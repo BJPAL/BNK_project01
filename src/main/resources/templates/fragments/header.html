@@ -33,10 +33,17 @@
 
     const interval = setInterval(() => {
       seconds--;
+
+      // 5초 전 알림
+      if (seconds === 5) {
+        alert('세션이 곧 만료됩니다!');
+      }
+
+      // 0초 이하 시 자동 로그아웃
       if (seconds <= 0) {
         timerElement.innerText = '만료됨';
         clearInterval(interval);
-        // 원하면 여기서 자동 로그아웃 또는 리다이렉트 가능
+        window.location.href = '/auth/logout';
       } else {
         timerElement.innerText = seconds;
       }
