@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>1:1 문의</h1>
+<hr>
+<table>
+	<tr>
+		<th>문의분야</th>
+		<td>펀드</td>
+	</tr>
+	<tr>
+		<th>성명</th>
+		<td></td>
+	</tr>
+	<tr>
+		<th>제목</th>
+		<td><input type="text" name="title" placeholder="제목을 입력하세요"></td>
+	</tr>
+	<tr>
+		<th>내용</th>
+		<td><textarea name="content" placeholder="내용을 입력하세요"></textarea></td>
+	</tr>
+</table>
+<button onclick="submitQna()">등록</button>
+
+<script>
+	function submitQna(){
+		const title = document.querySelector('input[name="title"]').value;
+		const content = document.querySelector('textarea[name="content"]').value;
+		
+		if(!title){
+			alert("제목을 입력해주세요");
+			return;
+		}
+		if(!content){
+			alert("내용을 입력해주세요");
+			return;
+		}
+		
+		fetch('/regQna',{
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({title, content})
+		}).then(res => res.json())
+		  .then(data=>{
+			  alert("문의가 등록되었습니다.");
+			  window.location.href = data.redirectUrl;
+		  })
+		  .catch(error=>{
+			  console.log("1:1 문의 등록 중 에러 발생 : " + error);
+		  })
+	}
+</script>
+</body>
+</html>

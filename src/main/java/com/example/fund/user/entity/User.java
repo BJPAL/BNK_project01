@@ -17,7 +17,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    private Integer user_id;
 
     @Column(length = 15)
     @Pattern(regexp = "^[a-z][a-zA-Z0-9]{5,14}$", message = "ID는 영문자로 시작하고 영문자와 숫자 조합의 4~15자여야 합니다.")
