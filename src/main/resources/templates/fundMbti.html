@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>펀드 MBTI 테스트</title>
+  <link rel="stylesheet" th:href="@{/css/mbtiIntro.css}">
+  <style>
+  	body {
+  margin: 0;
+  padding: 0;
+  background-color: #f1e9e7;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.mbti-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.mbti-card {
+  background-color: white;
+  border-radius: 30px;
+  padding: 40px;
+  width: 600px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.mbti-card h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.highlight {
+  color: #157347;
+  font-weight: 700;
+}
+
+.mbti-character {
+  width: 100px;
+  margin: 20px 0;
+}
+
+.subtext {
+  font-size: 16px;
+  color: #333;
+  margin: 4px 0;
+}
+
+button {
+  margin-top: 25px;
+  background-color: #157347;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #125f3d;
+}
+  	
+  </style>
+</head>
+<body>
+  <div class="mbti-container">
+    <div class="mbti-card">
+      <h1><span class="bold">펀드</span> <span class="highlight">MBTI</span> - 투자성향 테스트</h1>
+      <img th:src="@{/images/mbti_char1.jpg}" alt="캐릭터" class="mbti-character">
+      <p class="subtext">나의 투자 스타일, 궁금하지 않나요?</p>
+      <p class="subtext">간단한 테스트로 당신의 펀드 <strong>MBTI</strong> 유형을 확인해보세요!</p>
+      <button th:onclick="|location.href='@{/mbti/start}'|">테스트 시작</button>
+    </div>
+  </div>
+</body>
+</html>
