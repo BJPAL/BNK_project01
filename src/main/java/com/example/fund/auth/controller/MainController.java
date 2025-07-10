@@ -1,4 +1,4 @@
-package com.example.fund.main.controller;
+package com.example.fund.auth.controller;
 
 import jakarta.servlet.http.HttpSession;
 import com.example.fund.user.entity.User;
