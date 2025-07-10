@@ -3,9 +3,12 @@ package com.example.fund.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.example.fund.auth.dto.JoinRequest;
 import com.example.fund.user.entity.User;
 import com.example.fund.user.repository.UserRepository;
+
+import org.mindrot.jbcrypt.BCrypt;   // BCrypt만 수입
 
 @Service
 @RequiredArgsConstructor
@@ -16,20 +19,26 @@ public class UserService {
     /* ---------- 회원가입 ---------- */
     @Transactional
     public void register(JoinRequest dto) {
-        if (repo.existsByUsername(dto.getUsername()))
-            throw new IllegalStateException("이미 사용 중인 아이디입니다.");
-        if (repo.existsByPhone(dto.getPhone()))
-            throw new IllegalStateException("이미 등록된 전화번호입니다.");
 
-        // 하이픈 추가: 01012345678 → 010-1234-5678
-        String formattedPhone = dto.getPhone()
-                .replaceAll("(\\d{3})(\\d{3,4})(\\d{4})", "$1-$2-$3");
+        if (repo.existsByUsername(dto.getUsername())) {
+            throw new IllegalStateException("이미 사용 중인 아이디입니다.");
+        }
+        if (repo.existsByPhone(dto.getPhone())) {
+            throw new IllegalStateException("이미 등록된 전화번호입니다.");
+        }
+
+        // 전화번호 포맷 정리
+        String rawPhone       = dto.getPhone().replaceAll("[^0-9]", "");
+        String formattedPhone = rawPhone.replaceAll("(\\d{3})(\\d{3,4})(\\d{4})", "$1-$2-$3");
+
+        // 비밀번호 해싱 (cost=10이 기본, 필요하면 gensalt(12) 등으로 조정)
+        String hashedPw = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
 
         User user = User.builder()
                 .username(dto.getUsername())
-                .password(dto.getPassword())   // 평문 저장
+                .password(hashedPw)
                 .name(dto.getName())
-                .phone(formattedPhone)         // 가공된 전화번호 저장
+                .phone(formattedPhone)
                 .build();
 
         repo.save(user);
@@ -38,7 +47,7 @@ public class UserService {
     /* ---------- 로그인 ---------- */
     public User login(String id, String pw) {
         return repo.findByUsername(id)
-                .filter(u -> u.getPassword().equals(pw))
+                .filter(u -> BCrypt.checkpw(pw, u.getPassword()))
                 .orElse(null);
     }
 }
