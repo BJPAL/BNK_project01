@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ 목록</title>
+</head>
+<body>
+<h1>FAQ 목록</h1>
+
+<!-- 메시지 출력 -->
+<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}"></div>
+<div th:if="${successMessage}" style="color:green;" th:text="${successMessage}"></div>
+
+<!-- 검색 폼 -->
+<form th:action="@{/admin/faq/list}" method="get">
+  <input type="text" name="keyword" th:value="${keyword}" placeholder="질문 또는 답변 검색"/>
+  <button type="submit">검색</button>
+</form>
+
+<!-- 등록 버튼: CS 권한만 -->
+<a th:if="${admin != null and admin.role == 'CS'}" th:href="@{/admin/faq/add}">등록</a>
+
+<!-- FAQ 테이블 -->
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <th>질문</th>
+    <th>답변</th>
+    <th>상태</th>
+    <th th:if="${admin != null and admin.role == 'CS'}">수정</th>
+    <th th:if="${admin != null and admin.role == 'CS'}">삭제</th>
+  </tr>
+
+  <tr th:each="faq : ${faqList}">
+    <td th:text="${faq.faqId}"></td>
+    <td th:text="${faq.question}"></td>
+    <td th:text="${faq.answer}"></td>
+    <td th:text="${faq.active ? '활성화' : '비활성'}"></td>
+    <td th:if="${admin != null and admin.role == 'CS'}">
+      <a th:href="@{'/admin/faq/edit/' + ${faq.faqId}}">수정</a>
+    </td>
+    <td th:if="${admin != null and admin.role == 'CS'}">
+      <form th:action="@{'/admin/faq/delete/' + ${faq.faqId}}" method="post">
+        <button type="submit">삭제</button>
+      </form>
+    </td>
+  </tr>
+</table>
+
+<!-- 페이징 -->
+<div th:if="${totalPages > 1}">
+    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:href="@{/admin/faq/list(page=${i}, keyword=${keyword})}"
+           th:text="${i + 1}"
+           th:classappend="${i == currentPage} ? 'active' : ''">1</a>
+    </span>
+</div>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-package com.example.fund.admin.entity;
+package com.example.fund.admin;
 
 
 import jakarta.persistence.*;
@@ -15,7 +15,7 @@ public class Admin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int admin_id;
+    private Integer admin_id;
 
     @Column(length = 20)
     private String adminname;
@@ -25,6 +25,8 @@ public class Admin {
 
     private String name;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private AdminRole role;  // ← 여기에 enum 사용!
 
 }

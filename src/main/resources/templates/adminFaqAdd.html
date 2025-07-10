@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>FAQ 등록</h1>
+
+<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}"></div>
+
+<form th:action="@{/admin/faq/add}" method="post">
+  <label>질문</label>
+  <input type="text" name="question" />
+  <br>
+  <label>답변</label>
+  <textarea name="answer"></textarea>
+  <br>
+    <label>활성화 여부</label>
+    <input type="checkbox" name="active" checked /><br>
+    <br>
+  <button type="submit">등록</button>
+</form>
+</body>
+</html>

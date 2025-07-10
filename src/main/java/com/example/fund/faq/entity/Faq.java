@@ -32,4 +32,7 @@ public class Faq extends BaseEntity {
 	
 	@Column(nullable = false)
     private Integer viewCount = 0;
+
+	@Column(nullable = false)
+	private Boolean active = true;
 }

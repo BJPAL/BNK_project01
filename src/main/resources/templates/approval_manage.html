@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>결재 요청 승인 관리</title>
+</head>
+<body>
+<h2>결재 요청 승인 관리</h2>
+
+<!-- 상태 필터 -->
+<form method="get" action="/admin/approval/manage">
+  <label>상태 필터:
+    <select name="status">
+      <option value="">전체</option>
+      <option th:each="s : ${T(com.example.fund.admin.approval.ApprovalStatus).values()}"
+              th:value="${s}" th:text="${s}"></option>
+    </select>
+  </label>
+
+  <button type="submit">조회</button>
+</form>
+<br>
+<table border="1">
+  <thead>
+  <tr>
+    <th>제목</th>
+    <th>내용</th>
+    <th>상태</th>
+    <th>작성자</th>
+    <th>작성일</th>
+    <th>액션</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${approvalList}">
+    <td th:text="${approval.title}">제목</td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${approval.status}">상태</td>
+    <td th:text="${approval.writer != null ? approval.writer.adminname : '작성자 없음'}">작성자</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+    <td>
+      <!-- 상태: 결재대기 → 승인, 반려 버튼 -->
+      <div th:if="${isSuper} and ${approval.status.name() == '결재대기'}">
+        <!-- 승인 버튼 -->
+<!--        <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post">-->
+<!--          <button type="submit">승인</button>-->
+<!--        </form>-->
+        <th:block th:if="${admin.role.name() == 'SUPER' or admin.role.name() == 'APPROVER'}">
+          <button>승인</button>
+        </th:block>
+
+        <!-- 반려 버튼 + 사유 입력 -->
+        <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post">
+          <input type="text" name="reason" placeholder="반려 사유" required>
+          <button type="submit">반려</button>
+        </form>
+      </div>
+
+      <!-- 상태: 배포대기, 배포, 반려 등 → 버튼 없음 -->
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
