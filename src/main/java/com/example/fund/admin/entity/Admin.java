@@ -15,7 +15,7 @@ public class Admin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int admin_id;
+    private Integer admin_id;
 
     @Column(length = 20)
     private String adminname;
