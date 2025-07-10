@@ -31,11 +31,8 @@ public class Qna extends BaseEntity {
 	private Integer qnaId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId") // fk 칼럼 이름
+	@JoinColumn(name = "user_id" , nullable = false) // fk 칼럼 이름
 	private User user;
-	
-	@Column(nullable = false)
-    private String category = "펀드"; // 고정값
 	
 	@Column(nullable = false)
 	private String title;
