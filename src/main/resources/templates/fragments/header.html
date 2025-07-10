@@ -1,0 +1,47 @@
+<!-- src/main/resources/templates/fragments/header.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="*">
+  <header>
+    <h1>Fund Management System</h1>
+    <nav>
+      <!-- 로그인 X 상태일 때 -->
+      <div th:if="${session.user == null}">
+        <a th:href="@{/auth/login}">로그인</a> |
+        <a th:href="@{/auth/join}">회원가입</a>
+      </div>
+
+      <!-- 로그인 O 상태일 때 -->
+      <div th:if="${session.user != null}">
+        <span th:text="|${session.user.name}님 환영합니다!|"></span> |
+        <a th:href="@{/auth/logout}">로그아웃</a><br/>
+
+        <!-- 남은 세션 시간 -->
+        <small th:if="${sessionRemaining}">
+          세션 만료까지 <span id="session-timer" th:text="${sessionRemaining}">0</span>초 남음
+        </small>
+      </div>
+    </nav>
+    <hr/>
+  </header>
+
+  <!-- 실시간 타이머 -->
+  <script th:if="${sessionRemaining}">
+    let seconds = [[${sessionRemaining}]];
+    const timerElement = document.getElementById('session-timer');
+
+    const interval = setInterval(() => {
+      seconds--;
+      if (seconds <= 0) {
+        timerElement.innerText = '만료됨';
+        clearInterval(interval);
+        // 원하면 여기서 자동 로그아웃 또는 리다이렉트 가능
+      } else {
+        timerElement.innerText = seconds;
+      }
+    }, 1000);
+  </script>
+</div>
+</body>
+</html>
