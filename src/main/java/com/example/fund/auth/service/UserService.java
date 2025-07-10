@@ -1,6 +1,6 @@
 package com.example.fund.auth.service;
 
-import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;   // BCrypt만 수입
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,7 +8,7 @@ import com.example.fund.auth.dto.JoinRequest;
 import com.example.fund.user.entity.User;
 import com.example.fund.user.repository.UserRepository;
 
-import org.mindrot.jbcrypt.BCrypt;   // BCrypt만 수입
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
