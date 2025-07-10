@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>자주 묻는 질문</h1>
+<hr>
+<ul>
+	<li th:each="faq: ${faqList}">
+		<span>Q </span>
+		<span class="question" th:text="${faq.question}" style="cursor:pointer;"></span>
+		<div class="answer" th:text="${faq.answer}" style="display:none"></div>
+	</li>
+</ul>
+
+<script>
+	const question = document.querySelectorAll(".question")
+</script>
+</body>
+</html>
