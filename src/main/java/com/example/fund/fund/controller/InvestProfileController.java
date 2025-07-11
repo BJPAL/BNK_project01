@@ -8,6 +8,7 @@ public class InvestProfileController {
 	
 	@GetMapping("/profile")
 	public String investProfile() {
-		return "investProfile/investprofile";
+		return "investprofile";
 	}
+
 }
