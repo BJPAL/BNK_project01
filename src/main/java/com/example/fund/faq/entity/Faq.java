@@ -35,4 +35,5 @@ public class Faq extends BaseEntity {
 
 	@Column(nullable = false)
 	private Boolean active = true;
+
 }
