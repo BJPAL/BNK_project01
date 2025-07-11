@@ -1,8 +1,10 @@
 package com.example.fund.admin.repository;
 
+import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AdminRepository_A extends JpaRepository<Admin, Integer> {
@@ -11,4 +13,5 @@ public interface AdminRepository_A extends JpaRepository<Admin, Integer> {
 
     boolean existsByAdminname(String adminname); //아이디 중복체크
 
+    List<Admin> findByRole(String role);
 }
