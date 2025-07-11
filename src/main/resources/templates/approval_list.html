@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>내 결재 요청 내역</title>
+</head>
+<body>
+<h2>내 결재 요청 내역</h2>
+
+<!-- 결재대기 -->
+<h3>결재대기</h3>
+<table border="1">
+  <thead>
+  <tr>
+    <th>제목</th>
+    <th>내용</th>
+    <th>작성일</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${approvalsPending}">
+    <td th:text="${approval.title}">제목</td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 배포대기 -->
+<h3>배포대기</h3>
+<table border="1">
+  <thead>
+  <tr>
+    <th>제목</th>
+    <th>내용</th>
+    <th>작성일</th>
+    <th>액션</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${approvalsWaiting}">
+    <td th:text="${approval.title}">제목</td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+    <td>
+      <form th:action="@{'/admin/approval/publish/' + ${approval.approvalId}}" method="post">
+        <button type="submit">배포</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 반려 -->
+<h3>반려</h3>
+<table border="1">
+  <thead>
+  <tr>
+    <th>제목</th>
+    <th>내용</th>
+    <th>반려사유</th>
+    <th>작성일</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${approvalsRejected}">
+    <td th:text="${approval.title}">제목</td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${approval.rejectReason}">사유</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 배포 완료 -->
+<h3>배포 완료</h3>
+<table border="1">
+  <thead>
+  <tr>
+    <th>제목</th>
+    <th>내용</th>
+    <th>작성일</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${approvalsPublished}">
+    <td th:text="${approval.title}">제목</td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

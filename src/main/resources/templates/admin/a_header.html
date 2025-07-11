@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <!-- 공통 헤더 fragment -->
+  <div th:fragment="adminHeader">
+    <h1><a href="/admin/main">Admin Main</a></h1>
+    <div class="header">
+      <p th:text="${session.admin.name + ' 관리자님 (' + session.admin.role + ')'}"></p>
+
+      <ul class="menu">
+        <!-- 모든 관리자 공통 메뉴 -->
+        <li><a href="/admin/logout">로그아웃</a></li>
+
+        <!-- 권한에 따라 다른 메뉴 -->
+        <!--
+        super: 최상위 관리자
+        planner: 기획자
+        approver: 결재자
+        cs: CS관리자
+        -->
+
+        <!--super 메뉴-->
+        <li th:if="${session.admin.role == 'super'}"><a href="/admin/adminSetting">관리자 설정</a></li>
+
+        <!--planner 메뉴-->
+        <li th:if="${session.admin.role == 'planner'}"><a href="">펀드상품 관리</a></li>
+        <li th:if="${session.admin.role == 'planner'}"><a href="">결재 요청 내역</a></li>
+
+        <!--approver 메뉴-->
+        <li th:if="${session.admin.role == 'approver'}"><a href="">결재 요청 내역 및 승인</a></li>
+
+        <!--cs 메뉴-->
+        <li th:if="${session.admin.role == 'cs'}"><a href="">1:1문의 관리</a></li>
+        <li th:if="${session.admin.role == 'cs'}"><a href="">FAQ 관리</a></li>
+
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
