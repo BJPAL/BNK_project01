@@ -21,6 +21,7 @@ public class AdminConverter {
         AdminDTO adminDTO = new AdminDTO();
         adminDTO.setAdmin_id(admin.getAdmin_id());
         adminDTO.setAdminname(admin.getAdminname());
+        adminDTO.setName(admin.getName());
         adminDTO.setPassword(admin.getPassword());
         adminDTO.setRole(admin.getRole());
         return adminDTO;
