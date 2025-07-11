@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>투자성향분석</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #ffffff;
+      margin: 0;
+      padding: 40px;
+      color: #222;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      color: #1a1a1a;
+    }
+
+    .section {
+      margin-top: 50px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-bottom: 40px;
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: #f5f7fa;
+      font-weight: 600;
+      color: #333;
+    }
+
+    td {
+      color: #444;
+    }
+
+    ul {
+      font-size: 14px;
+      line-height: 1.8;
+      padding-left: 20px;
+    }
+
+    .danger {
+      color: #b22222;
+      font-weight: bold;
+    }
+
+    .notice {
+      border: 1px solid #ccc;
+      background-color: #f8f8f8;
+      padding: 24px;
+      color: #222;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-top: 30px;
+      border-left: 5px solid #d9534f;
+    }
+
+    .btn-box {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .btn-analyze {
+      background-color: #d9534f;
+      color: white;
+      padding: 12px 40px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-analyze:hover {
+      background-color: #b52b27;
+    }
+
+.risk-1 { background-color: #7A0000; color: #fff; font-weight: bold; } /* 위험 최고: 짙은 혈흑색 */
+.risk-2 { background-color: #A80000; color: #fff; font-weight: bold; } /* 매우 위험: 강렬한 어두운 빨강 */
+.risk-3 { background-color: #D00000; color: #fff; font-weight: bold; } /* 높음: 선명한 레드 */
+.risk-4 { background-color: #F25B5B; color: #fff; font-weight: 500; }  /* 보통: 밝은 레드 */
+.risk-5 { background-color: #FFBABA; color: #222; font-weight: 500; }  /* 낮음: 파스텔 레드 */
+.risk-6 { background-color: #FFF5F5; color: #222; }                    /* 매우 낮음: 거의 흰색에 가까운 연붉은 */
+
+.table-note {
+  background-color: #fff8f8;
+  border: 1px solid #e0cfcf;
+  border-left: 5px solid #d9534f;
+  padding: 20px 24px;
+  margin-top: 30px;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: #333;
+  border-radius: 6px;
+}
+
+.table-note ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.table-note li {
+  margin-bottom: 10px;
+}
+
+.table-note .warning-text {
+  color: #b22222;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+
+  </style>
+</head>
+<body>
+  <h2>투자자정보확인</h2>
+  <table>
+    <tr>
+      <th>투자자리스크(위험)등급</th>
+      <td>설문대상자</td>
+      <th>등급최종변경일자</th>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <th>투자가능기간</th>
+      <td>&nbsp;</td>
+      <th>투자경험기간</th>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+
+  <div class="section">
+    <h2>금융투자상품 투자위험지도</h2>
+    <table border="1" cellspacing="0" cellpadding="10">
+      <tr>
+        <td rowspan="2" colspan="3">구분</td>
+        <td class="risk-1">1등급</td>
+        <td class="risk-2">2등급</td>
+        <td class="risk-3">3등급</td>
+        <td class="risk-4">4등급</td>
+        <td class="risk-5">5등급</td>
+        <td class="risk-6">6등급</td>
+      </tr>
+      <tr>
+        <td class="risk-1">매우높은위험</td>
+        <td class="risk-2">높은위험</td>
+        <td class="risk-3">다소높은위험</td>
+        <td class="risk-4">보통위험</td>
+        <td class="risk-5">낮은위험</td>
+        <td class="risk-6">매우낮은위험</td>
+      </tr>
+      <tr>
+        <td rowspan="4">펀드/ETF</td>
+        <td rowspan="2">설정 후 3년 이후 (주1,2)</td>
+        <td>97.5% VaR</td>
+        <td class="risk-1">VaR 50% 초과</td>
+        <td class="risk-2">VaR 50% 이하</td>
+        <td class="risk-3">VaR 30% 이하</td>
+        <td class="risk-4">VaR 20% 이하</td>
+        <td class="risk-5">VaR 10% 이하</td>
+        <td class="risk-6">VaR 1% 이하</td>
+      </tr>
+      <tr>
+        <td>수익률 변동성</td>
+        <td class="risk-1">수익률변동성 25% 초과</td>
+        <td class="risk-2">수익률변동성 25% 이하</td>
+        <td class="risk-3">수익률변동성 15% 이하</td>
+        <td class="risk-4">수익률변동성 10% 이하</td>
+        <td class="risk-5">수익률변동성 5% 이하</td>
+        <td class="risk-6">수익률변동성 0.5% 이하</td>
+      </tr>
+      <tr>
+        <td rowspan="2" colspan="2">설정 후 3년 이전</td>
+        <td class="risk-1">레버리지 등 수익구조가 특수한 경우</td>
+        <td class="risk-2" rowspan="2">고위험자산 80% 이상 투자</td>
+        <td class="risk-3">고위험자산 80% 미만 투자</td>
+        <td class="risk-4">고위험자산 50% 미만 투자</td>
+        <td class="risk-5">저위험자산(주6) 60% 이상 투자</td>
+        <td class="risk-6" rowspan="2">단기금융 집합투자기구, 단기 국공채 등 집합투자기구</td>
+      </tr>
+      <tr>
+        <td class="risk-1">최대손실 가능 금액 20% 초과 파생결합증권투자</td>
+        <td class="risk-3">최대손실 가능 금액 20% 이하 파생결합증권투자</td>
+        <td class="risk-4">중위험자산(주5) 60% 이상 투자</td>
+        <td class="risk-5">원금보존추구형 파생결합증권 투자</td>
+      </tr>
+      <tr>
+        <td colspan="3">채권</td>
+        <td class="risk-1">회사채 B+이하</td>
+        <td class="risk-2">회사채 BB+ ~ BB-</td>
+        <td class="risk-3">회사채 BBB+ ~ BBB-</td>
+        <td class="risk-4">회사채 A+ ~ A-</td>
+        <td class="risk-5">회사채 AA-이상 특수채, 금융채, RP</td>
+        <td class="risk-6">국고채, 통안채, 지방채, 보증채</td>
+      </tr>
+      <tr>
+        <td colspan="3">기업어음 단기사채</td>
+        <td class="risk-1">B이하 또는 무등급</td>
+        <td class="risk-2"></td>
+        <td class="risk-3">A3</td>
+        <td class="risk-4">A2</td>
+        <td class="risk-5">A1</td>
+        <td class="risk-6">-</td>
+      </tr>
+      <tr>
+        <td rowspan="2">ELT (주3)</td>
+        <td colspan="2">신용등급 A+ ~ A-</td>
+        <td class="risk-1" rowspan="2">최대원금손실률 20%초과 +추가요건</td>
+        <td class="risk-2" rowspan="2">최대원금손실률 20%초과</td>
+        <td class="risk-3" rowspan="2">최대원금손실률 10%초과 20%이내</td>
+        <td class="risk-4">최대원금손실률 10%이내</td>
+        <td class="risk-5">-</td>
+        <td class="risk-6">-</td>
+      </tr>
+      <tr>
+        <td colspan="2">신용등급 AA-이상</td>
+        <td class="risk-4">최대원금손실률 5%초과 10%이내</td>
+        <td class="risk-5">최대원금손실률 5%이내</td>
+        <td class="risk-6">-</td>
+      </tr>
+      <tr>
+        <td colspan="3">기타</td>
+        <td class="risk-1">신용자본증권/조건부자본증권</td>
+        <td class="risk-2">지분증권</td>
+        <td class="risk-3"></td>
+        <td class="risk-4"></td>
+        <td class="risk-5">저축은행정기예금</td>
+        <td class="risk-6">정기예금 (저축은행제외), 개인종합자산관리계좌 편입 예적금</td>
+      </tr>
+    </table>
+  </div>
+	<div class="table-note">
+	  <ul>
+	    <li>(주1) ‘24.3.1 이후 재산정주기가 도래한 설정 후 3년 이상된 펀드/ETF: 신뢰수준 97.5% VaR(발생가능한 최대손실금액) 적용<br>
+	      단, ’24.3.1 이후 결산 미도래한 펀드: 수익률 변동성 적용</li>
+	    <li>(주2) 주식형 또는 주식파생형 ETF의 경우, 최저 위험등급은 2등급(높은위험)</li>
+	    <li>(주3) 다음 중 하나라도 해당되는 원금비보장형 ELT는 1등급 상향 적용:<br>
+	      기초자산 수 3개 이상 / 기초자산 변동성 25% 초과 / 낙인배리어 60% 이상 / 노낙인상품 만기 배리어 70% 이상</li>
+	    <li>(주4) 고위험 자산: 주식, 후순위채, 투기등급채권(BB+ 이하), 기업어음(A3 미만), 리츠, 파생상품 등</li>
+	    <li>(주5) 중위험 자산: 채권(BBB- 이상), 기업어음(A3 이상), 담보부대출 및 대출채권 등</li>
+	    <li>(주6) 저위험 자산: 국공채, 지방채, 회사채(A- 이상), 기업어음(A2-), 현금성 자산 등</li>
+	    <li class="warning-text">※ 모든 금융투자상품은 원금손실 위험이 있으며, 예금자보호법에 따라 보호되지 않습니다.<br>
+	      「매우낮은위험」은 손실발생 가능성이 낮다는 의미일 뿐, 손실이 없거나 규모가 작다는 의미는 아닙니다.</li>
+	  </ul>
+	</div>
+
+  <div class="section">
+    <h2>주의사항</h2>
+    <ul style="font-size: 13px; line-height: 1.8;">
+      <li>본 투자 질문지는 부산은행에서 제공되었으며, 등 투자적합성 평가의 결과는 고객님께서 제공하신 정보에 근거하여 산출되었음을 알려드립니다.</li>
+      <li>본 설문지에서 수집된 개인정보는 고객에게 적합한 펀드를 제공하기 위한 기초자료로만 활용될 예정이며 저희 금융사에 의하여 기밀로 보호될 것을 약속드립니다.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>투자유형안내</h2>
+    <table>
+      <tr>
+        <th>투자유형</th>
+        <th>설명</th>
+      </tr>
+      <tr>
+        <td>안정형</td>
+        <td>예금 또는 저축 수준의 수익률을 기대하며, 투자원금에 손실이 발생하는 것을 원하지 않음</td>
+      </tr>
+      <tr>
+        <td>안정추구형</td>
+        <td>투자원금의 손실위험을 최소화하고, 이자소득이나 배당소득 수준의 안정적인 투자를 목표로 함</td>
+      </tr>
+      <tr>
+        <td>위험중립형</td>
+        <td>투자에는 손실위험이 있음을 충분히 인식하고 있으며, 예금보다 높은 수익을 기대할 수 있다면 일정수준의 손실위험을 감수할 수 있음</td>
+      </tr>
+      <tr>
+        <td>적극투자형</td>
+        <td>투자원금의 보전보다는 위험을 감내하더라도 높은 수준의 투자수익실현을 추구함</td>
+      </tr>
+      <tr>
+        <td>공격투자형</td>
+        <td>시장평균 수익률을 훨씬 넘어서는 높은 수준의 투자수익을 추구하며, 이를 위해 자산가치의 변동에도 손실위험을 적극 수용</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="notice">
+    이전 <span class="danger">투자성향분석</span>에 대한 <span class="danger">고객님의 투자 유형</span>입니다.<br>
+    금융소비자보호법에 따라 고객님의 투자성향분석 실시후, 적합성·적정성원칙에 부합하는 상품만 조회 및 가입이 가능합니다.<br>
+    투자성향분석을 진행하시겠습니까?
+  </div>
+
+  <div class="btn-box">
+    <button class="btn-analyze">분석하기</button>
+  </div>
+</body>
+</html>
