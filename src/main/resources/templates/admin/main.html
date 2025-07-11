@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Main</title>
+</head>
+<body>
+<h1>Admin Main</h1>
+<p th:if="${msg}" th:text="${msg}"></p>
+<div th:replace="admin/a_header :: adminHeader"></div>
+
+</body>
+</html>
