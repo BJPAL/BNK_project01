@@ -4,9 +4,7 @@ import com.example.fund.admin.converter.AdminConverter;
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.repository.AdminRepository_A;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

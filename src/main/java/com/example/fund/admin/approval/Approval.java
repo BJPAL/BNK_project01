@@ -1,6 +1,6 @@
 package com.example.fund.admin.approval;
 
-import com.example.fund.admin.Admin;
+import com.example.fund.admin.entity.Admin;
 import com.example.fund.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,8 +29,8 @@ public class Approval extends BaseEntity {
     @JoinColumn(name = "writer_id", referencedColumnName = "admin_id")
     private Admin writer;
 
-    @Enumerated(EnumType.STRING)
-    private ApprovalStatus status;
+    @Column(length = 20, nullable = false)
+    private String status;
 
     @Column(length = 200)
     private String rejectReason; // 반려 사유

@@ -1,4 +1,3 @@
-// src/main/java/com/example/fund/auth/dto/LoginRequest.java
 package com.example.fund.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;

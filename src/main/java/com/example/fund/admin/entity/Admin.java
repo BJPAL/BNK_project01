@@ -1,4 +1,4 @@
-package com.example.fund.admin;
+package com.example.fund.admin.entity;
 
 
 import jakarta.persistence.*;
@@ -25,8 +25,7 @@ public class Admin {
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private AdminRole role;  // ← 여기에 enum 사용!
+    private String role;
 
 }

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <title>FAQ 수정</title>
 </head>
 <body>
 <h1>FAQ 수정</h1>
@@ -11,14 +11,14 @@
 
 <form th:action="@{'/admin/faq/edit/' + ${faq.faqId}}" method="post">
   <label>질문</label>
-  <input type="text" name="question" th:value="${faq.question}" />
-  <br>
+  <input type="text" name="question" th:value="${faq.question}" required/><br>
+
   <label>답변</label>
-  <textarea name="answer" th:text="${faq.answer}"></textarea>
-  <br>
-    <label>활성화 여부</label>
-    <input type="checkbox" name="active" th:checked="${faq.active}" /><br>
-    <br>
+  <textarea name="answer" th:text="${faq.answer}" required></textarea><br>
+
+  <label>활성화 여부</label>
+  <input type="checkbox" name="active" th:checked="${faq != null and faq.active}" /><br><br>
+
   <button type="submit">수정</button>
 </form>
 </body>

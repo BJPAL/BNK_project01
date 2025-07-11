@@ -1,8 +1,7 @@
-package com.example.fund.admin.controllerTest;
+package com.example.fund.admin.faq;
 
-
-import com.example.fund.admin.Admin;
-import com.example.fund.admin.serviceTest.FaqAdminService;
+import com.example.fund.admin.dto.AdminDTO;
+import com.example.fund.admin.entity.Admin;
 import com.example.fund.faq.entity.Faq;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class FaqAdminController {
                           @RequestParam(defaultValue = "0") int page,
                           Model model, HttpSession session) {
 
-        Admin admin = (Admin) session.getAttribute("loginAdmin");
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         model.addAttribute("admin", admin);
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by("faqId").descending());
@@ -34,7 +35,8 @@ public class FaqAdminController {
             faqPage = faqAdminService.search(keyword, pageable);
             model.addAttribute("keyword", keyword);
         } else {
-            faqPage = new PageImpl<>(faqAdminService.findAll(), pageable, faqAdminService.findAll().size());
+            List<Faq> allFaqs = faqAdminService.findAll();
+            faqPage = new PageImpl<>(allFaqs, pageable, allFaqs.size());
         }
 
         model.addAttribute("faqList", faqPage.getContent());
@@ -45,11 +47,11 @@ public class FaqAdminController {
     }
 
     @GetMapping("/add")
-    public String addForm(HttpSession session,Model model){
-        Admin admin = (Admin) session.getAttribute("loginAdmin");
-        if(!"CS".equals(admin.getRole())){
+    public String addForm(HttpSession session, Model model) {
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 등록 가능합니다.");
-//            return "adminFaqList";
+            return "adminFaqList";
         }
         return "adminFaqAdd";
     }
@@ -62,8 +64,8 @@ public class FaqAdminController {
                          RedirectAttributes redirectAttributes,
                          Model model) {
 
-        Admin admin = (Admin) session.getAttribute("loginAdmin");
-        if (admin == null || !"CS".equals(admin.getRole())) {
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 등록 가능합니다.");
             return "adminFaqAdd";
         }
@@ -79,10 +81,10 @@ public class FaqAdminController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable("id")Integer id, Model model, HttpSession session){
-        Admin admin = (Admin) session.getAttribute("loginAdmin");
+    public String editForm(@PathVariable("id") Integer id, Model model, HttpSession session) {
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
 
-        if (admin == null || !"CS".equals(admin.getRole())) {
+        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 접근 가능합니다.");
             return "adminFaqList";
         }
@@ -105,8 +107,8 @@ public class FaqAdminController {
                           HttpSession session,
                           RedirectAttributes redirectAttributes,
                           Model model) {
-        Admin admin = (Admin) session.getAttribute("loginAdmin");
-        if (admin == null || !"CS".equals(admin.getRole())) {
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 수정 가능합니다.");
             return "adminFaqEdit";
         }
@@ -119,7 +121,7 @@ public class FaqAdminController {
 
         existing.setQuestion(question);
         existing.setAnswer(answer);
-        existing.setActive(active == null || active.equals("on")); // 체크박스가 null이 아니면 true
+        existing.setActive(active == null || active.equals("on"));
 
         faqAdminService.save(existing);
         redirectAttributes.addFlashAttribute("successMessage", "FAQ가 수정되었습니다.");
@@ -131,9 +133,9 @@ public class FaqAdminController {
                             HttpSession session,
                             RedirectAttributes redirectAttributes,
                             Model model) {
-        Admin admin = (Admin) session.getAttribute("loginAdmin");
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
 
-        if (admin == null || !"CS".equals(admin.getRole())) {
+        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 삭제 가능합니다.");
             return "adminFaqList";
         }
@@ -142,5 +144,4 @@ public class FaqAdminController {
         redirectAttributes.addFlashAttribute("successMessage", "FAQ가 성공적으로 삭제되었습니다.");
         return "redirect:/admin/faq/list";
     }
-
 }
