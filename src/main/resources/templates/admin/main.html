@@ -7,6 +7,8 @@
 <body>
 <p th:if="${msg}" th:text="${msg}"></p>
 <div th:replace="admin/a_header :: adminHeader"></div>
-
+<div th:if="${session.admin != null and session.admin.role == 'cs'}">
+    <p>미답변 문의 <strong th:text="${unansweredCount}">0</strong>건</p>
+</div>
 </body>
 </html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div th:replace="admin/a_header :: adminHeader"></div>
+
+    <h2 th:text="${qna.title}">문의 제목</h2>
+
+    <p><strong>작성자:</strong> <span th:text="${qna.user.username}">userId</span></p>
+
+    <p><strong>작성일:</strong> <span th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd HH:mm')}">2025-07-13</span></p>
+
+    <p><strong>문의 내용:</strong></p>
+    <div th:text="${qna.content}">문의 본문 내용</div>
+
+    <hr/>
+
+    <form th:action="@{/admin/qna/answer}" method="post">
+        <!-- qna id를 넘기기 위한 hidden input -->
+        <input type="hidden" name="id" th:value="${qna.qnaId}" />
+
+        <label for="answer">답변 내용</label><br/>
+        <textarea name="answer" id="answer" rows="8" cols="80" required
+                th:text="${qna.answer != null ? qna.answer : ''}"></textarea><br/>
+
+        <button type="submit">답변 등록</button>
+  </form>
+</body>
+</html>
