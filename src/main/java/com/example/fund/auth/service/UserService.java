@@ -1,14 +1,14 @@
 package com.example.fund.auth.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.example.fund.auth.dto.JoinRequest;
+import com.example.fund.auth.dto.UserUpdateRequest;
 import com.example.fund.user.entity.User;
 import com.example.fund.user.repository.UserRepository;
-
-import org.mindrot.jbcrypt.BCrypt;   // BCrypt만 수입
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class UserService {
         String rawPhone       = dto.getPhone().replaceAll("[^0-9]", "");
         String formattedPhone = rawPhone.replaceAll("(\\d{3})(\\d{3,4})(\\d{4})", "$1-$2-$3");
 
-        // 비밀번호 해싱 (cost=10이 기본, 필요하면 gensalt(12) 등으로 조정)
+        // 비밀번호 해싱
         String hashedPw = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
 
         User user = User.builder()
@@ -49,5 +49,39 @@ public class UserService {
         return repo.findByUsername(id)
                 .filter(u -> BCrypt.checkpw(pw, u.getPassword()))
                 .orElse(null);
+    }
+
+    /* ---------- 회원 정보 수정 ---------- */
+    @Transactional
+    public User updateProfile(int userId, @Valid UserUpdateRequest dto) {
+
+        User user = repo.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("회원이 존재하지 않습니다."));
+
+        // 현재 비밀번호 검증
+        if (!BCrypt.checkpw(dto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalStateException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호 변경 처리
+        if (dto.isChangingPassword()) {
+            if (!dto.newPwMatches()) {
+                throw new IllegalStateException("새 비밀번호가 서로 다릅니다.");
+            }
+            String hashed = BCrypt.hashpw(dto.getNewPassword(), BCrypt.gensalt());
+            user.setPassword(hashed);
+        }
+
+        // 전화번호 중복 확인 (본인 제외)
+        if (!user.getPhone().equals(dto.getPhone())
+                && repo.existsByPhoneAndUserIdNot(dto.getPhone(), userId)) {
+            throw new IllegalStateException("이미 사용 중인 전화번호입니다.");
+        }
+
+        // 이름/전화번호 업데이트
+        user.setName(dto.getName());
+        user.setPhone(dto.getPhone());
+
+        return user; // 세션 교체용으로 컨트롤러에서 활용
     }
 }
