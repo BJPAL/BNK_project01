@@ -1,5 +1,6 @@
 package com.example.fund.admin.controller;
 
+import ch.qos.logback.core.model.Model;
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.service.AdminService_A;
@@ -8,10 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.swing.plaf.synth.SynthTextAreaUI;
