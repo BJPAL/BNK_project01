@@ -35,15 +35,11 @@ public class FaqAdminController {
             faqPage = faqAdminService.search(keyword, pageable);
             model.addAttribute("keyword", keyword);
         } else {
-            List<Faq> allFaqs = faqAdminService.findAll();
-            faqPage = new PageImpl<>(allFaqs, pageable, allFaqs.size());
+            faqPage = faqAdminService.findAllWithPaging(pageable);
         }
 
-        model.addAttribute("faqList", faqPage.getContent());
-        model.addAttribute("totalPages", faqPage.getTotalPages());
-        model.addAttribute("currentPage", faqPage.getNumber());
-
-        return "adminFaqList";
+        model.addAttribute("faqPage", faqPage);
+        return "admin/faq/list";
     }
 
     @GetMapping("/add")
@@ -51,9 +47,9 @@ public class FaqAdminController {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 등록 가능합니다.");
-            return "adminFaqList";
+            return "admin/faq/list";
         }
-        return "adminFaqAdd";
+        return "admin/faq/add";
     }
 
     @PostMapping("/add")
@@ -67,13 +63,13 @@ public class FaqAdminController {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 등록 가능합니다.");
-            return "adminFaqAdd";
+            return "admin/faq/add";
         }
 
         Faq faq = new Faq();
         faq.setQuestion(question);
         faq.setAnswer(answer);
-        faq.setActive(active == null || active.equals("on"));
+        faq.setActive(active != null && active.equals("on")); // 수정된 부분
 
         faqAdminService.save(faq);
         redirectAttributes.addFlashAttribute("successMessage", "FAQ가 등록되었습니다.");
@@ -86,17 +82,17 @@ public class FaqAdminController {
 
         if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 접근 가능합니다.");
-            return "adminFaqList";
+            return "admin/faq/list";
         }
 
         Faq faq = faqAdminService.findById(id);
         if (faq == null) {
             model.addAttribute("errorMessage", "해당 FAQ가 존재하지 않습니다.");
-            return "adminFaqList";
+            return "admin/faq/list";
         }
 
         model.addAttribute("faq", faq);
-        return "adminFaqEdit";
+        return "admin/faq/edit";
     }
 
     @PostMapping("/edit/{id}")
@@ -110,18 +106,18 @@ public class FaqAdminController {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 수정 가능합니다.");
-            return "adminFaqEdit";
+            return "admin/faq/edit";
         }
 
         Faq existing = faqAdminService.findById(id);
         if (existing == null) {
             model.addAttribute("errorMessage", "FAQ가 존재하지 않습니다.");
-            return "adminFaqEdit";
+            return "admin/faq/edit";
         }
 
         existing.setQuestion(question);
         existing.setAnswer(answer);
-        existing.setActive(active == null || active.equals("on"));
+        existing.setActive(active != null && active.equals("on")); // 수정된 부분
 
         faqAdminService.save(existing);
         redirectAttributes.addFlashAttribute("successMessage", "FAQ가 수정되었습니다.");
@@ -137,7 +133,7 @@ public class FaqAdminController {
 
         if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 삭제 가능합니다.");
-            return "adminFaqList";
+            return "admin/faq/list";
         }
 
         faqAdminService.delete(id);

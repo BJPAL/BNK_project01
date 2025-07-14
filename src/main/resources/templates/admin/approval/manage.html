@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>결재 승인 관리</title>
+</head>
+<body>
+<h2>결재 요청 승인 관리</h2>
+
+<!-- 결재대기 목록 -->
+<h3>[결재대기]</h3>
+<table border="1">
+  <thead><tr><th>제목</th><th>내용</th><th>작성자</th><th>작성일</th><th>액션</th></tr></thead>
+  <tbody>
+  <tr th:each="approval : ${pendingPage.content}">
+    <td>
+      <a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a>
+    </td>
+    <td>
+      <a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a>
+    </td>
+    <td>
+      <a th:if="${approval.writer != null}"
+         th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
+         th:text="${approval.writer.adminname}">작성자</a>
+      <span th:if="${approval.writer == null}">작성자 없음</span>
+    </td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+    <td>
+      <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post">
+        <button type="submit">승인</button>
+      </form>
+      <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post">
+        <input type="text" name="reason" required placeholder="반려 사유 입력" />
+        <button type="submit">반려</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<!-- 페이지네이션 -->
+<div>
+  <a th:if="${pendingPage.hasPrevious()}" th:href="@{'/admin/approval/manage?(pendingPage=' + ${pendingPage.number - 1} + ')'}">이전</a>
+  <span th:text="${pendingPage.number + 1}">현재페이지</span>
+  <a th:if="${pendingPage.hasNext()}" th:href="@{'/admin/approval/manage?(pendingPage=' + ${pendingPage.number + 1} + ')'}">다음</a>
+</div>
+
+<!-- 배포대기 -->
+<h3>[배포대기]</h3>
+<table border="1">
+  <thead><tr><th>제목</th><th>내용</th><th>작성자</th><th>작성일</th></tr></thead>
+  <tbody>
+  <tr th:each="approval : ${readyPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
+    <td>
+      <a th:if="${approval.writer != null}"
+         th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
+         th:text="${approval.writer.adminname}">작성자</a>
+      <span th:if="${approval.writer == null}">작성자 없음</span>
+    </td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+<div>
+  <a th:if="${readyPage.hasPrevious()}" th:href="@{'/admin/approval/manage?(readyPage=' + ${readyPage.number - 1} + ')'}">이전</a>
+  <span th:text="${readyPage.number + 1}">현재페이지</span>
+  <a th:if="${readyPage.hasNext()}" th:href="@{'/admin/approval/manage?(readyPage=' + ${readyPage.number + 1} + ')'}">다음</a>
+</div>
+
+<!-- 반려 -->
+<h3>[반려]</h3>
+<table border="1">
+  <thead><tr><th>제목</th><th>내용</th><th>작성자</th><th>작성일</th><th>반려 사유</th></tr></thead>
+  <tbody>
+  <tr th:each="approval : ${rejectedPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
+    <td>
+      <a th:if="${approval.writer != null}"
+         th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
+         th:text="${approval.writer.adminname}">작성자</a>
+      <span th:if="${approval.writer == null}">작성자 없음</span>
+    </td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+    <td th:text="${approval.rejectReason}">사유</td>
+  </tr>
+  </tbody>
+</table>
+<div>
+  <a th:if="${rejectedPage.hasPrevious()}" th:href="@{'/admin/approval/manage?(rejectedPage=' + ${rejectedPage.number - 1} + ')'}">이전</a>
+  <span th:text="${rejectedPage.number + 1}">현재페이지</span>
+  <a th:if="${rejectedPage.hasNext()}" th:href="@{'/admin/approval/manage?(rejectedPage=' + ${rejectedPage.number + 1} + ')'}">다음</a>
+</div>
+</body>
+</html>

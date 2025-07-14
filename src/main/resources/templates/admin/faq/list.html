@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>FAQ 목록</title>
+  <style>
+    .active {
+      font-weight: bold;
+      color: red;
+    }
+  </style>
 </head>
 <body>
 <h1>FAQ 목록</h1>
@@ -34,7 +40,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="faq : ${faqList}">
+  <tr th:each="faq : ${faqPage.content}">
     <td th:text="${faq.faqId}">ID</td>
     <td th:text="${faq.question}">질문</td>
     <td th:text="${faq.answer}">답변</td>
@@ -52,11 +58,11 @@
 </table>
 
 <!-- 페이징 -->
-<div th:if="${totalPages > 1}">
-  <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+<div th:if="${faqPage.totalPages > 1}">
+  <span th:each="i : ${#numbers.sequence(0, faqPage.totalPages - 1)}">
     <a th:href="@{/admin/faq/list(page=${i}, keyword=${keyword})}"
        th:text="${i + 1}"
-       th:classappend="${i == currentPage} ? 'active' : ''">1</a>
+       th:classappend="${i == faqPage.number} ? 'active' : ''">1</a>
   </span>
 </div>
 
