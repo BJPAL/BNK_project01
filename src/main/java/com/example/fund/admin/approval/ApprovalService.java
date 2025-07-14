@@ -1,20 +1,21 @@
 package com.example.fund.admin.approval;
 
 import com.example.fund.admin.entity.Admin;
-import com.example.fund.admin.faq.AdminRepository;
+import com.example.fund.admin.repository.AdminRepository_A;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ApprovalService {
     private final ApprovalRepository approvalRepository;
-    private final AdminRepository adminRepository;
+    private final AdminRepository_A adminRepository;
 
     public Page<Approval> getMyApprovals(String adminname, Pageable pageable) {
         List<String> excludeStatuses = List.of("배포", "반려");
@@ -95,13 +96,27 @@ public class ApprovalService {
     }
 
     // 요청자: adminname + 상태
-    public List<Approval> getApprovalsByStatus(String adminname, String status) {
-        return approvalRepository.findByWriterAdminnameAndStatus(adminname, status);
+    public Page<Approval> getApprovalsByStatus(String adminname, String status, int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("regDate").descending());
+        System.out.println(">>> 요청자용 호출됨: adminname=" + adminname + ", status=" + status + ", page=" + page);
+        return approvalRepository.findByWriterAdminnameAndStatus(adminname, status, pageable);
     }
 
     // 승인자: 상태만
-    public List<Approval> getApprovalsByStatus(String status) {
-        return approvalRepository.findByStatus(status);
+    public Page<Approval> getApprovalsByStatus(String status, int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("regDate").descending());
+        System.out.println(">>> 승인자용 호출됨: status=" + status + ", page=" + page);
+        return approvalRepository.findByStatus(status, pageable);
     }
 
+    //상세 페이지용
+    public Approval findById(Long id) {
+        return approvalRepository.findById(id).orElse(null);
+    }
+
+    //작성자별 찾기용
+    public List<Approval> getApprovalsByWriter(String adminname) {
+        Pageable pageable = Pageable.unpaged();
+        return approvalRepository.findByWriterAdminname(adminname, pageable).getContent();
+    }
 }

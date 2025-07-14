@@ -1,0 +1,27 @@
+<table class="table" xmlns:th="http://www.w3.org/1999/xhtml">
+  <thead>
+  <tr>
+    <th>번호</th>
+    <th>제목</th>
+    <th>내용</th>
+    <th>작성일</th>
+    <th>상태</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="q, iter : ${qnaList}">
+    <td th:text="${iter.count}"></td> <!-- 번호 자동 증가 -->
+    <td>
+      <a th:href="@{'/mypage/qna/' + ${q.qnaId}}" th:text="${q.title}" class="link-bank"></a>
+    </td>
+    <td th:text="${#strings.abbreviate(q.content, 30)}"></td> <!-- 미리보기 30자 -->
+    <td th:text="${#temporals.format(q.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+    <td th:text="${q.status}"></td>
+  </tr>
+
+  <!-- 문의 내역이 비어 있을 때 -->
+  <tr th:if="${#lists.isEmpty(qnaList)}">
+    <td colspan="5" class="text-center">문의 내역이 없습니다.</td>
+  </tr>
+  </tbody>
+</table>

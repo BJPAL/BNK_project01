@@ -14,4 +14,6 @@ public interface QnaRepository extends JpaRepository<Qna, Integer> {
     List<Qna> findByStatus(String status);
 
     Page<Qna> findByStatus(String status, Pageable pageable);
+
+    List<Qna> findByUser_UserIdOrderByRegDateDesc(int userId);
 }

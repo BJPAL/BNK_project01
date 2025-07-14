@@ -25,4 +25,7 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
     List<Approval> findByWriterAdminnameAndStatus(String adminname, String status);
 
     List<Approval> findByStatus(String status);
+
+    Page<Approval> findByWriterAdminnameAndStatus(String adminname, String status, Pageable pageable);
+
 }
