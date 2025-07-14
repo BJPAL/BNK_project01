@@ -45,7 +45,7 @@ public class FaqAdminController {
     @GetMapping("/add")
     public String addForm(HttpSession session, Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 등록 가능합니다.");
             return "admin/faq/list";
         }
@@ -61,7 +61,7 @@ public class FaqAdminController {
                          Model model) {
 
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 등록 가능합니다.");
             return "admin/faq/add";
         }
@@ -80,7 +80,7 @@ public class FaqAdminController {
     public String editForm(@PathVariable("id") Integer id, Model model, HttpSession session) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
 
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 접근 가능합니다.");
             return "admin/faq/list";
         }
@@ -104,7 +104,7 @@ public class FaqAdminController {
                           RedirectAttributes redirectAttributes,
                           Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 수정 가능합니다.");
             return "admin/faq/edit";
         }
@@ -131,7 +131,7 @@ public class FaqAdminController {
                             Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
 
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 삭제 가능합니다.");
             return "admin/faq/list";
         }
