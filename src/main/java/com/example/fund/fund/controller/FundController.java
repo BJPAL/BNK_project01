@@ -23,6 +23,7 @@ public class FundController {
         if (user == null) return "redirect:/auth/login";
 
         model.addAttribute("holdings", fundHoldingService.getHoldingsByUserId(user.getUserId()));
-        return "mypage/my-fund-list";  // 뷰는 이 경로로
+        return "mypage/my-fund-list"; // ★ templates/mypage/my-fund-list.html
+
     }
 }
