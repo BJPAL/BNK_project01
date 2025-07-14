@@ -1,27 +1,37 @@
 package com.example.fund.qna.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.fund.qna.entity.Qna;
 import com.example.fund.qna.repository.QnaRepository;
+import com.example.fund.qna.service.QnaService;
 import com.example.fund.user.entity.User;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 public class QnaController {
 	
 	@Autowired
 	QnaRepository qnaRepository;
+
+	@Autowired
+	QnaService qnaService;
 
 	@GetMapping("/qna")
 	public String qnaPage(HttpSession session, Model model) {
@@ -55,4 +65,50 @@ public class QnaController {
 		}
 		return "qna_success";
 	}
+
+	@GetMapping("/admin/qna")
+	public String listQnaByStatus(@RequestParam(defaultValue = "대기") String status, Model model) {
+		List<Qna> qnaList = qnaService.getQnaList(status);
+		System.out.println(qnaList);
+
+		if (qnaList == null) {
+			qnaList = new ArrayList<>();
+		}
+
+		if(status.equals("완료")){
+			model.addAttribute("qnaList", qnaList);
+			return "admin/cs/qnaList :: qna-AnsweredList";
+		}
+
+		model.addAttribute("qnaList", qnaList);
+
+		return "admin/cs/qnaList :: qna-UnAnsweredList";
+	}
+
+	@GetMapping("/admin/qna/detail/{qnaId}")
+	public String showQnaDetail(@PathVariable("qnaId") Integer id, Model model) {
+		Qna qna = qnaService.getQna(id);
+		model.addAttribute("qna", qna);
+		return "admin/cs/qnaDetailAndAnswer"; 
+	}
+	
+	@PostMapping("/admin/qna/answer")
+	public String answer(@RequestParam("id") Integer qnaId, @RequestParam("answer")String answer, RedirectAttributes rttr){
+		qnaService.SubmitAnswer(qnaId, answer);
+		
+		String msg = "답변이 성공적으로 등록되었습니다";
+		rttr.addFlashAttribute("msg", msg);
+
+		return "redirect:/admin/qnaList";
+	} 
+
+	@GetMapping("/admin/qna/answeredDetail/{qnaId}")
+	public String showAnsweredQnaDetail(@PathVariable("qnaId") Integer id, Model model) {
+		Qna qna = qnaService.getQna(id);
+		model.addAttribute("qna", qna);
+
+		return "admin/cs/qnaAnsweredDetail";
+	}
+	
+	
 }

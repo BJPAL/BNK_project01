@@ -4,16 +4,26 @@ package com.example.fund.admin.controller;
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.service.AdminService_A;
+import com.example.fund.qna.service.QnaService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +34,31 @@ public class MainAdminController {
     @Autowired
     AdminService_A adminService_a;
 
+    @Autowired
+    QnaService qnaService;
+
     @GetMapping("/")
-    public String root(){
+    public String root(HttpSession session){
+        AdminDTO adminDTO = (AdminDTO) session.getAttribute("admin");
+
+        if(adminDTO != null){
+            return "admin/main";
+        }
+        
         return "admin/login";
     }
 
+    //로그인 한 관리자의 Role이 cs일 때 미답변된 문의 수를 전달
     @GetMapping("/main")
-    public String main(){
+    public String main(HttpSession session, Model model){
+        AdminDTO adminDTO = (AdminDTO) session.getAttribute("admin");
+
+        if(adminDTO != null && "cs".equals(adminDTO.getRole())){
+            int unansweredCount = qnaService.countUnanwseQna();
+
+            model.addAttribute("unansweredCount", unansweredCount);
+        }
+
         return "admin/main";
     }
 
@@ -47,7 +75,7 @@ public class MainAdminController {
             sessionAdmin.setAdminname(admin.getAdminname());
 
             session.setAttribute("admin", sessionAdmin); //sessionAdmin으로 session등록
-            return "admin/main";
+            return "redirect:/admin/main";
         }
         String msg = "아이디 또는 비밀번호를 확인하세요";
         rttr.addFlashAttribute("msg", msg);
@@ -61,17 +89,20 @@ public class MainAdminController {
         return "admin/login";
     }
 
+    //아이디 중복 검사(Ajax 응답)
     @GetMapping("/check-id")
     public ResponseEntity<Boolean> checkDuplicateAdminname(@RequestParam String adminname){
         boolean exists = adminService_a.check_id(adminname);
         return ResponseEntity.ok(exists);
     }
 
+    //관리자 등록 폼으로 이동
     @GetMapping("/adminRegistForm")
-    public String adminRegistForm(){ //관리자 등록 폼으로 이동
+    public String adminRegistForm(){ 
         return "admin/super/admin_register";
     }
 
+    //관리자 설정 메뉴로 이동
     @GetMapping("/adminSetting")
     public String adminSetting(){
         return "admin/super/adminSetting";
@@ -124,4 +155,12 @@ public class MainAdminController {
         adminService_a.deleteAdmin(id);
         return "success";
     }
+
+    //1:1문의 관리 메뉴로 이동
+    @GetMapping("/qnaList")
+    public String qnaList() {
+        return "admin/cs/qnaSetting";
+    }
+    
+
 }

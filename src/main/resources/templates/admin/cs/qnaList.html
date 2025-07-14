@@ -1,0 +1,51 @@
+<div th:fragment="qna-UnAnsweredList">
+    <div th:if="${qnaList != null and qnaList.isEmpty()}">
+        <p>내역이 없습니다</p>
+    </div>
+
+    <table class="table" th:if="${qnaList != null and !qnaList.isEmpty()}">
+        <thead>
+            <th>No.</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>등록일</th>
+            <th>관리</th>
+        </thead>
+        <tbody>
+            <tr th:each="qna, stat : ${qnaList}">
+                <td th:text="${stat.index + 1}"></td>
+                <td th:text="${qna.title}"></td>
+                <td th:text="${qna.user.username}"></td>
+                <td th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd')}"></td>
+                <td>
+                    <a th:href="@{'/admin/qna/detail/' + ${qna.qnaId}}" >답변하기</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:fragment="qna-AnsweredList">
+    <div th:if="${qnaList != null and qnaList.isEmpty()}">
+        <p>내역이 없습니다</p>
+    </div>
+
+    <table class="table" th:if="${qnaList != null and !qnaList.isEmpty()}">
+        <thead>
+            <th>No.</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>등록일</th>
+        </thead>
+        <tbody>
+            <tr th:each="qna, stat : ${qnaList}">
+                <td th:text="${stat.index + 1}"></td>
+                <td>
+                    <a th:href="@{'/admin/qna/answeredDetail/' + ${qna.qnaId}}" th:text="${qna.title}"></a>
+                </td>
+                <td th:text="${qna.user.username}"></td>
+                <td th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd')}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
