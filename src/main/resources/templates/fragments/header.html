@@ -18,9 +18,11 @@
         <div th:if="${session.user != null}" class="text-end text-white">
           <span class="me-3 fw-semibold" th:text="|${session.user.name} 님|"></span>
 
+          <!-- 보유 펀드 목록 -->
           <a class="btn btn-outline-light btn-sm me-2" th:href="@{/fund/my}">보유 펀드 목록</a>
 
-          <a class="btn btn-outline-light btn-sm me-2" th:href="@{/mypage}">정보수정</a>
+          <!-- 마이페이지(정보수정·문의 탭 포함) -->
+          <a class="btn btn-outline-light btn-sm me-2" th:href="@{/mypage}">마이페이지</a>
 
           <a class="btn btn-outline-light btn-sm" th:href="@{/auth/logout}">로그아웃</a>
 

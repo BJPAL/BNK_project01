@@ -10,4 +10,8 @@ public interface QnaRepository extends JpaRepository<Qna, Integer> {
     Integer countByStatus(String status);
 
     List<Qna> findByStatus(String status);
+
+
+
+    List<Qna> findByUser_UserIdOrderByRegDateDesc(int userId);
 }

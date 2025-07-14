@@ -54,6 +54,7 @@ public class QnaController {
 	    Map<String, Object> result = new HashMap<>();
 	    result.put("result", "success");
 	    result.put("redirectUrl", "/qnaSuccess");
+
 	    return result;
 	}
 	
@@ -109,6 +110,24 @@ public class QnaController {
 
 		return "admin/cs/qnaAnsweredDetail";
 	}
-	
-	
+	@GetMapping("/qna/{qnaId}")
+	public String qnaDetail(@PathVariable Long qnaId, Model model, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		if (user == null) return "redirect:/auth/login";
+
+		Qna qna = qnaService.getQnaById(qnaId); // 서비스에서 가져오기
+		model.addAttribute("qna", qna);
+		return "mypage/qna-detail";
+	}
+	@GetMapping("/mypage/qna/{qnaId}")
+	public String mypageQnaDetail(@PathVariable Long qnaId, Model model, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		if (user == null) return "redirect:/auth/login";
+
+		Qna qna = qnaService.getQnaById(qnaId);
+		model.addAttribute("qna", qna);
+		return "mypage/qna-detail"; // 상세 보기 페이지 경로
+	}
+
+
 }
