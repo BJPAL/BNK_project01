@@ -1,29 +1,47 @@
 package com.example.fund.fund.controller;
 
-import com.example.fund.fund.service.FundHoldingService;
+import com.example.fund.favorite.service.FundFavoriteService;
+import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.repository.FundRepository;
 import com.example.fund.user.entity.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/fund")
 public class FundController {
 
-    private final FundHoldingService fundHoldingService;
-    private static final String SESSION_KEY = "user";
+    private final FundRepository fundRepo;
+    private final FundFavoriteService favoriteService;
 
+    /** 펀드 상세 페이지 */
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id,
+                         HttpSession session,
+                         Model model) {
+
+        Fund fund = fundRepo.findById(id).orElseThrow();
+        model.addAttribute("fund", fund);
+
+        User user = (User) session.getAttribute("user");
+        boolean isFav = favoriteService.isFavorite(user.getUserId(), id);
+        model.addAttribute("isFavorite", isFav);
+
+
+        return "mypage/fund-detail";
+    }
+
+    /** 보유 펀드 목록 */
     @GetMapping("/my")
     public String myFundHoldings(HttpSession session, Model model) {
-        User user = (User) session.getAttribute(SESSION_KEY);
+        User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/auth/login";
 
-        model.addAttribute("holdings", fundHoldingService.getHoldingsByUserId(user.getUserId()));
-        return "mypage/my-fund-list"; // ★ templates/mypage/my-fund-list.html
-
+        // (보유 펀드 조회 로직 생략됨)
+        return "mypage/my-fund-list";
     }
 }
