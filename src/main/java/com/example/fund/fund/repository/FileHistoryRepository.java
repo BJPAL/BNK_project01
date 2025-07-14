@@ -8,5 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FileHistoryRepository extends JpaRepository<FileHistory, Long> {
 
+    List<FileHistory> findAllByOrderByUploadedAtDesc();
+
+    List<FileHistory> findByFileTypeOrderByUploadedAtDesc(String type);
+    
     List<FileHistory> findByFileType(String type);
+
 }

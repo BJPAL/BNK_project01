@@ -156,17 +156,17 @@ public class FundServiceController {
         }
     }
 
-    @GetMapping("/history")
-    public ResponseEntity<List<FileHistory>> getFileHistories(@RequestParam(required = false) String type) {
-        List<FileHistory> histories;
+@GetMapping("/history")
+public ResponseEntity<List<FileHistory>> getFileHistories(@RequestParam(required = false) String type) {
+    List<FileHistory> histories;
 
-        if (type != null && !type.isBlank()) {
-            histories = fileHistoryRepository.findByFileType(type);
-        } else {
-            histories = fileHistoryRepository.findAll();
-        }
-
-        return ResponseEntity.ok(histories);
+    if (type != null && !type.isBlank()) {
+        histories = fileHistoryRepository.findByFileTypeOrderByUploadedAtDesc(type); // 🔽 정렬된 메서드 사용
+    } else {
+        histories = fileHistoryRepository.findAllByOrderByUploadedAtDesc();
     }
+
+    return ResponseEntity.ok(histories);
+}
 
 }
