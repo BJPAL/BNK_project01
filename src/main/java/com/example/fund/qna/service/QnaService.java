@@ -5,6 +5,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.fund.qna.entity.Qna;
@@ -49,4 +53,10 @@ public class QnaService {
                 .orElseThrow(() -> new NoSuchElementException("문의가 존재하지 않습니다."));
     }
 
+    //한페이지당 15개 게시글 보이도록 return
+    public Page<Qna> getQnaListByStatus(String status, int page) {
+        Pageable pageable = PageRequest.of(page, 15, Sort.by("regDate").descending()); //최신순 정렬
+        return qnaRepository.findByStatus(status, pageable);
+    }
+    
 }
