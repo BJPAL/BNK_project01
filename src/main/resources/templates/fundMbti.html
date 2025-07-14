@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>펀드 MBTI 테스트</title>
+  <style>
+    body {
+  margin: 0;
+  padding: 0;
+  background-color: #f1e9e7;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.mbti-container,
+.question-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.mbti-card,
+.question-card {
+  background-color: white;
+  border-radius: 30px;
+  padding: 60px; /* ✅ 카드 크기 키움 */
+  width: 700px;   /* ✅ 너비 확대 */
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.mbti-card h1,
+.question-card h2 {
+  font-size: 28px; /* ✅ 텍스트 크기 키움 */
+  margin-bottom: 30px;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.highlight {
+  color: #157347;
+  font-weight: 700;
+}
+
+.mbti-character {
+  width: 120px; /* ✅ 캐릭터도 약간 키움 */
+  margin: 20px 0;
+}
+
+.subtext {
+  font-size: 16px;
+  color: #333;
+  margin: 4px 0;
+}
+
+/* ✅ 선택지 버튼 나란히 + 버튼 간격 넓힘 */
+.option-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 30px 0;
+  flex-wrap: nowrap; /* ✅ 줄바꿈 안 되게 */
+}
+
+/* ✅ 선택지 버튼: 흰색 + 낮은 투명도 + 크기 키움 */
+.option-buttons button {
+  background-color: rgba(255, 255, 255, 0.85); /* 반투명 흰색 */
+  color: #000;
+  border: none;
+  padding: 20px 40px; /* ✅ 크기 키움 */
+  font-size: 18px;     /* ✅ 글자 크기 키움 */
+  border-radius: 25px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.option-buttons button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ 다른 버튼은 그대로 유지 */
+#prev-btn,
+.start-btn {
+  background-color: #157347;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#prev-btn {
+  margin-top: 20px;
+  background-color: #d2f0da;
+  color: #157347;
+}
+
+.start-btn:hover {
+  background-color: #125f3d;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- [1] 시작 화면 -->
+  <div class="mbti-container" id="intro">
+    <div class="mbti-card">
+      <h1><span class="bold">펀드</span> <span class="highlight">MBTI</span> - 투자성향 테스트</h1>
+      <img src="/images/mbti_char1.jpg" alt="캐릭터" class="mbti-character">
+      <p class="subtext">나의 투자 스타일, 궁금하지 않나요?</p>
+      <p class="subtext">간단한 테스트로 당신의 펀드 <strong>MBTI</strong> 유형을 확인해보세요!</p>
+      <button class="start-btn" onclick="start()">테스트 시작</button>
+    </div>
+  </div>
+
+  <!-- [2] 질문 화면 -->
+  <div class="question-container" id="question-box" style="display: none;">
+    <div class="question-card" id="question-card">
+      <h2 id="question-text"></h2>
+      <div class="option-buttons">
+        <button onclick="selectOption(0)" id="optionA"></button>
+        <button onclick="selectOption(1)" id="optionB"></button>
+      </div>
+      <img src="/images/mbti_char3.jpg" alt="캐릭터" class="mbti-character" id="question-char">
+      <br>
+      <button onclick="prevQuestion()" id="prev-btn">이전으로</button>
+    </div>
+  </div>
+
+  <!-- [3] 결과 화면 -->
+  <div class="mbti-container" id="result-box" style="display: none;">
+    <div class="mbti-card">
+      <h2>나의 <span class="highlight">펀드 MBTI</span>는 ?</h2>
+      <div id="mbti-type" style="font-size: 24px; font-weight: bold; margin-top: 20px;"></div>
+      <p id="mbti-desc" class="subtext" style="margin: 20px 0;"></p>
+      <p id="mbti-tag" style="color: gray; font-weight: bold;"></p>
+      <img src="/images/mbti_char2.jpg" alt="MBTI 캐릭터" class="mbti-character" style="margin-top: 30px; width: 300px;">
+    </div>
+  </div>
+
+<script>
+const questions = [
+  {
+    text: "1. 투자 시 더 중요한 것은?",
+    options: ["수익률", "안정성"],
+    bgColor: "#4fc1a6",
+    char: "/images/icons1.png"
+  },
+  {
+    text: "2. 투자를 시작할 때",
+    options: ["계획을 철저히 세운 뒤 \n신중히 시작", "일단 시작하고 \n경험하면서 배우는 편"],
+    bgColor: "#6ed9f2",
+    char: "/images/icons6.png"
+  },
+  {
+    text: "3. 투자 정보를 얻을 때",
+    options: ["뉴스, 리포트", "SNS, 커뮤니티"],
+    bgColor: "#b2eb39",
+    char: "/images/icons3.png"
+  },
+  {
+    text: "4. 펀드 수익률이 5% 하락했다면?",
+    options: ["바로 환매", "더 기다림"],
+    bgColor: "#ff4da9",
+    char: "/images/icons11.png"
+  },
+  {
+    text: "5. 펀드 상품을 고를 때 기준은?",
+    options: ["높은 수익률", "꾸준한 수익"],
+    bgColor: "#ff9d23",
+    char: "/images/icons8.png"
+  }
+];
+
+let currentQuestion = 0;
+let answers = [];
+
+function start(){
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('question-box').style.display = 'flex';
+  renderQuestion(currentQuestion);
+}
+
+function renderQuestion(index) {
+  const q = questions[index];
+  document.getElementById("question-text").innerText = q.text;
+  document.getElementById("optionA").innerText = q.options[0];
+  document.getElementById("optionB").innerText = q.options[1];
+  document.getElementById("question-card").style.backgroundColor = q.bgColor;
+  document.getElementById("question-char").src = q.char;
+
+  const prevBtn = document.getElementById("prev-btn");
+  prevBtn.style.display = index === 0 ? "none" : "inline-block";
+}
+
+function selectOption(optionIndex) {
+  answers[currentQuestion] = questions[currentQuestion].options[optionIndex];
+
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    renderQuestion(currentQuestion);
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    answers[currentQuestion] = undefined; // 답변 초기화
+    renderQuestion(currentQuestion);
+  }
+}
+
+function showResult() {
+	  document.getElementById("question-box").style.display = "none";
+	  document.getElementById("result-box").style.display = "flex";
+
+	  let profile = {
+	    aggressiveness: 0, planning: 0, info: 0, response: 0, goal: 0
+	  };
+
+	  answers.forEach((answer, idx) => {
+	    switch(idx) {
+	      case 0: profile.aggressiveness = (answer === "수익률") ? 1 : 0; break;
+	      case 1: profile.planning = (answer === "계획을 철저히 세운 뒤 신중히 시작") ? 1 : 0; break;
+	      case 2: profile.info = (answer === "뉴스, 리포트") ? 1 : 0; break;
+	      case 3: profile.response = (answer === "더 기다림") ? 1 : 0; break;
+	      case 4: profile.goal = (answer === "꾸준한 수익") ? 1 : 0; break;
+	    }
+	  });
+
+	  const code =
+	    (profile.aggressiveness ? "AGG" : "SAFE") + "-" +
+	    (profile.planning ? "PLAN" : "FREE") + "-" +
+	    (profile.info ? "ANA" : "TREND") + "-" +
+	    (profile.response ? "PATI" : "REACT") + "-" +
+	    (profile.goal ? "STEAD" : "HIGH");
+
+	  const resultMap = {
+			  "AGG-PLAN-ANA-PATI-STEAD": {
+			    title: "경제분석형",
+			    description: "시장과 데이터를 기반으로 장기적 안목을 지닌 투자자입니다.",
+			    tag: "#분석적장기투자자",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-PLAN-ANA-PATI-HIGH": {
+			    title: "수익추구형",
+			    description: "분석과 전략을 바탕으로 고수익을 추구하는 투자자입니다.",
+			    tag: "#전략가 #고수익",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-PLAN-ANA-REACT-STEAD": {
+			    title: "신중대응형",
+			    description: "계획적으로 분석하지만 빠르게 반응할 줄 아는 투자자입니다.",
+			    tag: "#계획형 #기민한",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-PLAN-ANA-REACT-HIGH": {
+			    title: "분석공격형",
+			    description: "계획과 분석력을 바탕으로 적극적인 수익을 추구합니다.",
+			    tag: "#분석 #공격적투자",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-PLAN-TREND-PATI-STEAD": {
+			    title: "트렌드분석형",
+			    description: "시장 트렌드를 따르면서도 장기적인 성향을 유지합니다.",
+			    tag: "#트렌드분석 #장기투자",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-PLAN-TREND-PATI-HIGH": {
+			    title: "고수익트렌더",
+			    description: "시장 흐름에 민감하며 고수익 기회를 노리는 투자자입니다.",
+			    tag: "#트렌드 #수익형",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-PLAN-TREND-REACT-STEAD": {
+			    title: "트렌드중시형",
+			    description: "시장 흐름에 민감하게 반응하는 반응형 투자자입니다.",
+			    tag: "#트렌드헌터",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-PLAN-TREND-REACT-HIGH": {
+			    title: "공격형트렌더",
+			    description: "변화에 즉각 대응하며 수익 극대화를 추구합니다.",
+			    tag: "#즉응형 #공격투자자",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-FREE-ANA-PATI-STEAD": {
+			    title: "직관분석형",
+			    description: "자유롭게 접근하되 분석 기반으로 안정성을 추구합니다.",
+			    tag: "#직관적 #분석형",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-FREE-ANA-PATI-HIGH": {
+			    title: "자유수익형",
+			    description: "분석보다는 직감과 수익성에 초점을 둔 투자자입니다.",
+			    tag: "#자유형 #고수익지향",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-FREE-ANA-REACT-STEAD": {
+			    title: "직관대응형",
+			    description: "분석보다 반응에 강하며 균형 감각이 뛰어난 투자자입니다.",
+			    tag: "#기민형 #직관형",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-FREE-ANA-REACT-HIGH": {
+			    title: "공격직관형",
+			    description: "감각적으로 움직이며 빠른 판단으로 수익을 추구합니다.",
+			    tag: "#감투자 #스피드형",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-FREE-TREND-PATI-STEAD": {
+			    title: "트렌드감성형",
+			    description: "시장 감각에 민감하며 장기적 안정도 고려합니다.",
+			    tag: "#감성형 #트렌디",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-FREE-TREND-PATI-HIGH": {
+			    title: "감성수익형",
+			    description: "트렌드를 타고 고수익을 노리는 감각적 투자자입니다.",
+			    tag: "#감각형 #고위험",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-FREE-TREND-REACT-STEAD": {
+			    title: "트렌드직감형",
+			    description: "직관적이며 트렌드에 즉각 반응하는 균형잡힌 투자자입니다.",
+			    tag: "#트렌디 #중립형",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "AGG-FREE-TREND-REACT-HIGH": {
+			    title: "즉흥공격형",
+			    description: "감각과 속도로 움직이는 민첩한 고위험 투자자입니다.",
+			    tag: "#스피드투자 #고위험고수익",
+			    image: "/images/mbti_char2.jpg"
+			  },
+			  "SAFE-PLAN-ANA-PATI-STEAD": {
+			    title: "안정분석형",
+			    description: "분석 기반의 안정형 투자자입니다.",
+			    tag: "#분석형 #신중한",
+			    image: "/images/mbti_char2.jpg"
+			  }
+			};
+
+
+	  const result = resultMap[code] || {
+		  title: "균형형",
+		  description: "수익과 안정 사이에서 균형을 잘 잡는 타입입니다.",
+		  tag: "#밸런스형 #중립성향",
+		  image: "/images/mbti_char2.jpg"
+		};
+
+		document.getElementById("mbti-type").innerText = result.title;
+		document.getElementById("mbti-desc").innerText = result.description;
+		document.getElementById("mbti-tag").innerText = result.tag;
+		document.querySelector("#result-box img").src = result.image;
+	}
+</script>
+
+</body>
+</html>

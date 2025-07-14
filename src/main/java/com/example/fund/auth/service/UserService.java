@@ -4,6 +4,7 @@ import com.example.fund.auth.dto.JoinRequest;
 import com.example.fund.auth.dto.UserUpdateRequest;
 import com.example.fund.user.entity.User;
 import com.example.fund.user.repository.UserRepository;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
@@ -19,7 +20,6 @@ public class UserService {
     /* ---------- 회원가입 ---------- */
     @Transactional
     public void register(JoinRequest dto) {
-
         if (repo.existsByUsername(dto.getUsername())) {
             throw new IllegalStateException("이미 사용 중인 아이디입니다.");
         }
@@ -28,7 +28,7 @@ public class UserService {
         }
 
         // 전화번호 포맷 정리
-        String rawPhone       = dto.getPhone().replaceAll("[^0-9]", "");
+        String rawPhone = dto.getPhone().replaceAll("[^0-9]", "");
         String formattedPhone = rawPhone.replaceAll("(\\d{3})(\\d{3,4})(\\d{4})", "$1-$2-$3");
 
         // 비밀번호 해싱
@@ -54,7 +54,6 @@ public class UserService {
     /* ---------- 회원 정보 수정 ---------- */
     @Transactional
     public User updateProfile(int userId, @Valid UserUpdateRequest dto) {
-
         User user = repo.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("회원이 존재하지 않습니다."));
 
@@ -82,6 +81,6 @@ public class UserService {
         user.setName(dto.getName());
         user.setPhone(dto.getPhone());
 
-        return user; // 세션 교체용으로 컨트롤러에서 활용
+        return user; // 컨트롤러에서 세션 갱신용으로 반환
     }
 }
