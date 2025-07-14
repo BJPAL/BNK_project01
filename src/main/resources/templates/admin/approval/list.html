@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>내 결재 요청 내역</title>
+</head>
+<body>
+<h2>내 결재 요청 내역</h2>
+
+<!-- 결재대기 -->
+<h3>결재대기</h3>
+<table border="1">
+  <thead>
+  <tr><th>제목</th><th>내용</th><th>작성일</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${pendingPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+<div th:if="${pendingPage.totalPages > 1}">
+  <span th:each="i : ${#numbers.sequence(0, pendingPage.totalPages - 1)}">
+    <a th:href="@{/admin/approval/my-list(pendingPage=${i}, waitingPage=0, rejectedPage=0, publishedPage=0)}"
+       th:text="${i + 1}" th:classappend="${i == pendingPage.number} ? 'active' : ''">1</a>
+  </span>
+</div>
+
+<!-- 배포대기 -->
+<h3>배포대기</h3>
+<table border="1">
+  <thead>
+  <tr><th>제목</th><th>내용</th><th>작성일</th><th>액션</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${waitingPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+    <td>
+      <form th:action="@{'/admin/approval/publish/' + ${approval.approvalId}}" method="post">
+        <button type="submit">배포</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<div th:if="${waitingPage.totalPages > 1}">
+  <span th:each="i : ${#numbers.sequence(0, waitingPage.totalPages - 1)}">
+    <a th:href="@{/admin/approval/my-list(pendingPage=0, waitingPage=${i}, rejectedPage=0, publishedPage=0)}"
+       th:text="${i + 1}" th:classappend="${i == waitingPage.number} ? 'active' : ''">1</a>
+  </span>
+</div>
+
+<!-- 반려 -->
+<h3>반려</h3>
+<table border="1">
+  <thead>
+  <tr><th>제목</th><th>내용</th><th>반려사유</th><th>작성일</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${rejectedPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${approval.rejectReason}">사유</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+<div th:if="${rejectedPage.totalPages > 1}">
+  <span th:each="i : ${#numbers.sequence(0, rejectedPage.totalPages - 1)}">
+    <a th:href="@{/admin/approval/my-list(pendingPage=0, waitingPage=0, rejectedPage=${i}, publishedPage=0)}"
+       th:text="${i + 1}" th:classappend="${i == rejectedPage.number} ? 'active' : ''">1</a>
+  </span>
+</div>
+
+<!-- 배포 완료 -->
+<h3>배포 완료</h3>
+<table border="1">
+  <thead>
+  <tr><th>제목</th><th>내용</th><th>작성일</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${publishedPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td th:text="${approval.content}">내용</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+<div th:if="${publishedPage.totalPages > 1}">
+  <span th:each="i : ${#numbers.sequence(0, publishedPage.totalPages - 1)}">
+    <a th:href="@{/admin/approval/my-list(pendingPage=0, waitingPage=0, rejectedPage=0, publishedPage=${i})}"
+       th:text="${i + 1}" th:classappend="${i == publishedPage.number} ? 'active' : ''">1</a>
+  </span>
+</div>
+
+</body>
+</html>

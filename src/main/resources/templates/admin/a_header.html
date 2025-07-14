@@ -34,9 +34,8 @@
         <li th:if="${session.admin.role == 'approver'}"><a href="">결재 요청 내역 및 승인</a></li>
 
         <!--cs 메뉴-->
-        <li th:if="${session.admin.role == 'cs'}"><a href="">1:1문의 관리</a></li>
+        <li th:if="${session.admin.role == 'cs'}"><a href="/admin/qnaList">1:1문의 관리</a></li>
         <li th:if="${session.admin.role == 'cs'}"><a href="">FAQ 관리</a></li>
-
       </ul>
     </div>
   </div>

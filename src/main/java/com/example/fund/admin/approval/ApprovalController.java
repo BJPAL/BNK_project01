@@ -21,46 +21,24 @@ public class ApprovalController {
 
     private final ApprovalService approvalService;
 
-//    @GetMapping("/manage")
-//    public String getApprovalManage(@RequestParam(defaultValue = "0") int page,
-//                                    @RequestParam(required = false) String status,
-//                                    HttpSession session, Model model) {
-//
-//        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-//        if (admin == null) {
-//            return "redirect:/admin/";
-//        }
-//
-//        Pageable pageable = PageRequest.of(page, 10, Sort.by("regDate").descending());
-//        Page<Approval> approvals = approvalService.getAllApprovals(status, pageable);
-//
-//        model.addAttribute("approvalList", approvals);
-//        model.addAttribute("isSuper", "SUPER".equals(admin.getRole()));
-//        model.addAttribute("admin", admin);
-//        model.addAttribute("status", status);
-//        return "approval_manage";
-//    }
-
     @GetMapping("/manage")
-    public String manageApprovals(HttpSession session, Model model) {
+    public String manageApprovals(HttpSession session, Model model,
+                                  @RequestParam(defaultValue = "0") int pendingPage,
+                                  @RequestParam(defaultValue = "0") int readyPage,
+                                  @RequestParam(defaultValue = "0") int rejectedPage) {
+
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
-        // 권한 확인
         if (!"SUPER".equals(admin.getRole()) && !"APPROVER".equals(admin.getRole())) {
             model.addAttribute("msg", "승인 권한이 없습니다.");
-            return "error";
         }
 
-        List<Approval> pendingList = approvalService.getApprovalsByStatus("결재대기");
-        List<Approval> readyList = approvalService.getApprovalsByStatus("배포대기");
-        List<Approval> rejectedList = approvalService.getApprovalsByStatus("반려");
+        model.addAttribute("pendingPage", approvalService.getApprovalsByStatus("결재대기", pendingPage));
+        model.addAttribute("readyPage", approvalService.getApprovalsByStatus("배포대기", readyPage));
+        model.addAttribute("rejectedPage", approvalService.getApprovalsByStatus("반려", rejectedPage));
 
-        model.addAttribute("pendingList", pendingList);
-        model.addAttribute("readyList", readyList);
-        model.addAttribute("rejectedList", rejectedList);
-
-        return "approval_manage";
+        return "admin/approval/manage";
     }
 
     @PostMapping("/approve/{id}")
@@ -102,37 +80,26 @@ public class ApprovalController {
         return "redirect:/admin/approval/my-list";
     }
 
-//    @GetMapping("/my-list")
-//    public String getMyApprovals(@RequestParam(defaultValue = "0") int page,
-//                                 HttpSession session, Model model) {
-//        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-//        if (admin == null) return "redirect:/admin/";
-//
-//        System.out.println(">>> 현재 로그인 adminname: " + admin.getAdminname());
-//
-//        Pageable pageable = PageRequest.of(page, 10, Sort.by("regDate").descending());
-//        Page<Approval> approvals = approvalService.getMyApprovals(admin.getAdminname(), pageable);
-//
-//        System.out.println(">>> 가져온 결재 수: " + approvals.getTotalElements());
-//
-//        model.addAttribute("approvalList", approvals);
-//        model.addAttribute("admin", admin);
-//        return "approval_list";
-//    }
-
     @GetMapping("/my-list")
-    public String getMyApprovals(HttpSession session, Model model) {
+    public String getMyApprovals(HttpSession session, Model model,
+                                 @RequestParam(defaultValue = "0") int pendingPage,
+                                 @RequestParam(defaultValue = "0") int waitingPage,
+                                 @RequestParam(defaultValue = "0") int rejectedPage,
+                                 @RequestParam(defaultValue = "0") int publishedPage) {
+
+        System.out.println(">>> [Controller] /my-list 진입 성공");
+
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
         String adminname = admin.getAdminname();
 
-        model.addAttribute("approvalsPending", approvalService.getApprovalsByStatus(adminname, "결재대기"));
-        model.addAttribute("approvalsWaiting", approvalService.getApprovalsByStatus(adminname, "배포대기"));
-        model.addAttribute("approvalsRejected", approvalService.getApprovalsByStatus(adminname, "반려"));
-        model.addAttribute("approvalsPublished", approvalService.getApprovalsByStatus(adminname, "배포"));
+        model.addAttribute("pendingPage", approvalService.getApprovalsByStatus(adminname, "결재대기", pendingPage));
+        model.addAttribute("waitingPage", approvalService.getApprovalsByStatus(adminname, "배포대기", waitingPage));
+        model.addAttribute("rejectedPage", approvalService.getApprovalsByStatus(adminname, "반려", rejectedPage));
+        model.addAttribute("publishedPage", approvalService.getApprovalsByStatus(adminname, "배포", publishedPage));
 
-        return "approval_list";
+        return "admin/approval/list";
     }
 
     // 등록 폼 보여주기
@@ -142,7 +109,7 @@ public class ApprovalController {
         if (admin == null || !"PLANNER".equals(admin.getRole())) {
             return "redirect:/admin/";
         }
-        return "approval_form";
+        return "admin/approval/form";
     }
 
     // 등록 처리
@@ -158,4 +125,43 @@ public class ApprovalController {
         approvalService.createApproval(title, content, admin.getAdmin_id());
         return "redirect:/admin/approval/my-list";
     }
+
+    //요청 상세 페이지
+    @GetMapping("/detail/{id}")
+    public String viewDetail(@PathVariable("id") Long id, HttpSession session, Model model) {
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+        if (admin == null) return "redirect:/admin/";
+
+        Approval approval = approvalService.findById(id);
+        if (approval == null) {
+            model.addAttribute("msg", "존재하지 않는 결재 요청입니다.");
+            return "redirect:/admin/approval/my-list";
+        }
+
+        model.addAttribute("approval", approval);
+        model.addAttribute("admin", admin); // 승인자 판단을 위해 필요
+        return "admin/approval/detail";
+    }
+
+    //작성자 상태별로 리스트 가져오기
+    @GetMapping("/writer/{adminname}")
+    public String viewByWriter(@PathVariable("adminname") String adminname,
+                               @RequestParam(defaultValue = "0") int pendingPage,
+                               @RequestParam(defaultValue = "0") int waitingPage,
+                               @RequestParam(defaultValue = "0") int rejectedPage,
+                               @RequestParam(defaultValue = "0") int publishedPage,
+                               HttpSession session, Model model) {
+
+        AdminDTO viewer = (AdminDTO) session.getAttribute("admin");
+        if (viewer == null) return "redirect:/admin/";
+
+        model.addAttribute("pendingPage", approvalService.getApprovalsByStatus(adminname, "결재대기", pendingPage));
+        model.addAttribute("waitingPage", approvalService.getApprovalsByStatus(adminname, "배포대기", waitingPage));
+        model.addAttribute("rejectedPage", approvalService.getApprovalsByStatus(adminname, "반려", rejectedPage));
+        model.addAttribute("publishedPage", approvalService.getApprovalsByStatus(adminname, "배포", publishedPage));
+
+        model.addAttribute("writerName", adminname);
+        return "admin/approval/writer-list";
+    }
+
 }

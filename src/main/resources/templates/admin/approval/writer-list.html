@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="'[' + ${writerName} + '] 요청 목록'">작성자 요청 목록</title>
+</head>
+<body>
+<h2 th:text="'[' + ${writerName} + '] 작성자의 결재 요청 목록'">요청 목록</h2>
+
+<!-- 결재대기 -->
+<h3>결재대기</h3>
+<table border="1">
+  <thead>
+  <tr><th>제목</th><th>내용</th><th>작성일</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${pendingPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 배포대기 -->
+<h3>배포대기</h3>
+<table border="1">
+  <thead>
+  <tr><th>제목</th><th>내용</th><th>작성일</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${waitingPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 반려 -->
+<h3>반려</h3>
+<table border="1">
+  <thead>
+  <tr><th>제목</th><th>내용</th><th>반려사유</th><th>작성일</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${rejectedPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
+    <td th:text="${approval.rejectReason}">사유</td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 배포 -->
+<h3>배포</h3>
+<table border="1">
+  <thead>
+  <tr><th>제목</th><th>내용</th><th>작성일</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${publishedPage.content}">
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
+    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
+    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+  </tr>
+  </tbody>
+</table>
+
+<br>
+<a th:href="@{/admin/approval/manage}">← 승인 관리로 돌아가기</a>
+</body>
+</html>
