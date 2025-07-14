@@ -142,21 +142,18 @@ ul {
 </head>
 <body>
 <div class="container">
-  <h2>투자자정보확인</h2>
+  <h2><span th:text="|${user.name}님의 투자자정보확인|"></span></h2>
   <table>
-    <tr>
-      <th>투자자리스크(위험)등급</th>
-      <td>설문대상자</td>
-      <th>등급최종변경일자</th>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <th>투자가능기간</th>
-      <td>&nbsp;</td>
-      <th>투자경험기간</th>
-      <td>&nbsp;</td>
-    </tr>
+	  <tr>
+	    <th>투자자리스크(위험)등급</th>
+	    <td th:text="${(result == null) ? '설문대상자' : result.type.typeName}"></td>
+	
+	    <th>등급최종변경일자</th>
+	    <td th:text="${(result == null) ? '' : #temporals.format(result.analysisDate, 'yyyy-MM-dd')}">&nbsp;</td>
+	  </tr>
   </table>
+
+
 
   <div class="section">
     <h2>금융투자상품 투자위험지도</h2>

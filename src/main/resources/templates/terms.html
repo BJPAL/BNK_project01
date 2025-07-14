@@ -16,11 +16,11 @@
 	  </div>
 	  <div class="step">
 	    <span class="num">2</span>
-	    <span class="label">확인서작성</span>
+	    <span class="label"></span>
 	  </div>
 	  <div class="step">
 	    <span class="num">3</span>
-	    <span class="label">문항작성</span>
+	    <span class="label"></span>
 	  </div>
 	</div>
 
@@ -58,8 +58,22 @@
 <!-- [2] 투자성향 문항 영역 -->
 <div id="questionnaire-box" style="display: none; margin-top: 40px;">
   <h2>투자성향분석</h2>
+  <div class="step-indicator">
+  <div class="step">
+    <span class="num">1</span>
+    <span class="label"></span>
+  </div>
+  <div class="step active">
+    <span class="num">2</span>
+    <span class="label">확인서작성</span>
+  </div>
+  <div class="step">
+    <span class="num">3</span>
+    <span class="label"></span>
+  </div>
+</div>
 
-  <form action="/invest-profile/submit" method="post">
+  <form action="/analyze" method="post">
 
     <!-- 질문 반복 처리: 카드 바깥에서 PART 헤더 분리 -->
     <div th:each="entry, entryStat : ${questions}">
@@ -128,10 +142,11 @@
     document.getElementById('questionnaire-box').style.display = 'block';
 
     // 단계 인디케이터 업데이트
-    const steps = document.querySelectorAll('.step');
+    const steps = document.querySelectorAll('#questionnaire-box .step');
     steps.forEach(step => step.classList.remove('active'));
-    steps[1].classList.add('active'); // 2단계 활성화
+    steps[1].classList.add('active');
     steps[1].querySelector('.label').textContent = '확인서작성';
+    steps[0].querySelector('.label').textContent = '';
 
     // 확인 박스 애니메이션 스크롤 감지
     const confirmBox = document.querySelector('.confirmation-box');
@@ -148,7 +163,53 @@
       observer.observe(confirmBox);
     }
   });
+
+  // 제출 시 유효성 검사
+  document.querySelector('form').addEventListener('submit', function (e) {
+    const totalQuestions = 11;
+    let unanswered = [];
+
+    for (let i = 0; i < totalQuestions; i++) {
+      const name = 'q' + i;
+      const inputs = document.querySelectorAll('[name="' + name + '"]');
+      let checked = Array.from(inputs).some(input => input.checked);
+
+      // 체크박스(9번)은 1개 이상만 체크되면 통과
+      if (i === 8 && !checked) {
+        unanswered.push(i + 1);
+      }
+
+      // 5번 문항 예외 처리 (투자 원금 보전 선택 시 차단)
+      if (i === 4) {
+        const dangerousOption = Array.from(inputs).find(input =>
+          input.nextElementSibling.innerText.includes('투자 원금은 반드시 보전되어야')
+        );
+        if (dangerousOption && dangerousOption.checked) {
+          e.preventDefault();
+          alert('투자원금보전의 경우 금융투자상품 가입이 불가능합니다.');
+          dangerousOption.checked = false;
+          dangerousOption.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+      }
+
+      // 라디오 문항 중 체크 안 된 항목
+      if (i !== 8 && !checked) {
+        unanswered.push(i + 1);
+      }
+    }
+
+    if (unanswered.length > 0) {
+      e.preventDefault();
+      alert(`${unanswered.join(', ')}번 항목에 응답하지 않았습니다. 해당 문항으로 이동합니다.`);
+      const firstUnanswered = document.querySelector(`input[name="q${unanswered[0] - 1}"]`);
+      if (firstUnanswered) {
+        firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
 </script>
+
 
 </body>
 </html>
