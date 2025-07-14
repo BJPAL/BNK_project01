@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>QnaAnsweredDetail</title>
 </head>
 <body>
     <div th:replace="admin/a_header :: adminHeader"></div>
@@ -17,16 +17,7 @@
     <p><strong>문의 내용:</strong></p>
     <div th:text="${qna.content}">문의 본문 내용</div>
 
-    <hr/>
-
-    <form th:action="@{/admin/qna/answer}" method="post">
-        <!-- qna id를 넘기기 위한 hidden input -->
-        <input type="hidden" name="id" th:value="${qna.qnaId}" />
-
-        <label for="answer">답변 내용</label><br/>
-        <textarea name="answer" id="answer" rows="8" cols="80" required></textarea><br/>
-
-        <button type="submit">답변 등록</button>
-  </form>
+    <p><strong>답변 내용:</strong></p>
+    <div th:text="${qna.answer}">문의 답변 내용</div>
 </body>
 </html>

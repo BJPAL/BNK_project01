@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,13 @@ public class MainAdminController {
     QnaService qnaService;
 
     @GetMapping("/")
-    public String root(){
+    public String root(HttpSession session){
+        AdminDTO adminDTO = (AdminDTO) session.getAttribute("admin");
+
+        if(adminDTO != null){
+            return "admin/main";
+        }
+        
         return "admin/login";
     }
 

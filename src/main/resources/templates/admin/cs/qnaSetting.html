@@ -8,6 +8,12 @@
 <body>
   <div th:replace="admin/a_header :: adminHeader"></div>
   
+  <div th:if="${msg}">
+    <script th:inline="javascript">
+      alert("답변이 성공적으로 등록되었습니다");
+    </script>
+  </div>
+
   <div class="tab-buttons">
     <button type="button" class="tab-button active" data-status="대기">미답변</button>
     <button type="button" class="tab-button" data-status="완료">답변 완료</button>

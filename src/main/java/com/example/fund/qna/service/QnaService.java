@@ -29,4 +29,15 @@ public class QnaService {
 
         return qna;
     }
+
+    public void SubmitAnswer(Integer qnaId, String answer){
+		Qna qna = qnaRepository.findById(qnaId).orElseThrow();
+
+		qna.setAnswer(answer);
+		qna.setStatus("완료");
+
+		qnaRepository.save(qna);
+	} 
+
+    
 }

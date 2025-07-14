@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.fund.qna.entity.Qna;
 import com.example.fund.qna.repository.QnaRepository;
@@ -74,6 +75,11 @@ public class QnaController {
 			qnaList = new ArrayList<>();
 		}
 
+		if(status.equals("완료")){
+			model.addAttribute("qnaList", qnaList);
+			return "admin/cs/qnaList :: qna-AnsweredList";
+		}
+
 		model.addAttribute("qnaList", qnaList);
 
 		return "admin/cs/qnaList :: qna-UnAnsweredList";
@@ -84,6 +90,24 @@ public class QnaController {
 		Qna qna = qnaService.getQna(id);
 		model.addAttribute("qna", qna);
 		return "admin/cs/qnaDetailAndAnswer"; 
+	}
+	
+	@PostMapping("/admin/qna/answer")
+	public String answer(@RequestParam("id") Integer qnaId, @RequestParam("answer")String answer, RedirectAttributes rttr){
+		qnaService.SubmitAnswer(qnaId, answer);
+		
+		String msg = "답변이 성공적으로 등록되었습니다";
+		rttr.addFlashAttribute("msg", msg);
+
+		return "redirect:/admin/qnaList";
+	} 
+
+	@GetMapping("/admin/qna/answeredDetail/{qnaId}")
+	public String showAnsweredQnaDetail(@PathVariable("qnaId") Integer id, Model model) {
+		Qna qna = qnaService.getQna(id);
+		model.addAttribute("qna", qna);
+
+		return "admin/cs/qnaAnsweredDetail";
 	}
 	
 	

@@ -7,8 +7,17 @@
 <body>
 <p th:if="${msg}" th:text="${msg}"></p>
 <div th:replace="admin/a_header :: adminHeader"></div>
-<div th:if="${session.admin != null and session.admin.role == 'cs'}">
-    <p>미답변 문의 <strong th:text="${unansweredCount}">0</strong>건</p>
+<div th:if="${session.admin != null and session.admin.role == 'cs' and unansweredCount > 0}">
+    <p>미답변 문의 
+        <strong>
+            <a th:href="@{/admin/qnaList}" th:text="${unansweredCount}">0</a>
+        </strong>건
+    </p>
 </div>
+<div th:unless="${session.admin != null and session.admin.role == 'cs' and unansweredCount > 0}">
+    <p>모든 문의가 답변되었습니다</p>
+</div>
+
+
 </body>
 </html>
