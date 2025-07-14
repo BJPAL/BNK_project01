@@ -17,3 +17,28 @@ h1,h2,h3,h4,h5,h6{ font-weight:700; }
 
 /* ---------- Card ---------- */
 .card{ border-radius:1rem; }
+/* ---------- Layout (추가 필요) ---------- */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ---------- Table (추가 필요) ---------- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table th,
+.table td {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+/* ---------- Utility (추가 필요) ---------- */
+.text-center {
+  text-align: center;
+}

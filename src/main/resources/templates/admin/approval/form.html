@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>결재 요청 등록</title>
+</head>
+<body>
+<h2>결재 요청 등록</h2>
+
+<form th:action="@{/admin/approval/register}" method="post">
+    <label>제목:
+        <input type="text" name="title" required>
+    </label><br>
+    <label>내용:
+        <textarea name="content" required></textarea>
+    </label><br>
+    <button type="submit">등록</button>
+</form>
+
+</body>
+</html>

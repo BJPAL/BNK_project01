@@ -1,98 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Admin Register</title>
 </head>
 <body>
-  <form action="/admin/adminRegist" method="post" id="adminForm">
-    <table border="1">
-      <tbody>
-      <tr>
-        <th>ID</th>
-        <td><input type="text" name="adminname" id="adminname" placeholder="ID 설정"
-                   required oninvalid="this.setCustomValidity('아이디를 입력해주세요')" oninput="this.setCustomValidity('')"></td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <button type="button" id="id_check" onclick="checkDuplicate()">중복확인</button>
-          <p id="notice_p"></p>
-        </td>
-      </tr>
-      <tr>
-        <th>성명</th>
-        <td><input type="text" name="name" placeholder="성명 입력"
-                   required oninvalid="this.setCustomValidity('성명을 입력해주세요')" oninput="this.setCustomValidity('')"></td>
-      </tr>
-      <tr>
-        <th>ROLE 지정</th>
-        <td>
-          <select name="role" id="role" required>
-            <option value="" hidden selected>Role선택</option>
-            <option value="super">super</option>
-            <option value="planner">planner</option>
-            <option value="approver">approver</option>
-            <option value="cs">cs</option>
-          </select>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <br>
-    <input type="submit" value="등록">
-  </form>
-  <p>※ Notice ※</p>
-  <p>초기 비밀번호는 1234로 저장됩니다.
-    로그인 후 꼭 비밀번호를 변경해주세요</p>
-  <script>
-    let isDuplicateChecked = false; //중복 확인 여부 저장
-    let isAvailable = false; // 사용 가능한 상태인지 저장
-
-    //중복 확인 버튼 클릭 시 실행
-    function checkDuplicate(){
-        const adminname = document.getElementById("adminname").value;
-        const notice_p = document.getElementById("notice_p");
-
-        if(adminname.length < 3){
-            notice_p.innerText = "아이디는 3자 이상이어야 합니다";
-            notice_p.style.color = "red";
-            isDuplicateChecked = false;
-            isAvailable = false;
-            return;
-        }
-        fetch(`/admin/check-id?adminname=` + encodeURIComponent(adminname))
-            .then(res => res.json())
-            .then(isDuplicate => {
-                isDuplicateChecked = true;
-                if (isDuplicate) {
-                    notice_p.textContent = "이미 사용 중인 아이디입니다.";
-                    notice_p.style.color = "red";
-                    isAvailable = false;
-                } else {
-                    notice_p.textContent = "사용 가능한 아이디입니다.";
-                    notice_p.style.color = "green";
-                    isAvailable = true;
-                }
-            });
-    }
-    // 아이디 입력값이 변경되면 중복 확인 상태 초기화
-    document.getElementById("adminname").addEventListener("input", () => {
-    isDuplicateChecked = false;
-    isAvailable = false;
-    document.getElementById("notice_p").textContent = "아이디 중복 확인이 필요합니다.";
-    document.getElementById("notice_p").style.color = "orange";
-    });
-
-    // 폼 제출 전 중복 확인 여부 검사
-    document.getElementById("adminForm").addEventListener("submit", function (e) {
-        if (!isDuplicateChecked || !isAvailable) {
-            e.preventDefault();
-            alert("아이디 중복 확인을 시행해주세요");
-        }
-    });
-
-
-  </script>
-
+ <div th:fragment="admin-register-content">
+   <form action="/admin/adminRegist" method="post" id="adminForm">
+     <table border="1">
+       <tbody>
+       <tr>
+         <th>ID</th>
+         <td><input type="text" name="adminname" id="adminname" placeholder="ID 설정"
+                    required oninvalid="this.setCustomValidity('아이디를 입력해주세요')" oninput="this.setCustomValidity('')"></td>
+       </tr>
+       <tr>
+         <td colspan="2">
+           <button type="button" id="id_check" onclick="checkDuplicate()">중복확인</button>
+           <p id="notice_p"></p>
+         </td>
+       </tr>
+       <tr>
+         <th>성명</th>
+         <td><input type="text" name="name" placeholder="성명 입력"
+                    required oninvalid="this.setCustomValidity('성명을 입력해주세요')" oninput="this.setCustomValidity('')"></td>
+       </tr>
+       <tr>
+         <th>ROLE 지정</th>
+         <td>
+           <select name="role" id="role" required>
+             <option value="" hidden selected>Role선택</option>
+             <option value="super">super</option>
+             <option value="planner">planner</option>
+             <option value="approver">approver</option>
+             <option value="cs">cs</option>
+           </select>
+         </td>
+       </tr>
+       </tbody>
+     </table>
+     <br>
+     <input type="submit" value="등록">
+   </form>
+   <p>※ Notice ※</p>
+   <p>초기 비밀번호는 1234로 저장됩니다.
+     로그인 후 꼭 비밀번호를 변경해주세요</p>
+ </div>
 </body>
 </html>

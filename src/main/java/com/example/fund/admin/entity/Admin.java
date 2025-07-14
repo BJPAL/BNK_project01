@@ -25,6 +25,7 @@ public class Admin {
 
     private String name;
 
+    @Column(length = 20)
     private String role;
 
 }

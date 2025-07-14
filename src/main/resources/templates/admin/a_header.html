@@ -7,6 +7,7 @@
 <body>
   <!-- 공통 헤더 fragment -->
   <div th:fragment="adminHeader">
+    <h1><a href="/admin/main">Admin Main</a></h1>
     <div class="header">
       <p th:text="${session.admin.name + ' 관리자님 (' + session.admin.role + ')'}"></p>
 
@@ -23,7 +24,7 @@
         -->
 
         <!--super 메뉴-->
-        <li th:if="${session.admin.role == 'super'}"><a href="/admin/adminRegistForm">관리자 설정</a></li>
+        <li th:if="${session.admin.role == 'super'}"><a href="/admin/adminSetting">관리자 설정</a></li>
 
         <!--planner 메뉴-->
         <li th:if="${session.admin.role == 'planner'}"><a href="">펀드상품 관리</a></li>
@@ -33,9 +34,8 @@
         <li th:if="${session.admin.role == 'approver'}"><a href="">결재 요청 내역 및 승인</a></li>
 
         <!--cs 메뉴-->
-        <li th:if="${session.admin.role == 'cs'}"><a href="">1:1문의 관리</a></li>
+        <li th:if="${session.admin.role == 'cs'}"><a href="/admin/qnaList">1:1문의 관리</a></li>
         <li th:if="${session.admin.role == 'cs'}"><a href="">FAQ 관리</a></li>
-
       </ul>
     </div>
   </div>

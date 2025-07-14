@@ -1,0 +1,24 @@
+<!-- src/main/resources/templates/mypage/_tabs.html -->
+<div th:fragment="tabs" class="d-flex gap-2 mb-4" xmlns:th="http://www.thymeleaf.org">
+
+  <!-- 정보수정 -->
+  <a th:href="@{/mypage/edit}"
+     class="btn btn-outline-primary"
+     th:classappend="${requestURI == '/mypage/edit'} ? ' active'">
+    정보수정
+  </a>
+
+  <!-- 1:1 문의하기 -->
+  <a th:href="@{/qna}"
+     class="btn btn-outline-primary"
+     th:classappend="${requestURI == '/qna'} ? ' active'">
+    1:1 문의하기
+  </a>
+
+  <!-- 문의내역 -->
+  <a th:href="@{/mypage/qna}"
+     class="btn btn-outline-primary"
+     th:classappend="${requestURI == '/mypage/qna'} ? ' active'">
+    문의내역
+  </a>
+</div>
