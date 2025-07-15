@@ -31,4 +31,9 @@ public class MainController {
 
         return "main";
     }
+
+    @GetMapping("/user/")
+    public String userPage(){
+        return "user/index";
+    }
 }
