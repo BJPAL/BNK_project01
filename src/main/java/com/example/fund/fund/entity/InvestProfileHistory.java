@@ -18,26 +18,23 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
-@Table(name = "invest_profile_result")
+@Table(name = "invest_profile_history")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class InvestProfileResult {
+public class InvestProfileHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer resultId;
+    private Long historyId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // 선택한 옵션 정보: { "1": 2, "2": 3, "3": [1, 4] } 등 JSON 형태
     @Lob
     @Column(nullable = false)
     private String answerSnapshot;
