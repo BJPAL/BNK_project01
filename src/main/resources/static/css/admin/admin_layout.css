@@ -1,0 +1,196 @@
+@font-face {
+  font-family: 'BNK';
+  src: url('/font/BNKGothic-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'BNK';
+  src: url('/font/BNKGothic-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+/* ─────────── 기본 리셋 및 레이아웃 ─────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+}
+body {
+  font-family: 'BNK';
+  font-weight: 400;
+  color: #333;
+}
+/* 전체를 header + (aside + content) 구조로 */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─────────── 헤더 ─────────── */
+.admin-header {
+  height: 80px;           
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.main_logo{
+    width: 8.5rem;
+}
+
+.logo a{
+    text-decoration: none;
+}
+
+.admin-header .logo h1 {
+  font-size: 0.8rem;
+  color: #117C88;
+  display: flex;
+  align-items: baseline;
+}
+.admin-header .logo .sub {
+  font-size: 1.2rem;
+  color: #117C88;
+}
+.admin-header .user-info {
+  display: flex;
+  align-items: center;
+}
+.admin-header .user-info p {
+  margin-right: 16px;
+  font-size: 1rem;
+}
+.admin-header .menu {
+  list-style: none;
+  display: flex;
+}
+.admin-header .menu li + li {
+  margin-left: 12px;
+}
+.admin-header .menu a {
+  text-decoration: none;
+  color: #333;
+  font-size: 0.9rem;
+}
+.admin-header .menu a:hover {
+  text-decoration: underline;
+}
+
+/* ─────────── 본문: 사이드 + 콘텐츠 ─────────── */
+.main-wrapper {
+  display: flex;
+  flex: 1;     /* header를 제외한 나머지 높이 모두 차지 */
+  overflow: hidden;
+}
+
+/* ─────────── 사이드바 ─────────── */
+.admin-aside {
+  width: 200px;                
+  background-color: #117C88;
+  color: #fff;
+  overflow-y: auto;
+  flex-shrink: 0;
+  height: 100%;
+}
+.admin-aside nav ul {
+  list-style: none;
+}
+.admin-aside nav li.group-title {
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+.admin-aside nav li a {
+  display: block;
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  color: #fff;
+  text-decoration: none;
+}
+.admin-aside nav li a:hover,
+.admin-aside nav li a.active {
+  background: rgba(0,0,0,0.1);
+}
+
+/* ─────────── 콘텐츠 영역 ─────────── */
+.content {
+  flex: 1;
+  padding: 1rem 2rem;
+  overflow-y: auto;
+  background-color: #f8f8f8;
+}
+
+/* 그룹 버튼 스타일 */
+.admin-aside .group-btn {
+  font-family: 'BNK';
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  color: #fff;
+  font-size: 1rem;
+  text-align: left;
+  position: relative;
+  cursor: pointer;
+}
+.admin-aside .group-btn .arrow {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+/* 서브메뉴 숨김 */
+.admin-aside .submenu {
+  list-style: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+/* 열렸을 때 */
+.admin-aside .menu-group.open .submenu {
+  max-height: 500px; /* 충분히 큰 값 */
+}
+/* 화살표 회전 */
+.admin-aside .menu-group.open .group-btn .arrow {
+  transform: translateY(-50%) rotate(45deg);
+}
+/* 서브메뉴 항목 */
+.admin-aside .submenu li a {
+  display: block;
+  padding: 10px 40px;
+  font-size: 0.9rem;
+  color: #fff;
+  text-decoration: none;
+}
+.admin-aside .submenu li a:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
