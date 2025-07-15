@@ -40,13 +40,71 @@
             <h3>전체 메뉴보기</h3>
             <button onclick="toggleMenu()"><img src="/images/close-icon.png" alt="메뉴 닫기"></button>
         </div>
-        <div class="hidden-menu-tabBar">
-            <div class="hidden-menu-tab hidden-menu-tab-active">전체서비스</div>
-            <div class="hidden-menu-tab">개인뱅킹</div>
-            <div class="hidden-menu-tab">기업뱅킹</div>
-            <div class="hidden-menu-tab">금융상품</div>
+        <div class="hidden-menu-wrap">
+            <div class="hidden-menu-tabBar">
+                <div class="hidden-menu-tab active">전체서비스</div>
+                <div class="hidden-menu-tab">개인뱅킹</div>
+                <div class="hidden-menu-tab">기업뱅킹</div>
+                <div class="hidden-menu-tab">금융상품</div>
+            </div>
+            <div class="hidden-menu-subTab">
+                <span class="active">조회</span> | 
+                <span>이체</span> | 
+                <span>예금/신탁</span> | 
+                <span>퇴직연금</span> | 
+                <span>ISA</span> | 
+                <span>대출</span> | 
+                <span>웰스타로보B</span> | 
+                <span>펀드</span> | 
+                <span>카드</span> | 
+                <span>외환</span> | 
+                <span>보험</span> | 
+                <span>공과금납부</span> | 
+                <span>전자어음</span> | 
+                <span>뱅킹관리</span> | 
+                <span>공동인증센터</span> | 
+                <span>마이페이지</span> | 
+                <span>금융인증센터</span>
+            </div>
+
+            <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const mainTabSpans = document.querySelectorAll(".hidden-menu-tab");
+
+                mainTabSpans.forEach(tab => {
+                tab.addEventListener("click", function () {
+                    mainTabSpans.forEach(t => t.classList.remove("active"));
+                    this.classList.add("active");
+                });
+                });
+
+                const subTabSpans = document.querySelectorAll(".hidden-menu-subTab span");
+
+                subTabSpans.forEach(tab => {
+                tab.addEventListener("click", function () {
+                    subTabSpans.forEach(t => t.classList.remove("active"));
+                    this.classList.add("active");
+                });
+                });
+            });
+            </script>
+
+            <hr>
+            <h4 class="hidden-menu-subTab-title">조회</h4>
+            <ul class="hidden-menu-subTab-list">
+                <li><a href="#">전체 계좌 조회</a></li>
+                <li><a href="#">거래 내역 조회</a></li>
+                <li><a href="#">이체 내역 조회</a></li>
+                <li><a href="#">특정일전체계좌잔액조회</a></li>
+                <li><a href="#">썸패스가맹점거래조회</a></li>
+                <li><a href="#">수표/어음</a></li>
+                <li><a href="#">세금우대/비과세한도조회</a></li>
+                <li><a href="#">해지계좌조회</a></li>
+                <li><a href="#">해지계좌거래내역조회</a></li>
+                <li><a href="#">기일도래명도세조회</a></li>
+                <li><a href="#">계좌통합관리서비스</a></li>
+            </ul>
         </div>
     </div>
-
   </header>
 </div>

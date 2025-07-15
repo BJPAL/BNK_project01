@@ -18,7 +18,7 @@ body {
 }
 
 .logo img {
-  height: 40px;
+  height: 36px;
 }
 
 .right-section {
@@ -41,6 +41,8 @@ body {
   color: white;
   border: none;
   width: 120px; 
+  height: 40px;
+  line-height: 20px;
   font-size: 1.25rem;
   padding: 8px 14px;
   border-radius: 8px;
@@ -150,9 +152,12 @@ body {
   pointer-events: auto;
 }
 
+.hidden-menu-wrap{
+  width: 95%;
+}
+
 .hidden-menu-tabBar {
   display: flex;
-  width: 95%;
   margin: auto;
   height: 40px;
   margin-top: 40px;
@@ -176,9 +181,51 @@ body {
   border-right: 1px solid #D7191F;
 }
 
-.hidden-menu-tab-active, .hidden-menu-tab:hover {
+.hidden-menu-tabBar > .active, .hidden-menu-tab:hover {
   background: #D7191F;
   color: white;
   font-weight: 900;
+}
+
+.hidden-menu-subTab{
+    gap: 10px;
+    padding: 10px;
+    padding-top: 20px;
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+.hidden-menu-subTab span{
+    white-space: nowrap; 
+    padding-left: 3px;
+    padding-right: 3px;
+    cursor: pointer;
+
+}
+
+.hidden-menu-subTab > .active{
+    color: #D7191F;
+    font-weight: 700;
+}
+
+.hidden-menu-subTab-title{
+    font-size: 24px;
+    color: #D7191F;
+    font-weight: 900;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.hidden-menu-subTab-list li{
+    padding: 10px 10px 0 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;  
+}
+
+.hidden-menu-subTab-list li a{
+    font-size: 16px;
+    font-weight: 700;
+  
 }
 
