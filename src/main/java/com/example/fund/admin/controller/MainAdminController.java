@@ -83,10 +83,11 @@ public class MainAdminController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request){
+    public String logout(HttpServletRequest request, RedirectAttributes rttr){
         HttpSession session = request.getSession();
-        session.invalidate();
-        return "admin/login";
+        session.removeAttribute("admin");
+        rttr.addFlashAttribute("logoutMsg", "로그아웃");
+        return "redirect:/admin/";
     }
 
     //아이디 중복 검사(Ajax 응답)

@@ -45,7 +45,7 @@ public class FaqAdminController {
     @GetMapping("/add")
     public String addForm(HttpSession session, Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 등록 가능합니다.");
             return "admin/faq/list";
         }
@@ -61,7 +61,7 @@ public class FaqAdminController {
                          Model model) {
 
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 등록 가능합니다.");
             return "admin/faq/add";
         }
@@ -69,7 +69,7 @@ public class FaqAdminController {
         Faq faq = new Faq();
         faq.setQuestion(question);
         faq.setAnswer(answer);
-        faq.setActive(active != null && active.equals("on")); // 수정된 부분
+        faq.setActive(active != null && active.equals("on"));
 
         faqAdminService.save(faq);
         redirectAttributes.addFlashAttribute("successMessage", "FAQ가 등록되었습니다.");
@@ -80,7 +80,7 @@ public class FaqAdminController {
     public String editForm(@PathVariable("id") Integer id, Model model, HttpSession session) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
 
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 접근 가능합니다.");
             return "admin/faq/list";
         }
@@ -104,7 +104,7 @@ public class FaqAdminController {
                           RedirectAttributes redirectAttributes,
                           Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 수정 가능합니다.");
             return "admin/faq/edit";
         }
@@ -117,7 +117,7 @@ public class FaqAdminController {
 
         existing.setQuestion(question);
         existing.setAnswer(answer);
-        existing.setActive(active != null && active.equals("on")); // 수정된 부분
+        existing.setActive(active != null && active.equals("on"));
 
         faqAdminService.save(existing);
         redirectAttributes.addFlashAttribute("successMessage", "FAQ가 수정되었습니다.");
@@ -131,7 +131,7 @@ public class FaqAdminController {
                             Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
 
-        if (admin == null || !List.of("CS", "SUPER").contains(admin.getRole())) {
+        if (admin == null || !List.of("cs", "super").contains(admin.getRole())) {
             model.addAttribute("errorMessage", "CS 권한이 있는 관리자만 삭제 가능합니다.");
             return "admin/faq/list";
         }

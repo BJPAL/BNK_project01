@@ -25,6 +25,7 @@
 
         <!--super 메뉴-->
         <li th:if="${session.admin.role == 'super'}"><a href="/admin/adminSetting">관리자 설정</a></li>
+        <li th:if="${session.admin.role == 'super'}"><a href="/admin/faq/list">FAQ 관리</a></li>
 
         <!--planner 메뉴-->
         <li th:if="${session.admin.role == 'planner'}"><a href="">펀드상품 관리</a></li>
@@ -35,7 +36,7 @@
 
         <!--cs 메뉴-->
         <li th:if="${session.admin.role == 'cs'}"><a href="/admin/qnaList">1:1문의 관리</a></li>
-        <li th:if="${session.admin.role == 'cs'}"><a href="">FAQ 관리</a></li>
+        <li th:if="${session.admin.role == 'cs'}"><a href="/admin/faq/list">FAQ 관리</a></li>
       </ul>
     </div>
   </div>

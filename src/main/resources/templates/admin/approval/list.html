@@ -58,7 +58,7 @@
 <h3>반려</h3>
 <table border="1">
   <thead>
-  <tr><th>제목</th><th>내용</th><th>반려사유</th><th>작성일</th></tr>
+  <tr><th>제목</th><th>내용</th><th>반려사유</th><th>작성일</th><th>액션</th></tr>
   </thead>
   <tbody>
   <tr th:each="approval : ${rejectedPage.content}">
@@ -66,6 +66,9 @@
     <td th:text="${approval.content}">내용</td>
     <td th:text="${approval.rejectReason}">사유</td>
     <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+    <td>
+      <a th:href="@{'/admin/approval/edit/' + ${approval.approvalId}}">재기안</a>
+    </td>
   </tr>
   </tbody>
 </table>

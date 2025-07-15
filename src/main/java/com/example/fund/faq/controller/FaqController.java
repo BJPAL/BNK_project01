@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -35,7 +36,7 @@ public class FaqController {
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("faqId").descending());
-        Page<Faq> faqPage = faqRepository.findByQuestionContainingOrAnswerContaining(keyword, keyword, pageable);
+        Page<Faq> faqPage = faqRepository.searchActiveFaqs(keyword, pageable);
 
         Map<String, Object> response = new HashMap<>();
         response.put("content", faqPage.getContent());
