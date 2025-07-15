@@ -68,7 +68,7 @@ public class FundController {
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", fundPage.getTotalPages());
 
-            return "fundList";
+            return "fund/fundList";
         } else {
             // 투자 성향 검사 필요
             return "redirect:/profile";

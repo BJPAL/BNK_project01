@@ -11,4 +11,5 @@ public interface FundRepository extends JpaRepository<Fund, Long> {
 
     /** 위험 등급에 따른 펀드 목록 */
     Page<Fund> findByRiskLevelBetween(int start, int end, Pageable pageable);
+
 }
