@@ -43,6 +43,14 @@ public class FundDailyPrice extends BaseEntity {
     @Column(name = "base_price", precision = 10, scale = 2)
     private BigDecimal basePrice;
 
+    // 추가됨
+    @Column(name = "change_amount", precision = 10, scale = 2)
+    private BigDecimal changeAmount;
+
     @Column(name = "aum")
     private Integer aum;
+
+    // 추가됨
+    @Column(name = "fund_scale")
+    private Integer fundScale;
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>투자 성향 펀드 목록</title>
+        <style>
+            a.active {
+                font-weight: bold;
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>펀드 성향 펀드 목록</h1>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>펀드 ID</th>
+                    <th>펀드 이름</th>
+                    <th>위험 등급</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="fund : ${fundList}">
+                    <td th:text="${fund.fundId}">펀드ID</td>
+                    <td th:text="${fund.fundName}">펀드이름</td>
+                    <td th:text="${fund.riskLevel}">위험등급</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 20px;">
+            <!-- 이전 페이지 버튼 -->
+            <a th:if="${currentPage > 1}"
+               th:href="@{'/fund/list'(page=${currentPage - 1})}">
+                이전
+            </a>
+
+            <!-- 페이지 숫자 -->
+            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                <a th:href="@{'/fund/list'(page=${i})}"
+                   th:text="${i}"
+                   th:classappend="${i == currentPage} ? 'active' : ''">
+                </a>
+                &nbsp;
+            </span>
+
+            <!-- 다음 페이지 버튼 -->
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{'/fund/list'(page=${currentPage + 1})}">
+                다음
+            </a>
+        </div>
+    </body>
+</html>

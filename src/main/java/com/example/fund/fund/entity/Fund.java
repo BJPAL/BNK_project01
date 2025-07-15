@@ -44,8 +44,8 @@ public class Fund extends BaseEntity {
     @Column(name = "establish_date")
     private LocalDate establishDate;
 
-    @Column(name = "risk_level", length = 20)
-    private String riskLevel;
+    @Column(name = "risk_level", length = 3)
+    private Integer riskLevel;
 
     @Column(name = "fund_status", length = 10)
     private String fundStatus;
