@@ -36,7 +36,7 @@ public class FaqController {
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("faqId").descending());
-        Page<Faq> faqPage = faqRepository.findByQuestionContainingOrAnswerContaining(keyword, keyword, pageable);
+        Page<Faq> faqPage = faqRepository.searchActiveFaqs(keyword, pageable);
 
         Map<String, Object> response = new HashMap<>();
         response.put("content", faqPage.getContent());

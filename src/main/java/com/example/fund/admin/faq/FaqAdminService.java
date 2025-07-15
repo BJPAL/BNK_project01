@@ -43,7 +43,7 @@ public class FaqAdminService {
     }
 
     public Page<Faq> search(String keyword, Pageable pageable) {
-        return faqRepository.findByQuestionContainingOrAnswerContaining(keyword, keyword, pageable);
+        return faqRepository.searchActiveFaqs(keyword, pageable);
     }
 
     public Page<Faq> findAllWithPaging(Pageable pageable) {
