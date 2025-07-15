@@ -2,22 +2,180 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Main</title>
+    <title>펀드 관리자 메인페이지</title>
+
+    <!-- 아이콘·차트 CDN -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- ── 간단 스타일 ─────────────────────────────────────── -->
+    <style>
+        :root { --primary:#0B3C5D; --accent:#F2C14E; --bg:#f5f7fa; --card:#fff;
+                --border:#e1e5ea; --shadow:rgba(11,60,93,.08); }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:#333;}
+        .topbar{background:var(--primary);color:#fff;padding:14px 40px;
+                display:flex;flex-wrap:wrap;gap:24px;justify-content:center;}
+        .tile{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;}
+        .tile i{color:var(--accent);}
+        .dashboard{max-width:1240px;margin:40px auto;padding:0 30px;
+                   display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:32px;}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+              box-shadow:0 6px 18px var(--shadow);padding:28px 30px;display:flex;
+              flex-direction:column;gap:6px;transition:.25s;}
+        .card:hover{transform:translateY(-4px);box-shadow:0 10px 22px var(--shadow);}
+        .card h3{font-size:18px;color:var(--primary);display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+        .metric{font-size:34px;font-weight:800;color:var(--primary);}
+        .quick-link{display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid var(--border);
+                    border-left:4px solid var(--primary);border-radius:12px;background:#f9fbfc;text-decoration:none;
+                    color:#333;font-size:14px;font-weight:600;transition:.2s;margin-top:8px;}
+        .quick-link:hover{background:#eef4f8;}
+        .ring-wrapper{position:relative;width:120px;height:120px;margin:0 auto 8px;}
+        .ring-wrapper svg{transform:rotate(-90deg);}
+        .ring-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+                   font-size:22px;font-weight:700;color:var(--primary);}
+    </style>
 </head>
 <body>
-<p th:if="${msg}" th:text="${msg}"></p>
-<div th:replace="admin/a_header :: adminHeader"></div>
-<div th:if="${session.admin != null and session.admin.role == 'cs' and unansweredCount > 0}">
-    <p>미답변 문의 
-        <strong>
-            <a th:href="@{/admin/qnaList}" th:text="${unansweredCount}">0</a>
-        </strong>건
-    </p>
-</div>
-<div th:unless="${session.admin != null and session.admin.role == 'cs' and unansweredCount > 0}">
-    <p>모든 문의가 답변되었습니다</p>
+
+<header th:replace="admin/a_header :: adminHeader"></header>
+
+<!-- ===== 상단 정보 바 ===== -->
+<div class="topbar">
+
+    <!-- 공통: AUM · 오늘 손익 -->
+    <div class="tile">
+        <i class="fas fa-coins"></i> AUM&nbsp;:
+        <span th:text="${aum != null ? #numbers.formatDecimal(aum,0,0) + ' 억원' : '0 억원'}">0 억원</span>
+    </div>
+    <div class="tile">
+        <i class="fas fa-chart-line"></i> 오늘&nbsp;P/L&nbsp;:
+        <span th:text="${todayPnL != null ? #numbers.formatDecimal(todayPnL,0,0) + ' 원' : '0 원'}">0 원</span>
+    </div>
+
+    <!-- planner -->
+    <div class="tile" th:if="${role == 'planner'}">
+        <i class="fas fa-file-signature"></i> 결재대기&nbsp;:
+        <span th:text="${myPendingCount}">0</span>
+    </div>
+
+    <!-- approver -->
+    <div class="tile" th:if="${role == 'approver'}">
+        <i class="fas fa-check-double"></i> 승인대기&nbsp;:
+        <span th:text="${waitingApproveCount}">0</span>
+    </div>
+
+    <!-- cs -->
+    <div class="tile" th:if="${role == 'cs'}">
+        <i class="fas fa-question-circle"></i> 미답변&nbsp;:
+        <span th:text="${unansweredCount}">0</span>
+    </div>
+
+    <!-- 목표 달성률 -->
+    <div class="tile" th:if="${targetRate != null}">
+        <i class="fas fa-bullseye"></i> 목표달성&nbsp;:
+        <span th:text="${targetRate + '%'}">0%</span>
+    </div>
 </div>
 
+<!-- ===== 본문 카드 ===== -->
+<main class="dashboard">
+
+    <!-- (1) 총 운용 자산 -->
+    <div class="card">
+        <h3><i class="fas fa-coins" style="color:var(--accent);"></i> 총 운용 자산</h3>
+        <span class="metric"
+              th:text="${aum != null ? #numbers.formatDecimal(aum,0,0) + ' 억원' : '0 억원'}">0 억원</span>
+        <canvas id="aumChart" height="80"></canvas>
+    </div>
+
+    <!-- (2) 오늘 손익 -->
+    <div class="card">
+        <h3><i class="fas fa-chart-line" style="color:var(--accent);"></i> 오늘 손익</h3>
+        <span class="metric"
+              th:text="${todayPnL != null ? #numbers.formatDecimal(todayPnL,0,0) + ' 원' : '0 원'}">0 원</span>
+    </div>
+
+    <!-- (3) 월 목표 달성률 -->
+    <div class="card">
+        <h3><i class="fas fa-bullseye" style="color:var(--accent);"></i> 월 목표 달성률</h3>
+
+        <div class="ring-wrapper">
+            <svg width="120" height="120">
+                <circle cx="60" cy="60" r="50"
+                        stroke="#e6eaf0" stroke-width="12" fill="none"/>
+                <circle cx="60" cy="60" r="50"
+                        stroke="var(--accent)" stroke-width="12" fill="none"
+                        stroke-dasharray="314"
+                        th:attr="stroke-dashoffset=${targetRate != null ? 314 - (targetRate * 3.14) : 314}"/>
+            </svg>
+            <span class="ring-text"
+                  th:text="${targetRate != null ? targetRate : 0} + '%'">0%</span>
+        </div>
+        <p style="text-align:center;font-size:14px;color:#666;">월 목표 수익률 대비</p>
+    </div>
+
+    <!-- (4) 미답변 문의 – cs -->
+    <div class="card" th:if="${role == 'cs'}">
+        <h3><i class="fas fa-question-circle"></i> 미답변 문의</h3>
+        <span class="metric" th:text="${unansweredCount}">0</span>
+        <a th:href="@{/admin/qnaList}" class="quick-link">
+            <i class="far fa-comment-dots"></i> 문의 목록
+        </a>
+    </div>
+
+    <!-- (5) 내 결재 대기 – planner -->
+    <div class="card" th:if="${role == 'planner'}">
+        <h3><i class="fas fa-file-signature"></i> 내 결재 대기</h3>
+        <span class="metric" th:text="${myPendingCount}">0</span>
+        <a th:href="@{/admin/approval/my}" class="quick-link">
+            <i class="fas fa-list"></i> 내 요청 보기
+        </a>
+    </div>
+
+    <!-- (6) 승인 대기 – approver -->
+    <div class="card" th:if="${role == 'approver'}">
+        <h3><i class="fas fa-check-double"></i> 승인 대기</h3>
+        <span class="metric" th:text="${waitingApproveCount}">0</span>
+        <a th:href="@{/admin/approval/manage}" class="quick-link">
+            <i class="fas fa-gavel"></i> 승인 관리
+        </a>
+    </div>
+
+    <!-- (7) 빠른 액세스 -->
+    <div class="card" style="grid-row:span 2;">
+        <h3><i class="fas fa-tools"></i> 빠른 액세스</h3>
+        <a th:each="l : ${quickLinks}"
+           th:href="@{${l.url}}"
+           class="quick-link">
+            <i th:class="${l.icon}"></i>
+            <span th:text="${l.label}">링크</span>
+        </a>
+    </div>
+
+    <!-- (8) 시스템 공지 -->
+    <div class="card" style="grid-column:span 2;">
+        <h3><i class="fas fa-bullhorn"></i> 시스템 공지</h3>
+        <p>7/20(일) 02:00~04:00 서버 정기 점검 예정 • 점검 시간 동안 서비스 이용이 제한됩니다.</p>
+    </div>
+</main>
+
+<!-- ── 더미 라인 차트 스크립트 ───────────────────────── -->
+<script>
+    const ctx=document.getElementById('aumChart');
+    if(ctx){
+        new Chart(ctx,{
+            type:'line',
+            data:{labels:['-6d','-5d','-4d','-3d','-2d','어제','오늘'],
+                datasets:[{data:[120,122,123,125,126,128,130],
+                borderColor:'#F2C14E',backgroundColor:'transparent',
+                tension:.4,borderWidth:2,pointRadius:0}]},
+            options:{plugins:{legend:{display:false}},
+                     scales:{x:{display:false},y:{display:false}}}
+        });
+    }
+</script>
 
 </body>
 </html>

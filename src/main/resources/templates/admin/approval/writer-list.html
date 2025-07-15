@@ -1,74 +1,99 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="'[' + ${writerName} + '] 요청 목록'">작성자 요청 목록</title>
+  <meta charset="UTF-8" />
+  <title th:text="'[' + ${writerName} + '] 요청 목록'"></title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <style>
+    :root { --primary:#337D89; --bg:#eef3f5; --card:#fff; --border:#ddd; --shadow:rgba(0,0,0,.06); }
+    *{box-sizing:border-box;}
+    body{margin:0;padding:0;font-family:'Segoe UI',sans-serif;background:var(--bg);color:#333;}
+    .container{max-width:1200px;margin:40px auto;padding:0 30px;}
+    h1{font-size:28px;color:var(--primary);margin-bottom:40px;display:flex;align-items:center;gap:8px;}
+    h1 i{font-size:24px;}
+    .section{margin-bottom:60px;}
+    .section h2{font-size:22px;color:var(--primary);margin-bottom:24px;border-left:6px solid var(--primary);padding-left:12px;}
+
+    .card-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 4px 12px var(--shadow);padding:24px;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
+    .card:hover{transform:translateY(-6px);box-shadow:0 10px 24px var(--shadow);}
+    .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+    .card-title a{font-size:18px;font-weight:700;color:var(--primary);text-decoration:none;line-height:1.3;}
+    .card-title a:hover{text-decoration:underline;}
+    .badge{padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:700;color:#fff;}
+    .badge-pending{background:#f39c12;}.badge-waiting{background:#2980b9;}.badge-rejected{background:#e74c3c;}.badge-published{background:#2ecc71;}
+    .card-content{flex:1;line-height:1.5;margin-bottom:14px;white-space:pre-line;}
+    .reject-reason{background:#fdecea;color:#c0392b;padding:6px 10px;border-radius:8px;margin-top:8px;font-size:14px;}
+    .card-footer{font-size:14px;color:#666;}
+    a.back{display:inline-block;margin-top:30px;color:var(--primary);font-weight:600;text-decoration:none;}
+  </style>
 </head>
 <body>
-<h2 th:text="'[' + ${writerName} + '] 작성자의 결재 요청 목록'">요청 목록</h2>
+<div class="container">
+  <h1><i class="far fa-user"></i><span th:text="'[' + ${writerName} + '] 결재 요청 목록'"></span></h1>
 
-<!-- 결재대기 -->
-<h3>결재대기</h3>
-<table border="1">
-  <thead>
-  <tr><th>제목</th><th>내용</th><th>작성일</th></tr>
-  </thead>
-  <tbody>
-  <tr th:each="approval : ${pendingPage.content}">
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
-    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
-  </tr>
-  </tbody>
-</table>
+  <!-- ========== 결재대기 ========== -->
+  <div class="section">
+    <h2>결재대기</h2>
+    <div class="card-list">
+      <div class="card" th:each="approval : ${pendingPage.content}">
+        <div class="card-top">
+          <div class="card-title"><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}"></a></div>
+          <span class="badge badge-pending">대기</span>
+        </div>
+        <div class="card-content" th:text="${approval.content}"></div>
+        <div class="card-footer"><i class="far fa-clock"></i>&nbsp;<span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span></div>
+      </div>
+    </div>
+  </div>
 
-<!-- 배포대기 -->
-<h3>배포대기</h3>
-<table border="1">
-  <thead>
-  <tr><th>제목</th><th>내용</th><th>작성일</th></tr>
-  </thead>
-  <tbody>
-  <tr th:each="approval : ${waitingPage.content}">
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
-    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
-  </tr>
-  </tbody>
-</table>
+  <!-- ========== 배포대기 ========== -->
+  <div class="section">
+    <h2>배포대기</h2>
+    <div class="card-list">
+      <div class="card" th:each="approval : ${waitingPage.content}">
+        <div class="card-top">
+          <div class="card-title"><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}"></a></div>
+          <span class="badge badge-waiting">배포대기</span>
+        </div>
+        <div class="card-content" th:text="${approval.content}"></div>
+        <div class="card-footer"><i class="far fa-clock"></i>&nbsp;<span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span></div>
+      </div>
+    </div>
+  </div>
 
-<!-- 반려 -->
-<h3>반려</h3>
-<table border="1">
-  <thead>
-  <tr><th>제목</th><th>내용</th><th>반려사유</th><th>작성일</th></tr>
-  </thead>
-  <tbody>
-  <tr th:each="approval : ${rejectedPage.content}">
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
-    <td th:text="${approval.rejectReason}">사유</td>
-    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
-  </tr>
-  </tbody>
-</table>
+  <!-- ========== 반려 ========== -->
+  <div class="section">
+    <h2>반려</h2>
+    <div class="card-list">
+      <div class="card" th:each="approval : ${rejectedPage.content}">
+        <div class="card-top">
+          <div class="card-title"><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}"></a></div>
+          <span class="badge badge-rejected">반려</span>
+        </div>
+        <div class="card-content" th:text="${approval.content}"></div>
+        <p class="reject-reason" th:text="${approval.rejectReason}"></p>
+        <div class="card-footer"><i class="far fa-clock"></i>&nbsp;<span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span></div>
+      </div>
+    </div>
+  </div>
 
-<!-- 배포 -->
-<h3>배포</h3>
-<table border="1">
-  <thead>
-  <tr><th>제목</th><th>내용</th><th>작성일</th></tr>
-  </thead>
-  <tbody>
-  <tr th:each="approval : ${publishedPage.content}">
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
-    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
-  </tr>
-  </tbody>
-</table>
+  <!-- ========== 배포 완료 ========== -->
+  <div class="section">
+    <h2>배포 완료</h2>
+    <div class="card-list">
+      <div class="card" th:each="approval : ${publishedPage.content}">
+        <div class="card-top">
+          <div class="card-title"><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}"></a></div>
+          <span class="badge badge-published">배포</span>
+        </div>
+        <div class="card-content" th:text="${approval.content}"></div>
+        <div class="card-footer"><i class="far fa-clock"></i>&nbsp;<span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span></div>
+      </div>
+    </div>
+  </div>
 
-<br>
-<a th:href="@{/admin/approval/manage}">← 승인 관리로 돌아가기</a>
+  <a th:href="@{/admin/approval/manage}" class="back"><i class="fas fa-arrow-left"></i> 승인 관리로 돌아가기</a>
+</div>
 </body>
 </html>

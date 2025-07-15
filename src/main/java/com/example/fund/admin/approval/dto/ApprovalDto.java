@@ -1,4 +1,4 @@
-package com.example.fund.admin.approval;
+package com.example.fund.admin.approval.dto;
 
 import lombok.Builder;
 import lombok.Data;

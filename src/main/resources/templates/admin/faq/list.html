@@ -1,12 +1,170 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>FAQ 목록</title>
   <style>
-    .active {
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #eef3f5;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px 40px;
+    }
+
+    h1 {
+      color: #337D89;
+      font-size: 28px;
+      margin-bottom: 30px;
+      border-left: 6px solid #337D89;
+      padding-left: 12px;
+    }
+
+    form {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button, a.button-link {
+      background-color: #337D89;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
       font-weight: bold;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    button:hover, a.button-link:hover {
+      background-color: #2a6673;
+    }
+
+    .message {
+      margin: 10px 0;
+      font-weight: bold;
+    }
+
+    .message.error {
       color: red;
+    }
+
+    .message.success {
+      color: green;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background-color: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+    }
+
+    th {
+      background-color: #337D89;
+      color: white;
+      padding: 12px;
+      text-align: center;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+
+    tbody tr {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background-color: #f4f9fa;
+      transform: scale(1.01);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    /* 상태 뱃지 */
+    .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .badge.active {
+      background-color: #d4f4dd;
+      color: #2e7d32;
+    }
+
+    .badge.inactive {
+      background-color: #e0e0e0;
+      color: #616161;
+    }
+
+    /* 툴팁 버튼 */
+    .tooltip-btn {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .tooltip-btn:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 5px;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    /* 페이징 */
+    .pagination {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .pagination a {
+      margin: 0 6px;
+      text-decoration: none;
+      color: #337D89;
+      font-weight: bold;
+      border: 1px solid #337D89;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+
+    .pagination a.active {
+      color: white;
+      background-color: #337D89;
     }
   </style>
 </head>
@@ -14,62 +172,77 @@
 
 <div th:replace="admin/a_header :: adminHeader"></div>
 
-<h1>FAQ 목록</h1>
+<div class="container">
 
-<!-- 메시지 출력 -->
-<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}"></div>
-<div th:if="${successMessage}" style="color:green;" th:text="${successMessage}"></div>
+  <h1>FAQ 목록</h1>
 
-<!-- 검색 폼 -->
-<form th:action="@{/admin/faq/list}" method="get">
-  <input type="text" name="keyword" th:value="${keyword}" placeholder="질문 또는 답변 검색"/>
-  <button type="submit">검색</button>
-</form>
+  <!-- 메시지 출력 -->
+  <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+  <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
 
-<!-- 등록 버튼 (CS 또는 SUPER만 노출) -->
-<a th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}"
-   th:href="@{/admin/faq/add}">등록</a>
+  <!-- 검색 폼 -->
+  <form th:action="@{/admin/faq/list}" method="get">
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="질문 또는 답변 검색"/>
+    <button type="submit">검색</button>
+  </form>
 
-<!-- FAQ 테이블 -->
-<table border="1">
-  <thead>
-  <tr>
-    <th>ID</th>
-    <th>질문</th>
-    <th>답변</th>
-    <th>상태</th>
-    <th th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">수정</th>
-    <th th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">삭제</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="faq : ${faqPage.content}">
-    <td th:text="${faq.faqId}">ID</td>
-    <td th:text="${faq.question}">질문</td>
-    <td th:text="${faq.answer}">답변</td>
-    <td th:text="${faq.active ? '활성화' : '비활성'}">상태</td>
-    <td th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">
-      <a th:href="@{'/admin/faq/edit/' + ${faq.faqId}}">수정</a>
-    </td>
-    <td th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">
+  <!-- 등록 버튼 -->
+  <div style="margin-bottom: 15px;">
+    <a th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}"
+       th:href="@{/admin/faq/add}" class="button-link">+ 등록</a>
+  </div>
 
-      <form th:action="@{'/admin/faq/delete/' + ${faq.faqId}}" method="post"
-            onsubmit="return confirm('정말 삭제하시겠습니까?');">
+  <!-- FAQ 테이블 -->
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>질문</th>
+      <th>답변</th>
+      <th>상태</th>
+      <th th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">수정</th>
+      <th th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">삭제</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="faq : ${faqPage.content}">
+      <td th:text="${faq.faqId}">ID</td>
+      <td th:text="${faq.question}">질문</td>
+      <td th:text="${faq.answer}">답변</td>
+      <td>
+        <span th:class="${faq.active} ? 'badge active' : 'badge inactive'"
+              th:text="${faq.active ? '활성화' : '비활성'}">상태</span>
+      </td>
+      <td th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">
+        <a th:href="@{'/admin/faq/edit/' + ${faq.faqId}}"
+           class="tooltip-btn"
+           data-tooltip="수정"
+           style="color: #337D89; text-decoration: none; font-weight: bold;">수정</a>
+      </td>
+      <td th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">
+        <form th:action="@{'/admin/faq/delete/' + ${faq.faqId}}" method="post"
+              onsubmit="return confirm('정말 삭제하시겠습니까?');" style="margin: 0;">
+          <button type="submit"
+                  class="tooltip-btn"
+                  data-tooltip="삭제"
+                  style="background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+            삭제
+          </button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 
-        <button type="submit">삭제</button>
-      </form>
-    </td>
-  </tr>
-  </tbody>
-</table>
+  <!-- 페이징 -->
+  <div class="pagination" th:if="${faqPage.totalPages > 1}">
+    <span th:each="i : ${#numbers.sequence(0, faqPage.totalPages - 1)}">
+      <a th:href="@{/admin/faq/list(page=${i}, keyword=${keyword})}"
+         th:text="${i + 1}"
+         th:classappend="${i == faqPage.number} ? 'active' : ''">1</a>
+    </span>
+  </div>
 
-<!-- 페이징 -->
-<div th:if="${faqPage.totalPages > 1}">
-  <span th:each="i : ${#numbers.sequence(0, faqPage.totalPages - 1)}">
-    <a th:href="@{/admin/faq/list(page=${i}, keyword=${keyword})}"
-       th:text="${i + 1}"
-       th:classappend="${i == faqPage.number} ? 'active' : ''">1</a>
-  </span>
 </div>
 
 </body>

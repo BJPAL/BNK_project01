@@ -1,9 +1,9 @@
 package com.example.fund.admin.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.fund.qna.service.QnaService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.service.AdminService_A;
-import com.example.fund.qna.service.QnaService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -29,139 +28,119 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class MainAdminController {
 
-    @Autowired
-    AdminService_A adminService_a;
+    private final AdminService_A adminService_a;
+    private final QnaService     qnaService;
 
-    @Autowired
-    QnaService qnaService;
-
-    @GetMapping("/")
-    public String root(HttpSession session){
-        AdminDTO adminDTO = (AdminDTO) session.getAttribute("admin");
-
-        if(adminDTO != null){
-            return "admin/main";
-        }
-        
-        return "admin/login";
+    /* 1)  /admin/ → 세션 O : 대시보드로 / 세션 X : 로그인 */
+    @GetMapping({"/", ""})
+    public String root(HttpSession session) {
+        return (session.getAttribute("admin") != null)
+                ? "redirect:/admin/dashboard"      // ★ 지표 있는 화면으로 보냄
+                : "admin/login";
     }
 
-    //로그인 한 관리자의 Role이 cs일 때 미답변된 문의 수를 전달
+    /* 2)  /admin/main  → 과거 주소로 들어와도 대시보드로 보냄 */
     @GetMapping("/main")
-    public String main(HttpSession session, Model model){
-        AdminDTO adminDTO = (AdminDTO) session.getAttribute("admin");
-
-        if(adminDTO != null && "cs".equals(adminDTO.getRole())){
-            int unansweredCount = qnaService.countUnanwseQna();
-
-            model.addAttribute("unansweredCount", unansweredCount);
-        }
-
-        return "admin/main";
+    public String legacyMain() {
+        return "redirect:/admin/dashboard";         // ★ 한 줄로 끝
     }
 
+    //기존 2번
+//    @GetMapping("/main")
+//    public String main(HttpSession session, Model model) {
+//        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+//
+//        if (admin != null && "cs".equals(admin.getRole())) {
+//            int unanswered = qnaService.countUnanwseQna();
+//            model.addAttribute("unansweredCount", unanswered);
+//        }
+//        return "admin/main";
+//    }
+
+    /* 3)  로그인 성공 후 → /admin/dashboard */
     @PostMapping("/login")
-    public String login(AdminDTO adminDTO, HttpServletRequest request, RedirectAttributes rttr){
-        HttpSession session = request.getSession();
+    public String login(AdminDTO adminDTO,
+                        HttpServletRequest request,
+                        RedirectAttributes rttr) {
 
-        if(adminService_a.login(adminDTO)){
-            Admin admin = adminService_a.searchAdmin(adminDTO);
-            AdminDTO sessionAdmin = new AdminDTO(); //세션등록을 위한 DTO (role, name, admin_Id, adminname만 세션에 저장)
-            sessionAdmin.setRole(admin.getRole());
-            sessionAdmin.setAdmin_id(admin.getAdmin_id());
-            sessionAdmin.setName(admin.getName());
-            sessionAdmin.setAdminname(admin.getAdminname());
-
-            session.setAttribute("admin", sessionAdmin); //sessionAdmin으로 session등록
-            return "redirect:/admin/main";
+        if (!adminService_a.login(adminDTO)) {
+            rttr.addFlashAttribute("msg", "아이디 또는 비밀번호를 확인하세요");
+            return "redirect:/admin/";
         }
-        String msg = "아이디 또는 비밀번호를 확인하세요";
-        rttr.addFlashAttribute("msg", msg);
-        return "redirect:/admin/";
+
+        Admin adminEntity = adminService_a.searchAdmin(adminDTO);
+
+        AdminDTO sess = new AdminDTO();
+        sess.setRole(adminEntity.getRole());
+        sess.setAdmin_id(adminEntity.getAdmin_id());
+        sess.setName(adminEntity.getName());
+        sess.setAdminname(adminEntity.getAdminname());
+
+        request.getSession().setAttribute("admin", sess);
+
+        return "redirect:/admin/dashboard";   // ★ 대시보드로 이동
     }
+
+    /* ------------- 이하 기존 코드(로그아웃·관리자 CRUD 등) 그대로 -------------- */
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request, RedirectAttributes rttr){
-        HttpSession session = request.getSession();
-        session.removeAttribute("admin");
+    public String logout(HttpServletRequest request, RedirectAttributes rttr) {
+        request.getSession().removeAttribute("admin");
         rttr.addFlashAttribute("logoutMsg", "로그아웃");
         return "redirect:/admin/";
     }
 
-    //아이디 중복 검사(Ajax 응답)
     @GetMapping("/check-id")
-    public ResponseEntity<Boolean> checkDuplicateAdminname(@RequestParam String adminname){
-        boolean exists = adminService_a.check_id(adminname);
-        return ResponseEntity.ok(exists);
+    public ResponseEntity<Boolean> checkDuplicateAdminname(@RequestParam String adminname) {
+        return ResponseEntity.ok(adminService_a.check_id(adminname));
     }
 
-    //관리자 등록 폼으로 이동
     @GetMapping("/adminRegistForm")
-    public String adminRegistForm(){ 
-        return "admin/super/admin_register";
-    }
+    public String adminRegistForm() { return "admin/super/admin_register"; }
 
-    //관리자 설정 메뉴로 이동
     @GetMapping("/adminSetting")
-    public String adminSetting(){
-        return "admin/super/adminSetting";
-    }
+    public String adminSetting() { return "admin/super/adminSetting"; }
 
-    //관리자 등록 처리
     @PostMapping("/adminRegist")
-    public String adminRegist(AdminDTO adminDTO, RedirectAttributes rttr){
+    public String adminRegist(AdminDTO adminDTO, RedirectAttributes rttr) {
         adminService_a.adminRegist(adminDTO);
-        String msg = "관리자 등록을 완료하였습니다.";
-        rttr.addFlashAttribute("msg", msg);
+        rttr.addFlashAttribute("msg", "관리자 등록을 완료하였습니다.");
         return "admin/super/adminSetting";
     }
 
-    //관리자 리스트 컨트롤러(role 파라미터는 필수값 X)
     @GetMapping("/list")
-    public String getAdminList(@RequestParam(required = false) String role, Model model){
-        List<AdminDTO> admins = new ArrayList<>();
-        if (role == null || role.isEmpty()) {
-            admins = adminService_a.getAllAdmins();
-        } else {
-            admins = adminService_a.getAdminsByRole(role); // 역할별 조회
-        }
+    public String getAdminList(@RequestParam(required = false) String role,
+                               Model model) {
+        List<AdminDTO> admins = (role == null || role.isEmpty())
+                ? adminService_a.getAllAdmins()
+                : adminService_a.getAdminsByRole(role);
         model.addAttribute("adminList", admins);
         return "admin/super/adminList :: admin-list-content";
     }
 
-    //관리자 리스트 >> 상세정보 조회
     @GetMapping("/detail/{id}")
-    public String getAdminDetail(@PathVariable("id")Integer id, Model model){
-        AdminDTO admin = adminService_a.findById(id);
-        model.addAttribute("admin", admin);
-
+    public String getAdminDetail(@PathVariable Integer id, Model model) {
+        model.addAttribute("admin", adminService_a.findById(id));
         return "admin/super/adminList :: admin-modify-modal";
     }
 
-    //관리자 리스트 >> 상세정보 조회 >> 수정작업
     @PostMapping("/updateRole")
     @ResponseBody
-    public String updateRole(@RequestBody AdminDTO adminDTO){
-        System.out.println(adminDTO);
+    public String updateRole(@RequestBody AdminDTO adminDTO) {
         adminService_a.updateRole(adminDTO.getAdmin_id(), adminDTO.getRole());
         return "success";
     }
 
-    //관리자 리스트 >> 상세정보 조회 >> 삭제작업
     @DeleteMapping("/delete/{id}")
     @ResponseBody
-    public String deleteAdmin(@PathVariable("id")Integer id){
+    public String deleteAdmin(@PathVariable Integer id) {
         adminService_a.deleteAdmin(id);
         return "success";
     }
 
-    //1:1문의 관리 메뉴로 이동
     @GetMapping("/qnaList")
-    public String qnaList() {
-        return "admin/cs/qnaSetting";
-    }
-    
-
+    public String qnaList() { return "admin/cs/qnaSetting"; }
 }

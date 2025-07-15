@@ -1,6 +1,6 @@
-package com.example.fund.admin.approval;
+package com.example.fund.admin.approval.repository;
 
-import com.example.fund.admin.entity.Admin;
+import com.example.fund.admin.approval.entity.Approval;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

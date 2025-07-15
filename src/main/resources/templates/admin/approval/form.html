@@ -2,26 +2,41 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>결재 요청 등록</title>
+    <title th:text="${approval != null} ? '결재 요청 수정' : '결재 요청 등록'"></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+    <style>
+        :root { --primary:#337D89; --bg:#eef3f5; --card:#fff; --border:#ddd; }
+        body{margin:0;padding:0;font-family:'Segoe UI',sans-serif;background:var(--bg);}
+        .form-container{max-width:700px;margin:50px auto;background:var(--card);
+          padding:40px 50px;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,.05);}
+        h1{font-size:28px;color:var(--primary);margin-bottom:30px;display:flex;align-items:center;gap:8px;}
+        h1 i{font-size:24px;}
+        label{display:block;font-weight:700;margin:18px 0 8px;}
+        input[type=text],textarea{
+          width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:15px;
+        }
+        input:focus,textarea:focus{border-color:var(--primary);outline:none;}
+        textarea{height:180px;resize:vertical;}
+        .btn-submit{margin-top:30px;background:var(--primary);color:#fff;border:none;padding:12px 24px;
+          border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:filter .2s;}
+        .btn-submit:hover{filter:brightness(.9);}
+    </style>
 </head>
 <body>
-<h2>결재 요청 등록</h2>
+<div class="form-container">
+    <h1><i class="fas fa-edit"></i><span th:text="${approval != null} ? '결재 요청 수정' : '결재 요청 등록'"></span></h1>
 
-<!--<form th:action="@{/admin/approval/register}" method="post">-->
-<!--    <label>제목:-->
-<!--        <input type="text" name="title" required>-->
-<!--    </label><br>-->
-<!--    <label>내용:-->
-<!--        <textarea name="content" required></textarea>-->
-<!--    </label><br>-->
-<!--    <button type="submit">등록</button>-->
-<!--</form>-->
+    <form th:action="${approval != null} ? @{'/admin/approval/update/' + ${approval.approvalId}} : @{/admin/approval/register}" method="post">
+        <label for="title">제목</label>
+        <input id="title" type="text" name="title" th:value="${approval?.title}" placeholder="제목을 입력하세요" required>
 
-<form th:action="@{${approval != null} ? '/admin/approval/update/' + ${approval.approvalId} : '/admin/approval/register'}" method="post">
-    <label>제목: <input type="text" name="title" th:value="${approval?.title}" required></label><br>
-    <label>내용: <textarea name="content" required th:text="${approval?.content}"></textarea></label><br>
-    <button type="submit" th:text="${approval != null} ? '수정 후 재기안' : '등록'"></button>
-</form>
+        <label for="content">내용</label>
+        <textarea id="content" name="content" placeholder="내용을 입력하세요" required
+                  th:text="${approval?.content}"></textarea>
 
+        <button type="submit" class="btn-submit"
+                th:text="${approval != null} ? '수정 후 재기안' : '등록'"></button>
+    </form>
+</div>
 </body>
 </html>

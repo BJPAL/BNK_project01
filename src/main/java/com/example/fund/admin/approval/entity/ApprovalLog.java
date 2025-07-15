@@ -1,4 +1,4 @@
-package com.example.fund.admin.approval;
+package com.example.fund.admin.approval.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

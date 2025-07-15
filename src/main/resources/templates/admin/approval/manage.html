@@ -1,97 +1,179 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>결재 승인 관리</title>
+  <meta charset="UTF-8" />
+  <title>결재 요청 승인 관리</title>
+
+  <!-- FontAwesome & SweetAlert2 -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root{
+      --primary:#337D89;--primary-dark:#2a6673;
+      --bg:#eef3f5;--card:#fff;--border:#e0e0e0;--shadow:rgba(0,0,0,.06);
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--bg);font-family:"Segoe UI",sans-serif;color:#333;}
+
+    .manage-container{max-width:1200px;margin:40px auto;padding:50px 60px;
+      background:var(--card);border-radius:16px;box-shadow:0 8px 24px var(--shadow);}
+
+    h1{display:flex;align-items:center;gap:10px;font-size:30px;color:var(--primary);margin:0 0 40px;}
+    h1::before{content:"\f559";font-family:'Font Awesome 5 Free';font-weight:900;color:var(--primary);font-size:28px;}
+
+    .section{margin-bottom:60px;}
+    .section h2{margin:0 0 24px;font-size:22px;color:var(--primary);
+                border-left:6px solid var(--primary);padding-left:12px;}
+
+    /* 카드 그리드 */
+    .card-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:24px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+          box-shadow:0 4px 12px var(--shadow);padding:24px;transition:.25s;}
+    .card:hover{transform:translateY(-6px);box-shadow:0 10px 24px var(--shadow);}
+
+    /* 상태 배지 + 모래시계 */
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:9999px;
+           font-size:12px;font-weight:700;color:#fff;white-space:nowrap;}
+    .badge-pending{background:#f39c12;}
+    .badge-ready{background:#2980b9;}
+    @keyframes hourFlip{0%{transform:rotate(0)}50%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
+    .hourglass-anim{animation:hourFlip 2.8s linear infinite;display:inline-block;transform-origin:center;}
+
+    /* 버튼 */
+    .btn-action{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border:none;
+                border-radius:10px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;
+                transition:.18s;background:var(--primary);}
+    .btn-action:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.12);}
+    .btn-action:active{transform:scale(.96);}
+    .btn-publish{background:linear-gradient(135deg,#2980b9,#2471a3);}
+
+    /* 페이지네이션 */
+    .pagination{text-align:center;margin-top:30px;}
+    .pagination a{display:inline-block;margin:0 6px;padding:6px 14px;border-radius:8px;
+                  border:1px solid var(--primary);color:var(--primary);font-weight:700;text-decoration:none;}
+    .pagination a.active{background:var(--primary);color:#fff;}
+  </style>
 </head>
+
 <body>
-<h2>결재 요청 승인 관리</h2>
+<div class="manage-container">
+  <h1>결재 요청 승인 관리</h1>
 
-<!-- 결재대기 목록 -->
-<h3>[결재대기]</h3>
-<table border="1">
-  <thead><tr><th>제목</th><th>내용</th><th>작성자</th><th>작성일</th><th>액션</th></tr></thead>
-  <tbody>
-  <tr th:each="approval : ${pendingPage.content}">
-    <td>
-      <a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a>
-    </td>
-    <td>
-      <a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a>
-    </td>
-    <td>
-      <a th:if="${approval.writer != null}"
-         th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
-         th:text="${approval.writer.adminname}">작성자</a>
-      <span th:if="${approval.writer == null}">작성자 없음</span>
-    </td>
-    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
-    <td>
-      <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post">
-        <button type="submit">승인</button>
-      </form>
-      <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post">
-        <input type="text" name="reason" required placeholder="반려 사유 입력" />
-        <button type="submit">반려</button>
-      </form>
-    </td>
-  </tr>
-  </tbody>
-</table>
-<!-- 페이지네이션 -->
-<div>
-  <a th:if="${pendingPage.hasPrevious()}" th:href="@{'/admin/approval/manage?(pendingPage=' + ${pendingPage.number - 1} + ')'}">이전</a>
-  <span th:text="${pendingPage.number + 1}">현재페이지</span>
-  <a th:if="${pendingPage.hasNext()}" th:href="@{'/admin/approval/manage?(pendingPage=' + ${pendingPage.number + 1} + ')'}">다음</a>
+  <!-- ============== 결재대기 ============== -->
+  <div class="section">
+    <h2>결재대기</h2>
+    <div class="card-list">
+      <div class="card" th:each="approval : ${pendingPage.content}">
+        <div style="display:flex;justify-content:space-between;gap:28px;">
+
+          <!-- ◂ 좌측 -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+            <span style="font-size:13px;color:#888;">
+              <i class="far fa-clock"></i>
+              <span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}">날짜</span>
+               · 
+              <i class="far fa-user"></i>
+              <span th:text="${approval.writer!=null?approval.writer.adminname:'작성자 없음'}">writer</span>
+            </span>
+
+            <a th:href="@{'/admin/approval/detail/'+${approval.approvalId}}"
+               th:text="${approval.title}"
+               style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none;"></a>
+          </div>
+
+          <!-- ▸ 우측 -->
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:18px;min-width:155px;">
+            <span class="badge badge-pending">
+              <i class="fas fa-hourglass-half hourglass-anim"></i>
+              <span th:text="${'대기 D+'+T(java.time.Duration)
+                   .between(approval.regDate,T(java.time.LocalDateTime).now()).toDays()}">대기 D+0</span>
+            </span>
+
+            <a th:href="@{'/admin/approval/detail/'+${approval.approvalId}}"
+               class="btn-action">
+              <i class="fas fa-search"></i> 자세히 보기
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- paging -->
+    <div class="pagination" th:if="${pendingPage.totalPages > 1}">
+      <a th:each="i:${#numbers.sequence(0,pendingPage.totalPages-1)}"
+         th:href="@{/admin/approval/manage(pendingPage=${i},readyPage=0,rejectedPage=0)}"
+         th:text="${i+1}" th:classappend="${i==pendingPage.number}?'active':''"></a>
+    </div>
+  </div>
+
+  <!-- ============== 배포대기 ============== -->
+  <div class="section">
+    <h2>배포대기</h2>
+    <div class="card-list">
+      <div class="card" th:each="approval : ${readyPage.content}">
+        <div style="display:flex;justify-content:space-between;gap:28px;">
+
+          <!-- ◂ 좌측 -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+            <span style="font-size:13px;color:#888;">
+              <i class="far fa-clock"></i>
+              <span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span>
+               · 
+              <i class="far fa-user"></i>
+              <span th:text="${approval.writer!=null?approval.writer.adminname:'작성자 없음'}"></span>
+            </span>
+
+            <a th:href="@{'/admin/approval/detail/'+${approval.approvalId}}"
+               th:text="${approval.title}"
+               style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none;"></a>
+          </div>
+
+          <!-- ▸ 우측 -->
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:18px;min-width:155px;">
+            <span class="badge badge-ready">
+              <i class="fas fa-hourglass-half hourglass-anim"></i>
+              <span th:text="${'배포대기 D+'+T(java.time.Duration)
+                   .between(approval.regDate,T(java.time.LocalDateTime).now()).toDays()}">배포대기 D+0</span>
+            </span>
+
+            <form th:action="@{'/admin/approval/publish/'+${approval.approvalId}}"
+                  method="post" onsubmit="return openPublishModal(event,this);">
+              <button type="submit" class="btn-action btn-publish">
+                <i class="fas fa-rocket"></i> 배포
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination" th:if="${readyPage.totalPages > 1}">
+      <a th:each="i:${#numbers.sequence(0,readyPage.totalPages-1)}"
+         th:href="@{/admin/approval/manage(pendingPage=0,readyPage=${i},rejectedPage=0)}"
+         th:text="${i+1}" th:classappend="${i==readyPage.number}?'active':''"></a>
+    </div>
+  </div>
 </div>
 
-<!-- 배포대기 -->
-<h3>[배포대기]</h3>
-<table border="1">
-  <thead><tr><th>제목</th><th>내용</th><th>작성자</th><th>작성일</th></tr></thead>
-  <tbody>
-  <tr th:each="approval : ${readyPage.content}">
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
-    <td>
-      <a th:if="${approval.writer != null}"
-         th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
-         th:text="${approval.writer.adminname}">작성자</a>
-      <span th:if="${approval.writer == null}">작성자 없음</span>
-    </td>
-    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
-  </tr>
-  </tbody>
-</table>
-<div>
-  <a th:if="${readyPage.hasPrevious()}" th:href="@{'/admin/approval/manage?(readyPage=' + ${readyPage.number - 1} + ')'}">이전</a>
-  <span th:text="${readyPage.number + 1}">현재페이지</span>
-  <a th:if="${readyPage.hasNext()}" th:href="@{'/admin/approval/manage?(readyPage=' + ${readyPage.number + 1} + ')'}">다음</a>
-</div>
+<!-- flash 메시지 SweetAlert 토스트 -->
+<script th:if="${alertMessage!=null}" th:inline="javascript">
+  Swal.fire({toast:true,position:'top-end',icon:'info',
+             title:[[${alertMessage}]],showConfirmButton:false,timer:2500});
+</script>
 
-<!-- 반려 -->
-<h3>[반려]</h3>
-<table border="1">
-  <thead><tr><th>제목</th><th>내용</th><th>작성자</th><th>작성일</th><th>반려 사유</th></tr></thead>
-  <tbody>
-  <tr th:each="approval : ${rejectedPage.content}">
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}">제목</a></td>
-    <td><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.content}">내용</a></td>
-    <td>
-      <a th:if="${approval.writer != null}"
-         th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
-         th:text="${approval.writer.adminname}">작성자</a>
-      <span th:if="${approval.writer == null}">작성자 없음</span>
-    </td>
-    <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
-    <td th:text="${approval.rejectReason}">사유</td>
-  </tr>
-  </tbody>
-</table>
-<div>
-  <a th:if="${rejectedPage.hasPrevious()}" th:href="@{'/admin/approval/manage?(rejectedPage=' + ${rejectedPage.number - 1} + ')'}">이전</a>
-  <span th:text="${rejectedPage.number + 1}">현재페이지</span>
-  <a th:if="${rejectedPage.hasNext()}" th:href="@{'/admin/approval/manage?(rejectedPage=' + ${rejectedPage.number + 1} + ')'}">다음</a>
-</div>
+<!-- 배포 확인 모달 -->
+<script>
+  function openPublishModal(e,form){
+    e.preventDefault();
+    Swal.fire({
+      title:'정말로 배포하시겠습니까?',
+      icon:'question',showCancelButton:true,
+      confirmButtonText:'배포',cancelButtonText:'취소',reverseButtons:true
+    }).then(res=>{ if(res.isConfirmed) form.submit(); });
+    return false;
+  }
+</script>
 </body>
 </html>

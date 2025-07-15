@@ -1,17 +1,18 @@
-package com.example.fund.admin.approval;
+package com.example.fund.admin.approval.controller;
 
+import com.example.fund.admin.approval.entity.Approval;
+import com.example.fund.admin.approval.entity.ApprovalLog;
+import com.example.fund.admin.approval.service.ApprovalLogService;
+import com.example.fund.admin.approval.service.ApprovalService;
 import com.example.fund.admin.dto.AdminDTO;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,24 +44,33 @@ public class ApprovalController {
         return "admin/approval/manage";
     }
 
-//    @PostMapping("/approve/{id}")
-//    public String approve(@PathVariable("id") Long id, HttpSession session) {
-//        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-//        if (admin == null) return "redirect:/admin/";
-//
-//        approvalService.approve(id, admin.getRole());
-//        return "redirect:/admin/approval/manage";
-//    }
-
-    //아래로 승인 사유란 기입 가능하도록 수정
+    // 승인 사유란 기입 + 간단한 예외 처리 (옵션 B)
     @PostMapping("/approve/{id}")
-    public String approve(@PathVariable("id") Long id,
-                          @RequestParam(value = "reason", required = false) String reason,
-                          HttpSession session) {
+    public String approve(@PathVariable Long id,
+                          @RequestParam(required=false) String reason,
+                          HttpSession session,
+                          RedirectAttributes redirect) {
+
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
-        approvalService.approve(id, admin.getRole(), reason); // 사유 전달
+        /* 1차 컨트롤러 권한 체크 */
+        if (!List.of("super", "approver", "planner")
+                .contains(admin.getRole())) {
+            redirect.addFlashAttribute("alertMessage", "승인 권한이 없습니다.");
+            return "redirect:/admin/approval/manage";
+        }
+
+        try {
+            /* ✏️ 두 번째 파라미터를 admin.getRole() 으로 전달 */
+            approvalService.approve(id, admin.getRole(), reason);
+            redirect.addFlashAttribute("alertMessage", "승인 처리되었습니다.");
+        } catch (SecurityException ex) {
+            redirect.addFlashAttribute("alertMessage", ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace(); // 로그 확인용
+            redirect.addFlashAttribute("alertMessage", "승인 중 시스템 오류가 발생했습니다.");
+        }
         return "redirect:/admin/approval/manage";
     }
 
@@ -73,7 +83,7 @@ public class ApprovalController {
         if (admin == null) return "redirect:/admin/";
 
         try {
-            approvalService.reject(id, reason, admin.getRole(), LocalDateTime.now());
+            approvalService.reject(id, reason, admin.getRole());
             rttr.addFlashAttribute("msg", "반려 완료");
         } catch (Exception e) {
             rttr.addFlashAttribute("msg", "반려 실패: " + e.getMessage());
@@ -82,13 +92,34 @@ public class ApprovalController {
         return "redirect:/admin/approval/manage";
     }
 
-    @PostMapping("/publish/{id}")
-    public String publish(@PathVariable("id") Long id, HttpSession session) {
-        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null) return "redirect:/admin/";
+//    @PostMapping("/publish/{id}")
+//    public String publish(@PathVariable("id") Long id, HttpSession session) {
+//        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+//        if (admin == null) return "redirect:/admin/";
+//
+//        approvalService.publish(id, admin.getAdminname(), LocalDateTime.now());
+//        return "redirect:/admin/approval/my-list";
+//    }
 
-        approvalService.publish(id, admin.getAdminname(), LocalDateTime.now());
-        return "redirect:/admin/approval/my-list";
+    @PostMapping("/publish/{id}")
+    public String publish(@PathVariable("id") Long id,
+                          HttpSession session,
+                          RedirectAttributes redirectAttributes) {
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+        if (admin == null) {
+            return "redirect:/admin/";
+        }
+
+        // 배포 권한 체크 (예: planner만 가능)
+        if (!"planner".equals(admin.getRole())) {
+            redirectAttributes.addFlashAttribute("alertMessage", "배포 권한이 없습니다.");
+            return "redirect:/admin/approval/manage";
+        }
+
+        // 정상 배포 처리
+        approvalService.publish(id, admin.getAdminname());
+        redirectAttributes.addFlashAttribute("alertMessage", "성공적으로 배포되었습니다.");
+        return "redirect:/admin/approval/manage";
     }
 
     @GetMapping("/my-list")
@@ -120,8 +151,8 @@ public class ApprovalController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestParam String title,
-                           @RequestParam String content,
+    public String register(@RequestParam("title") String title,
+                           @RequestParam("content") String content,
                            HttpSession session) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null || !"planner".equals(admin.getRole())) {
@@ -172,7 +203,7 @@ public class ApprovalController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable Long id, HttpSession session, Model model) {
+    public String editForm(@PathVariable("id") Long id, HttpSession session, Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
@@ -192,14 +223,14 @@ public class ApprovalController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateApproval(@PathVariable Long id,
-                                 @RequestParam String title,
-                                 @RequestParam String content,
+    public String updateApproval(@PathVariable("id") Long id,
+                                 @RequestParam("title") String title,
+                                 @RequestParam("content") String content,
                                  HttpSession session) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
-        approvalService.updateApproval(id, title, content, admin.getAdminname(), LocalDateTime.now());
+        approvalService.updateApproval(id, title, content, admin.getAdminname());
         return "redirect:/admin/approval/my-list";
     }
 

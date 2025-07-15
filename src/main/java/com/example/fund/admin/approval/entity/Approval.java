@@ -1,4 +1,4 @@
-package com.example.fund.admin.approval;
+package com.example.fund.admin.approval.entity;
 
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.common.entity.BaseEntity;
