@@ -4,25 +4,26 @@
   <meta charset="UTF-8">
   <title>투자성향분석 & 투자자정보확인서 작성 동의</title>
 <link rel="stylesheet" href="/css/terms.css">
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
   <div class="wrapper">
 
     <!-- ✅ 단계 인디케이터 UI 추가 -->
     <div class="step-indicator">
-	  <div class="step active">
-	    <span class="num">1</span>
-	    <span class="label">작성동의</span>
-	  </div>
-	  <div class="step">
-	    <span class="num">2</span>
-	    <span class="label"></span>
-	  </div>
-	  <div class="step">
-	    <span class="num">3</span>
-	    <span class="label"></span>
-	  </div>
-	</div>
+     <div class="step active">
+       <span class="num">1</span>
+       <span class="label">작성동의</span>
+     </div>
+     <div class="step">
+       <span class="num">2</span>
+       <span class="label"></span>
+     </div>
+     <div class="step">
+       <span class="num">3</span>
+       <span class="label"></span>
+     </div>
+   </div>
 
     <!-- 투자성향분석 안내 -->
     <div class="card-box">
@@ -101,7 +102,7 @@
           <label th:each="option : ${entry.options}">
             <input type="checkbox"
                    th:name="|q${entryStat.index}|"
-                   th:value="${option.score}">
+                   th:value="${option.optionId}">
             <span th:text="${option.content}"></span>
           </label>
         </div>
@@ -111,7 +112,7 @@
           <label th:each="option : ${entry.options}">
             <input type="radio"
                    th:name="|q${entryStat.index}|"
-                   th:value="${option.score}">
+                   th:value="${option.optionId}">
             <span th:text="${option.content}"></span>
           </label>
         </div>
@@ -119,43 +120,86 @@
     </div>
     
     <div class="confirmation-box">
-	  <p class="confirm-title">본인은 부산은행에 제공한 투자자정보와 관련하여 다음과 같은 사항을 확인합니다.</p>
-	    <ul>
-		   <li>부산은행에 제공한 투자자정보는 본인의 투자목적, 재산상황 및 투자경험 등의 정보를 정확히 등록한 것입니다.</li>
-		   <li>투자성향분석일로부터 향후 12개월 동안에는 재분석하지 않는 한 성향분석 결과가 변동되지 않음을 동의합니다.</li>
-		</ul>
-	</div>
+     <p class="confirm-title">본인은 부산은행에 제공한 투자자정보와 관련하여 다음과 같은 사항을 확인합니다.</p>
+       <ul>
+         <li>부산은행에 제공한 투자자정보는 본인의 투자목적, 재산상황 및 투자경험 등의 정보를 정확히 등록한 것입니다.</li>
+         <li>투자성향분석일로부터 향후 12개월 동안에는 재분석하지 않는 한 성향분석 결과가 변동되지 않음을 동의합니다.</li>
+      </ul>
+   </div>
 
     <!-- 제출 버튼 -->
     <div class="btn-box">
-      <button type="submit" class="btn-primary">제출</button>
+      <button type="submit" class="btn-primary">분석하기</button>
     </div>
-
   </form>
 </div>
 
+<div id="result-box" style="display: none; margin-top: 40px;">
+  <div class="step-indicator">
+    <div class="step">
+      <span class="num">1</span>
+      <span class="label"></span>
+    </div>
+    <div class="step">
+      <span class="num">2</span>
+      <span class="label"></span>
+    </div>
+    <div class="step active">
+      <span class="num">3</span>
+      <span class="label">분석결과</span>
+    </div>
+    
+  </div>
+
+<div class="result-container" style="padding: 40px; background-color: #f9f9f9; border-radius: 12px;">
+  <h2>투자성향 분석이 완료되었습니다</h2>
+
+  <!-- 결과 텍스트 + 게이지 -->
+  <div class="result-summary" style="display: flex; justify-content: space-between; align-items: center; gap: 60px; flex-wrap: wrap;">
+    <div class="text-info">
+      <h2 id="result-type-name" th:text="${typeName}"></h2>
+      <p id="result-description" th:text="${description}"></p>
+    </div>
+    <!-- 버블 차트 -->
+	  <div class="bubble-chart" style="display: flex; justify-content: center; align-items: flex-end; gap: 24px; height: 180px; margin-top: 40px;">
+	    <div class="bubble type1">안정형</div>
+	    <div class="bubble type2">안정추구형</div>
+	    <div class="bubble type3">위험중립형</div>
+	    <div class="bubble type4">적극투자형</div>
+	    <div class="bubble type5">공격투자형</div>
+	  </div>
+  </div>
+
+  <div id="radialGauge" style="width: 300px; height: 300px;"></div>
+
+  <!-- 완료 버튼 -->
+  <div class="btn-box" style="text-align: center; margin-top: 40px;">
+    <button class="btn-primary" onclick="location.href='/profile'">완료</button>
+  </div>
+</div>
+
+
+
 
 <script>
-  document.querySelector('.btn-primary').addEventListener('click', function () {
-    // 기존 화면 숨기기 / 질문지 보이기
+  // [1] 시작 버튼 클릭 시 확인서 작성 영역으로 이동
+     document.querySelector('.btn-primary').addEventListener('click', function () {
     document.querySelector('.wrapper').style.display = 'none';
     document.getElementById('questionnaire-box').style.display = 'block';
 
-    // 단계 인디케이터 업데이트
     const steps = document.querySelectorAll('#questionnaire-box .step');
     steps.forEach(step => step.classList.remove('active'));
     steps[1].classList.add('active');
     steps[1].querySelector('.label').textContent = '확인서작성';
     steps[0].querySelector('.label').textContent = '';
 
-    // 확인 박스 애니메이션 스크롤 감지
     const confirmBox = document.querySelector('.confirmation-box');
     if (confirmBox) {
       const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             confirmBox.classList.add('active');
-            observer.unobserve(confirmBox); // 1회만 실행
+            observer.unobserve(confirmBox);
           }
         });
       }, { threshold: 0.5 });
@@ -164,8 +208,10 @@
     }
   });
 
-  // 제출 시 유효성 검사
-  document.querySelector('form').addEventListener('submit', function (e) {
+  // [2] 분석 요청 (AJAX)
+  document.querySelector('form').addEventListener('submit', async function (e) {
+    e.preventDefault(); // 기본 제출 막기
+
     const totalQuestions = 11;
     let unanswered = [];
 
@@ -174,18 +220,15 @@
       const inputs = document.querySelectorAll('[name="' + name + '"]');
       let checked = Array.from(inputs).some(input => input.checked);
 
-      // 체크박스(9번)은 1개 이상만 체크되면 통과
       if (i === 8 && !checked) {
         unanswered.push(i + 1);
       }
 
-      // 5번 문항 예외 처리 (투자 원금 보전 선택 시 차단)
       if (i === 4) {
         const dangerousOption = Array.from(inputs).find(input =>
           input.nextElementSibling.innerText.includes('투자 원금은 반드시 보전되어야')
         );
         if (dangerousOption && dangerousOption.checked) {
-          e.preventDefault();
           alert('투자원금보전의 경우 금융투자상품 가입이 불가능합니다.');
           dangerousOption.checked = false;
           dangerousOption.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -193,22 +236,138 @@
         }
       }
 
-      // 라디오 문항 중 체크 안 된 항목
       if (i !== 8 && !checked) {
         unanswered.push(i + 1);
       }
     }
 
     if (unanswered.length > 0) {
-      e.preventDefault();
       alert(`${unanswered.join(', ')}번 항목에 응답하지 않았습니다. 해당 문항으로 이동합니다.`);
       const firstUnanswered = document.querySelector(`input[name="q${unanswered[0] - 1}"]`);
       if (firstUnanswered) {
         firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+      return;
     }
+
+    // [3] FormData → x-www-form-urlencoded로 변환
+    const form = e.target;
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+    for (let [key, value] of formData.entries()) {
+      params.append(key, value);
+    }
+
+    try {
+      const res = await fetch('/analyze-ajax', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params
+      });
+
+      if (!res.ok) {
+        alert('분석 중 오류가 발생했습니다.');
+        return;
+      }
+
+      const result = await res.json();
+
+      // [4] 결과 표시
+      document.getElementById('questionnaire-box').style.display = 'none';
+      document.getElementById('result-box').style.display = 'block';
+      document.getElementById('result-type-name').textContent = result.typeName;
+      document.getElementById('result-description').textContent = result.description;
+      
+      document.querySelectorAll('.bubble').forEach(bubble => {
+         if (bubble.textContent.trim() === result.typeName.trim()) {
+           bubble.classList.add('active');
+         }
+       });
+      
+      setTimeout(() => {
+         const target = document.querySelector('.bubble.active');
+         if (target) target.classList.add('emphasize');
+       }, 1600); // 모든 pop-in 끝난 후 강조 시작
+      
+       const score = result.totalScore || 0;
+       const percent = Math.round((score / 65) * 100); // 0~100 환산
+
+       const chartOptions = {
+         series: [percent],
+         chart: {
+           height: 300,
+           type: 'radialBar',
+           offsetY: -20
+         },
+         plotOptions: {
+           radialBar: {
+             startAngle: -90,
+             endAngle: 90,
+             hollow: {
+               margin: 15,
+               size: '60%'
+             },
+             track: {
+               background: '#eee',
+               strokeWidth: '100%'
+             },
+             dataLabels: {
+               name: {
+                 show: true,
+                 fontSize: '16px',
+                 offsetY: -10,
+                 color: '#666',
+                 text: '위험도'
+               },
+               value: {
+                 offsetY: 10,
+                 fontSize: '24px',
+                 color: '#222',
+                 formatter: function (val) {
+                   return val + "점";
+                 }
+               }
+             }
+           }
+         },
+         fill: {
+           type: 'gradient',
+           gradient: {
+             shade: 'light',
+             type: 'horizontal',
+             gradientToColors: ['#4caf50'],
+             stops: [0, 100]
+           },
+           colors: [percent < 20 ? '#f44336' :
+                    percent < 40 ? '#ff9800' :
+                    percent < 60 ? '#ffeb3b' :
+                    percent < 80 ? '#8bc34a' : '#4caf50']
+         },
+         labels: ['위험도']
+       };
+
+       const chart = new ApexCharts(document.querySelector("#radialGauge"), chartOptions);
+       chart.render();
+
+
+      // [5] STEP 표시 갱신
+      const steps = document.querySelectorAll('#result-box .step');
+      steps.forEach(step => step.classList.remove('active'));
+      steps[2].classList.add('active');
+      steps[2].querySelector('.label').textContent = '분석결과';
+      if (steps[1]) steps[1].querySelector('.label').textContent = '';
+
+    } catch (err) {
+      console.error('분석 오류', err);
+      alert('분석 중 예기치 못한 오류가 발생했습니다.');
+    }
+    
+    
   });
 </script>
+
 
 
 </body>

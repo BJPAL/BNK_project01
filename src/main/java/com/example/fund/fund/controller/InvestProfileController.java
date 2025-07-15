@@ -1,15 +1,19 @@
 package com.example.fund.fund.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.fund.fund.entity.InvestProfileQuestion;
 import com.example.fund.fund.entity.InvestProfileResult;
@@ -50,20 +54,29 @@ public class InvestProfileController {
 	 @GetMapping("/terms")
 	 public String showInvestProfileForm(Model model, HttpSession session) {
 		User loginUser = (User)session.getAttribute("user");
+		if (loginUser == null) return "redirect:/auth/login";
 	    List<InvestProfileQuestion> questions = investProfileService.findAllWithOptions();
 	    model.addAttribute("questions", questions);
 	    return "terms"; // templates/investProfile.html
 	 }
 	 
-	 @PostMapping("/analyze")
-	 public String analyze(@RequestParam Map<String, String> paramMap, HttpSession session) {
-		 User loginUser = (User)session.getAttribute("user");
-		 if (loginUser == null) {
-	            return "redirect:/auth/login";
-	        }
-		 // 분석 및 저장
-		 investProfileService.analyzeAndSave(loginUser.getUserId(), paramMap);
-		 return "redirect:/profile";
+	 @PostMapping("/analyze-ajax")
+	 @ResponseBody
+	 public Map<String, Object> analyzeAjax(@RequestParam Map<String, String> paramMap, HttpSession session) {
+	     User loginUser = (User) session.getAttribute("user");
+	     if (loginUser == null) {
+	         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+	     }
+
+	     // 분석 수행 및 결과 저장
+	     InvestProfileResult result = investProfileService.analyzeAndSave(loginUser.getUserId(), paramMap);
+
+	     Map<String, Object> response = new HashMap<>();
+	     response.put("typeName", result.getType().getTypeName());
+	     response.put("description", result.getType().getDescription());
+	     response.put("totalScore", result.getTotalScore()); // 게이지 차트용
+
+	     return response;
 	 }
 
 }
