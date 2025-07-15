@@ -40,6 +40,7 @@ import com.example.fund.fund.service.FundService;
 @RequestMapping("/api/fund")
 public class FundServiceController {
 
+<<<<<<< Updated upstream
     @Autowired
     private FundService fundService;
 
@@ -47,6 +48,12 @@ public class FundServiceController {
     private FileHistoryRepository fileHistoryRepository;
     
     // 펀드 CRUD
+=======
+    // 펀드 CRUD
+    
+    @Autowired
+    private FundService fundService;
+>>>>>>> Stashed changes
 
     @GetMapping
     public List<Fund> getAllFunds() {
