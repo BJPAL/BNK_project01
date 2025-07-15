@@ -11,6 +11,9 @@
   </style>
 </head>
 <body>
+
+<div th:replace="admin/a_header :: adminHeader"></div>
+
 <h1>FAQ 목록</h1>
 
 <!-- 메시지 출력 -->
@@ -24,7 +27,7 @@
 </form>
 
 <!-- 등록 버튼 (CS 또는 SUPER만 노출) -->
-<a th:if="${admin != null and (admin.role == 'CS' or admin.role == 'SUPER')}"
+<a th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}"
    th:href="@{/admin/faq/add}">등록</a>
 
 <!-- FAQ 테이블 -->
@@ -35,8 +38,8 @@
     <th>질문</th>
     <th>답변</th>
     <th>상태</th>
-    <th th:if="${admin != null and (admin.role == 'CS' or admin.role == 'SUPER')}">수정</th>
-    <th th:if="${admin != null and (admin.role == 'CS' or admin.role == 'SUPER')}">삭제</th>
+    <th th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">수정</th>
+    <th th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">삭제</th>
   </tr>
   </thead>
   <tbody>
@@ -45,11 +48,14 @@
     <td th:text="${faq.question}">질문</td>
     <td th:text="${faq.answer}">답변</td>
     <td th:text="${faq.active ? '활성화' : '비활성'}">상태</td>
-    <td th:if="${admin != null and (admin.role == 'CS' or admin.role == 'SUPER')}">
+    <td th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">
       <a th:href="@{'/admin/faq/edit/' + ${faq.faqId}}">수정</a>
     </td>
-    <td th:if="${admin != null and (admin.role == 'CS' or admin.role == 'SUPER')}">
-      <form th:action="@{'/admin/faq/delete/' + ${faq.faqId}}" method="post">
+    <td th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">
+
+      <form th:action="@{'/admin/faq/delete/' + ${faq.faqId}}" method="post"
+            onsubmit="return confirm('정말 삭제하시겠습니까?');">
+
         <button type="submit">삭제</button>
       </form>
     </td>

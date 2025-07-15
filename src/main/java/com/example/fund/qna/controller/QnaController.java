@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,16 +70,23 @@ public class QnaController {
 	}
 
 	@GetMapping("/admin/qna")
-	public String listQnaByStatus(@RequestParam(defaultValue = "대기") String status, Model model) {
+	public String listQnaByStatus(@RequestParam(defaultValue = "대기") String status, 
+								  @RequestParam(defaultValue = "0") int page,
+								  Model model) {
 		List<Qna> qnaList = qnaService.getQnaList(status);
 		System.out.println(qnaList);
+
+		Page<Qna> qnaPage = qnaService.getQnaListByStatus(status, page);
+		model.addAttribute("qnaList", qnaPage.getContent());
+		model.addAttribute("page", qnaPage);
 
 		if (qnaList == null) {
 			qnaList = new ArrayList<>();
 		}
 
 		if(status.equals("완료")){
-			model.addAttribute("qnaList", qnaList);
+			model.addAttribute("qnaList", qnaPage.getContent());
+			model.addAttribute("page", qnaPage);
 			return "admin/cs/qnaList :: qna-AnsweredList";
 		}
 
@@ -94,7 +103,9 @@ public class QnaController {
 	}
 	
 	@PostMapping("/admin/qna/answer")
-	public String answer(@RequestParam("id") Integer qnaId, @RequestParam("answer")String answer, RedirectAttributes rttr){
+	public String answer(@RequestParam("id") Integer qnaId, 
+						 @RequestParam("answer")String answer, 
+						 RedirectAttributes rttr){
 		qnaService.SubmitAnswer(qnaId, answer);
 		
 		String msg = "답변이 성공적으로 등록되었습니다";

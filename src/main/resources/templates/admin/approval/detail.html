@@ -11,7 +11,11 @@
   <tr><th>제목</th><td th:text="${approval.title}">제목</td></tr>
   <tr><th>내용</th><td th:text="${approval.content}">내용</td></tr>
   <tr><th>작성자</th>
-    <td th:text="${approval.writer != null ? approval.writer.adminname : '알 수 없음'}">작성자</td></tr>
+    <td>
+      <a th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
+         th:text="${approval.writer != null ? approval.writer.adminname : '알 수 없음'}">작성자</a>
+    </td>
+  </tr>
   <tr><th>상태</th><td th:text="${approval.status}">상태</td></tr>
   <tr th:if="${approval.rejectReason != null}">
     <th>반려사유</th><td th:text="${approval.rejectReason}">사유</td>
@@ -19,11 +23,31 @@
   <tr><th>작성일</th><td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}">작성일</td></tr>
 </table>
 
+<!-- 상태 변경 로그 표시 -->
+<h3>결재 상태 변경 이력</h3>
+<table border="1" th:if="${logs != null and #lists.size(logs) > 0}">
+  <thead>
+  <tr><th>변경자</th><th>상태</th><th>사유</th><th>일시</th></tr>
+  </thead>
+  <tbody>
+  <tr th:each="log : ${logs}">
+    <td th:text="${log.changerId}">변경자</td>
+    <td th:text="${log.status}">상태</td>
+    <td th:text="${log.reason}">사유</td>
+    <td th:text="${#temporals.format(log.changedAt, 'yyyy-MM-dd HH:mm')}">일시</td>
+  </tr>
+  </tbody>
+</table>
+
 <!-- 승인자용 버튼 -->
-<div th:if="${admin != null and (admin.role == 'APPROVER' or admin.role == 'SUPER')}">
+<div th:if="${admin != null and (admin.role == 'approver' or admin.role == 'super')}">
   <div th:if="${approval.status == '결재대기'}">
     <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post" style="display:inline;">
-      <button type="submit">승인 (배포대기)</button>
+      <div style="margin-top: 10px;">
+        <label for="approveReason">승인 사유:</label><br>
+        <textarea id="approveReason" name="reason" rows="3" cols="40" placeholder="승인 사유를 입력하세요"></textarea>
+      </div>
+      <button type="submit" style="margin-top: 5px;">승인 (배포대기)</button>
     </form>
     <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post" style="display:inline;">
       <div style="margin-top: 10px;">

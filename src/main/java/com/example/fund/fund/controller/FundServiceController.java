@@ -6,12 +6,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,7 +30,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.fund.fund.entity.FileHistory;
 import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.repository.FileHistoryRepository;
 import com.example.fund.fund.service.FundService;
 
 @CrossOrigin(origins = "*")
@@ -34,12 +40,13 @@ import com.example.fund.fund.service.FundService;
 @RequestMapping("/api/fund")
 public class FundServiceController {
 
-    // 펀드 CRUD
-    private final FundService fundService;
+    @Autowired
+    private FundService fundService;
 
-    public FundServiceController(FundService fundService) {
-        this.fundService = fundService;
-    }
+    @Autowired
+    private FileHistoryRepository fileHistoryRepository;
+    
+    // 펀드 CRUD
 
     @GetMapping
     public List<Fund> getAllFunds() {
@@ -71,71 +78,95 @@ public class FundServiceController {
 
     // 파일 업로드
 
-    private final String UPLOAD_DIR = "C:/uploads/"; // 예시 경로, 실제로는 application.yml
+    private final String UPLOAD_DIR = "C:/uploads/";
 
-    @PostMapping("/upload/manual") // 상품설명서
+    @PostMapping("/upload/manual")
     public ResponseEntity<String> uploadManual(
             @RequestParam("file") MultipartFile file,
             @RequestParam("filename") String filename) {
-        return saveFileAndConvertToJpg(file, "manual/", filename);
+        return saveFileAndConvertToJpg(file, "manual", filename);
     }
 
-    @PostMapping("/upload/prospectus") // 투자설명서
+    @PostMapping("/upload/prospectus")
     public ResponseEntity<String> uploadProspectus(
             @RequestParam("file") MultipartFile file,
             @RequestParam("filename") String filename) {
-        return saveFileAndConvertToJpg(file, "prospectus/", filename);
+        return saveFileAndConvertToJpg(file, "prospectus", filename);
     }
 
-    @PostMapping("/upload/terms") // 약관
+    @PostMapping("/upload/terms")
     public ResponseEntity<String> uploadTerms(
             @RequestParam("file") MultipartFile file,
             @RequestParam("filename") String filename) {
-        return saveFileAndConvertToJpg(file, "terms/", filename);
+        return saveFileAndConvertToJpg(file, "terms", filename);
     }
 
-    private ResponseEntity<String> saveFileAndConvertToJpg(MultipartFile file, String subDir, String filename) {
+    private ResponseEntity<String> saveFileAndConvertToJpg(MultipartFile file, String fileType, String filename) {
         try {
             String originalFilename = file.getOriginalFilename();
             if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".pdf")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Only PDF files are allowed.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Only PDF files are allowed.");
             }
 
             // MIME 타입 검사
             String contentType = file.getContentType();
             if (contentType == null || !contentType.equals("application/pdf")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Invalid file type. Only application/pdf allowed.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file type.");
             }
 
-            // 1. 저장 경로 생성
-            Path dirPath = Paths.get(UPLOAD_DIR + subDir);
+            // 날짜 기반 경로 및 타임스탬프
+            String dateFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmmss"));
+            String storedFilename = filename + "_" + timestamp;
+            Path dirPath = Paths.get(UPLOAD_DIR, fileType, dateFolder);
             Files.createDirectories(dirPath);
 
-            // 2. PDF 저장
-            Path pdfPath = dirPath.resolve(filename + ".pdf");
+            // PDF 저장
+            Path pdfPath = dirPath.resolve(storedFilename + ".pdf");
             Files.copy(file.getInputStream(), pdfPath, StandardCopyOption.REPLACE_EXISTING);
 
-            // 3. PDF → JPG (모든 페이지)
+            // PDF → JPG
             try (PDDocument document = PDDocument.load(pdfPath.toFile())) {
                 PDFRenderer pdfRenderer = new PDFRenderer(document);
-                int pageCount = document.getNumberOfPages(); // 페이지 수
+                int pageCount = document.getNumberOfPages();
 
                 for (int i = 0; i < pageCount; i++) {
-                    BufferedImage bim = pdfRenderer.renderImage(i); // 기본 DPI (72)
-                    String jpgFileName = String.format("%s_%d.jpg", filename, i + 1); // jpg 페이지 이름 설정
-                    Path jpgPath = dirPath.resolve(jpgFileName); // JPG 파일 경로
-                    ImageIO.write(bim, "jpg", jpgPath.toFile()); // JPG 파일로 저장
+                    BufferedImage bim = pdfRenderer.renderImage(i);
+                    String jpgName = String.format("%s_%d.jpg", storedFilename, i + 1);
+                    Path jpgPath = dirPath.resolve(jpgName);
+                    ImageIO.write(bim, "jpg", jpgPath.toFile());
                 }
             }
 
-            return ResponseEntity.ok("PDF uploaded and converted to JPG.");
+            // DB 기록
+            FileHistory history = FileHistory.builder()
+                    .originalFilename(originalFilename)
+                    .storedFilename(storedFilename)
+                    .fileType(fileType)
+                    .filePath(dirPath.toString())
+                    .uploadedAt(LocalDateTime.now())
+                    .build();
+
+            fileHistoryRepository.save(history);
+
+            return ResponseEntity.ok("Uploaded and converted successfully.");
+
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Upload/convert failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed: " + e.getMessage());
         }
     }
 
+@GetMapping("/history")
+public ResponseEntity<List<FileHistory>> getFileHistories(@RequestParam(required = false) String type) {
+    List<FileHistory> histories;
+
+    if (type != null && !type.isBlank()) {
+        histories = fileHistoryRepository.findByFileTypeOrderByUploadedAtDesc(type); // 🔽 정렬된 메서드 사용
+    } else {
+        histories = fileHistoryRepository.findAllByOrderByUploadedAtDesc();
+    }
+
+    return ResponseEntity.ok(histories);
+}
 
 }

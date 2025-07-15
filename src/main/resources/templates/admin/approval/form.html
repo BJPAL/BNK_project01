@@ -7,14 +7,20 @@
 <body>
 <h2>결재 요청 등록</h2>
 
-<form th:action="@{/admin/approval/register}" method="post">
-    <label>제목:
-        <input type="text" name="title" required>
-    </label><br>
-    <label>내용:
-        <textarea name="content" required></textarea>
-    </label><br>
-    <button type="submit">등록</button>
+<!--<form th:action="@{/admin/approval/register}" method="post">-->
+<!--    <label>제목:-->
+<!--        <input type="text" name="title" required>-->
+<!--    </label><br>-->
+<!--    <label>내용:-->
+<!--        <textarea name="content" required></textarea>-->
+<!--    </label><br>-->
+<!--    <button type="submit">등록</button>-->
+<!--</form>-->
+
+<form th:action="@{${approval != null} ? '/admin/approval/update/' + ${approval.approvalId} : '/admin/approval/register'}" method="post">
+    <label>제목: <input type="text" name="title" th:value="${approval?.title}" required></label><br>
+    <label>내용: <textarea name="content" required th:text="${approval?.content}"></textarea></label><br>
+    <button type="submit" th:text="${approval != null} ? '수정 후 재기안' : '등록'"></button>
 </form>
 
 </body>

@@ -1,18 +1,12 @@
 package com.example.fund.admin.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 
-import com.example.fund.admin.dto.AdminDTO;
-import com.example.fund.admin.entity.Admin;
-import com.example.fund.admin.service.AdminService_A;
-import com.example.fund.qna.service.QnaService;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import com.example.fund.admin.dto.AdminDTO;
+import com.example.fund.admin.entity.Admin;
+import com.example.fund.admin.service.AdminService_A;
+import com.example.fund.qna.service.QnaService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -83,10 +83,11 @@ public class MainAdminController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request){
+    public String logout(HttpServletRequest request, RedirectAttributes rttr){
         HttpSession session = request.getSession();
         session.invalidate();
-        return "admin/login";
+        rttr.addFlashAttribute("logoutMsg", "로그아웃");
+        return "redirect:/admin/";
     }
 
     //아이디 중복 검사(Ajax 응답)
