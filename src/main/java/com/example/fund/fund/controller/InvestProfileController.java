@@ -57,6 +57,7 @@ public class InvestProfileController {
 		if (loginUser == null) return "redirect:/auth/login";
 	    List<InvestProfileQuestion> questions = investProfileService.findAllWithOptions();
 	    model.addAttribute("questions", questions);
+	    model.addAttribute("user", loginUser.getName());
 	    return "terms"; // templates/investProfile.html
 	 }
 	 

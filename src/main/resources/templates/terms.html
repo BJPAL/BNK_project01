@@ -152,15 +152,27 @@
   </div>
 
 <div class="result-container" style="padding: 40px; background-color: #f9f9f9; border-radius: 12px;">
-  <h2>투자성향 분석이 완료되었습니다</h2>
+  <div class="user-summary-inline">
+  	<span class="user-name">성윤지</span><span class="user-sub">님의 투자성향</span>
+  </div>
 
-  <!-- 결과 텍스트 + 게이지 -->
-  <div class="result-summary" style="display: flex; justify-content: space-between; align-items: center; gap: 60px; flex-wrap: wrap;">
-    <div class="text-info">
+<table class="result-table">
+  <tr>
+    <!-- 결과 텍스트 영역 -->
+    <td class="text-col">
       <h2 id="result-type-name" th:text="${typeName}"></h2>
       <p id="result-description" th:text="${description}"></p>
-    </div>
-    <!-- 버블 차트 -->
+    </td>
+
+    <!-- 게이지 차트 영역 -->
+    <td class="gauge-col">
+      <div id="radialGauge" style="width: 300px; height: 300px; margin: 0 auto;"></div>
+    </td>
+  </tr>
+</table>
+
+
+      <!-- 버블 차트 -->
 	  <div class="bubble-chart" style="display: flex; justify-content: center; align-items: flex-end; gap: 24px; height: 180px; margin-top: 40px;">
 	    <div class="bubble type1">안정형</div>
 	    <div class="bubble type2">안정추구형</div>
@@ -168,9 +180,6 @@
 	    <div class="bubble type4">적극투자형</div>
 	    <div class="bubble type5">공격투자형</div>
 	  </div>
-  </div>
-
-  <div id="radialGauge" style="width: 300px; height: 300px;"></div>
 
   <!-- 완료 버튼 -->
   <div class="btn-box" style="text-align: center; margin-top: 40px;">
@@ -266,6 +275,12 @@
         },
         body: params
       });
+      
+      if(res.status === 401){
+    	  alert('로그인이 필요한 페이지입니다.');
+    	  window.location.href='/auth/login';
+    	  return;
+      }
 
       if (!res.ok) {
         alert('분석 중 오류가 발생했습니다.');
