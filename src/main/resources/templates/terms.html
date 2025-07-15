@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>투자성향분석 & 투자자정보확인서 작성 동의</title>
+<link rel="stylesheet" href="/css/terms.css">
+</head>
+<body>
+  <div class="wrapper">
+
+    <!-- ✅ 단계 인디케이터 UI 추가 -->
+    <div class="step-indicator">
+	  <div class="step active">
+	    <span class="num">1</span>
+	    <span class="label">작성동의</span>
+	  </div>
+	  <div class="step">
+	    <span class="num">2</span>
+	    <span class="label"></span>
+	  </div>
+	  <div class="step">
+	    <span class="num">3</span>
+	    <span class="label"></span>
+	  </div>
+	</div>
+
+    <!-- 투자성향분석 안내 -->
+    <div class="card-box">
+      <h2>투자성향분석</h2>
+      <ul>
+        <li>고객님은 자본시장통합법 시행세칙에 의거 일반고객으로 분류되었음을 알려드립니다.</li>
+        <li>본 질문지는 고객님의 투자자 정보를 파악하여, 그에 적합한 펀드를 권유해 드리기 위한 기초 자료로 활용됩니다.</li>
+        <li>고객님께 가장 적합한 펀드를 제공하기 위해서는 고객님의 정확한 답변이 필요합니다. 최대한 고객님의 상황에 부합하거나 가장 가까운 항목을 선택해 주세요. 잘못된 답변은 부적합한 상품 권유로 이어질 수 있습니다.</li>
+      </ul>
+    </div>
+
+    <!-- 투자자정보확인서 작성 동의 안내 -->
+    <div class="card-box">
+      <h2>투자자정보확인서 작성 동의</h2>
+      <ul>
+        <li class="nowrap">투자자 정보를 제공하지 않는 고객님께서는 다음의 금융투자상품에 대한 투자권유 및 일반투자자로서 보호받지 못할 수 있음을 알려드립니다.</li>
+        <li>증권시장에 상장되어 있지 아니한 증권으로써 향후 상장이 확정되지 아니한 증권</li>
+        <li>증권시장에서 투자경고종목, 투자위험종목, 관리종목으로 지정된 경우</li>
+        <li>투자적격등급에 미치지 아니하거나 신용등급을 받지 아니한 사채권, 자산유동화증권, 기업어음증권 및 이에 준하는 고위험 채무증권</li>
+        <li>신용거래 및 투자자예탁재산규모에 비추어 결제가 곤란한 증권거래</li>
+        <li>파생상품 등(파생상품, 파생결합증권, 파생상품 투자펀드)</li>
+      </ul>
+
+      <div class="confirm-box">
+        <span class="red">투자성향분석</span>을 위한 <strong>투자자정보확인서</strong> 작성을 계속하시겠습니까?
+      </div>
+
+      <div class="btn-box">
+        <button class="btn-primary">투자자정보확인서작성</button>
+      </div>
+    </div>
+  </div>
+<!-- [2] 투자성향 문항 영역 -->
+<div id="questionnaire-box" style="display: none; margin-top: 40px;">
+  <h2>투자성향분석</h2>
+  <div class="step-indicator">
+  <div class="step">
+    <span class="num">1</span>
+    <span class="label"></span>
+  </div>
+  <div class="step active">
+    <span class="num">2</span>
+    <span class="label">확인서작성</span>
+  </div>
+  <div class="step">
+    <span class="num">3</span>
+    <span class="label"></span>
+  </div>
+</div>
+
+  <form action="/analyze" method="post">
+
+    <!-- 질문 반복 처리: 카드 바깥에서 PART 헤더 분리 -->
+    <div th:each="entry, entryStat : ${questions}">
+
+      <!-- PART 헤더는 카드 바깥 -->
+      <div th:if="${entryStat.index == 0}" class="part-header">
+        PART 1. 다음 질문은 투자자의 재무적 필요성 및 재산상황을 파악하기 위한 질문입니다.
+      </div>
+      <div th:if="${entryStat.index == 3}" class="part-header">
+        PART 2. 다음 질문은 금융투자상품 이해에 필요한 지식 수준 및 이해도에 관한 질문입니다.
+      </div>
+      <div th:if="${entryStat.index == 4}" class="part-header">
+        PART 3. 다음 질문은 금융투자상품에 대한 투자목적을 파악하기 위한 질문입니다.
+      </div>
+      <div th:if="${entryStat.index == 8}" class="part-header">
+        PART 4. 다음 질문은 과거 투자경험에 대한 질문입니다.
+      </div>
+
+      <!-- 질문 카드 -->
+      <div class="question-block">
+        <p><strong th:text="|${entryStat.index + 1}. ${entry.content}|"></strong></p>
+
+        <!-- 9번 문항만 checkbox -->
+        <div th:if="${entryStat.index == 8}" class="option-group">
+          <label th:each="option : ${entry.options}">
+            <input type="checkbox"
+                   th:name="|q${entryStat.index}|"
+                   th:value="${option.score}">
+            <span th:text="${option.content}"></span>
+          </label>
+        </div>
+
+        <!-- 나머지 문항은 radio -->
+        <div th:unless="${entryStat.index == 8}" class="option-group">
+          <label th:each="option : ${entry.options}">
+            <input type="radio"
+                   th:name="|q${entryStat.index}|"
+                   th:value="${option.score}">
+            <span th:text="${option.content}"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="confirmation-box">
+	  <p class="confirm-title">본인은 부산은행에 제공한 투자자정보와 관련하여 다음과 같은 사항을 확인합니다.</p>
+	    <ul>
+		   <li>부산은행에 제공한 투자자정보는 본인의 투자목적, 재산상황 및 투자경험 등의 정보를 정확히 등록한 것입니다.</li>
+		   <li>투자성향분석일로부터 향후 12개월 동안에는 재분석하지 않는 한 성향분석 결과가 변동되지 않음을 동의합니다.</li>
+		</ul>
+	</div>
+
+    <!-- 제출 버튼 -->
+    <div class="btn-box">
+      <button type="submit" class="btn-primary">제출</button>
+    </div>
+
+  </form>
+</div>
+
+
+<script>
+  document.querySelector('.btn-primary').addEventListener('click', function () {
+    // 기존 화면 숨기기 / 질문지 보이기
+    document.querySelector('.wrapper').style.display = 'none';
+    document.getElementById('questionnaire-box').style.display = 'block';
+
+    // 단계 인디케이터 업데이트
+    const steps = document.querySelectorAll('#questionnaire-box .step');
+    steps.forEach(step => step.classList.remove('active'));
+    steps[1].classList.add('active');
+    steps[1].querySelector('.label').textContent = '확인서작성';
+    steps[0].querySelector('.label').textContent = '';
+
+    // 확인 박스 애니메이션 스크롤 감지
+    const confirmBox = document.querySelector('.confirmation-box');
+    if (confirmBox) {
+      const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            confirmBox.classList.add('active');
+            observer.unobserve(confirmBox); // 1회만 실행
+          }
+        });
+      }, { threshold: 0.5 });
+
+      observer.observe(confirmBox);
+    }
+  });
+
+  // 제출 시 유효성 검사
+  document.querySelector('form').addEventListener('submit', function (e) {
+    const totalQuestions = 11;
+    let unanswered = [];
+
+    for (let i = 0; i < totalQuestions; i++) {
+      const name = 'q' + i;
+      const inputs = document.querySelectorAll('[name="' + name + '"]');
+      let checked = Array.from(inputs).some(input => input.checked);
+
+      // 체크박스(9번)은 1개 이상만 체크되면 통과
+      if (i === 8 && !checked) {
+        unanswered.push(i + 1);
+      }
+
+      // 5번 문항 예외 처리 (투자 원금 보전 선택 시 차단)
+      if (i === 4) {
+        const dangerousOption = Array.from(inputs).find(input =>
+          input.nextElementSibling.innerText.includes('투자 원금은 반드시 보전되어야')
+        );
+        if (dangerousOption && dangerousOption.checked) {
+          e.preventDefault();
+          alert('투자원금보전의 경우 금융투자상품 가입이 불가능합니다.');
+          dangerousOption.checked = false;
+          dangerousOption.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+      }
+
+      // 라디오 문항 중 체크 안 된 항목
+      if (i !== 8 && !checked) {
+        unanswered.push(i + 1);
+      }
+    }
+
+    if (unanswered.length > 0) {
+      e.preventDefault();
+      alert(`${unanswered.join(', ')}번 항목에 응답하지 않았습니다. 해당 문항으로 이동합니다.`);
+      const firstUnanswered = document.querySelector(`input[name="q${unanswered[0] - 1}"]`);
+      if (firstUnanswered) {
+        firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
+</script>
+
+
+</body>
+</html>

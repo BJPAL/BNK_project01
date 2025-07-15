@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "invest_survey")
+@Table(name = "invest_profile")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,13 +14,14 @@ public class InvestProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "question_id")
+    private Integer questionId;
 
     @Column(length = 255, nullable = false)
     private String question;
 
     @Column(length = 255, nullable = false)
-    private String option;
+    private String selection;
 
     @Column(nullable = false)
     private Integer score;
