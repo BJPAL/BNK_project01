@@ -85,7 +85,7 @@ public class MainAdminController {
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, RedirectAttributes rttr){
         HttpSession session = request.getSession();
-        session.invalidate();
+        session.removeAttribute("admin");
         rttr.addFlashAttribute("logoutMsg", "로그아웃");
         return "redirect:/admin/";
     }
