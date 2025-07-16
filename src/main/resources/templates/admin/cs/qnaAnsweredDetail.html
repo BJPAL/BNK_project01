@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/admin/admin_layout.css" />
+    <link rel="stylesheet" href="/css/admin/qna_answered_detail.css" />
     <title>QnaAnsweredDetail</title>
   </head>
   <body>
@@ -12,31 +13,35 @@
 
       <div class="main-wrapper">
         <div th:replace="admin/admin_aside :: adminAside"></div>
-        <main class="content">
-          <h2 th:text="${qna.title}">문의 제목</h2>
+        <main class="content qna-answered-detail">
+          <h2 class="qna-title" th:text="${qna.title}">문의 제목</h2>
 
-          <p>
-            <strong>작성자:</strong>
-            <span th:text="${qna.user.username}">userId</span>
-          </p>
-
-          <p>
-            <strong>작성일:</strong>
-            <span
-              th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd HH:mm')}"
-              >2025-07-13</span
-            >
-          </p>
-
-          <p><strong>문의 내용:</strong></p>
-          <div th:text="${qna.content}">문의 본문 내용</div>
-
-          <p><strong>답변 내용:</strong></p>
-          <div th:text="${qna.answer}">문의 답변 내용</div>
+          <div class="qna-meta">
+            <p>
+              <strong>작성자:</strong>
+              <span th:text="${qna.user.username}">userId</span>
+            </p>
+            <p>
+              <strong>작성일:</strong>
+              <span
+                th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd HH:mm')}"
+              >
+                2025-07-13
+              </span>
+            </p>
+          </div>
+          <div class="detail-content-box">
+            <p class="detail-p"><strong>문의 내용:</strong></p>
+            <div class="qna-body card">
+              <div th:text="${qna.content}">문의 본문 내용</div>
+            </div>
+            <p class="detail-p"><strong>답변 내용:</strong></p>
+            <div class="qna-answer-body card">
+              <div th:text="${qna.answer}">문의 답변 내용</div>
+            </div>
+          </div>
         </main>
       </div>
-      <!--main-wrapper end-->
     </div>
-    <!--layout end-->
   </body>
 </html>
