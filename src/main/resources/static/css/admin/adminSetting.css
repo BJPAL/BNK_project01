@@ -157,9 +157,13 @@
 }
 #adminListContainer table th,
 #adminListContainer table td {
-  padding: 10px 12px;
+  padding: 10px 9px;
   border: 1px solid #e0e0e0;
   text-align: left;
+  font-size: 14px;
+}
+#adminListContainer table th{
+  font-size: 16px;
 }
 
 #adminListContainer table td a{
@@ -212,24 +216,24 @@
 /* 컬럼별 너비 비율 지정 */
 #adminListContainer table th:nth-child(1),
 #adminListContainer table td:nth-child(1) {
-  width: 5%;              /* No. */
+  width: 8%;              /* No. */
   text-align: center;
 }
 #adminListContainer table th:nth-child(2),
 #adminListContainer table td:nth-child(2) {
-  width: 25%;             /* 이름 */
+  width: 28%;             /* 이름 */
 }
 #adminListContainer table th:nth-child(3),
 #adminListContainer table td:nth-child(3) {
-  width: 25%;             /* 아이디 */
+  width: 28%;             /* 아이디 */
 }
 #adminListContainer table th:nth-child(4),
 #adminListContainer table td:nth-child(4) {
-  width: 20%;             /* 권한 */
+  width: 23%;             /* 권한 */
 }
 #adminListContainer table th:nth-child(5),
 #adminListContainer table td:nth-child(5) {
-  width: 10%;             /* 동작 */
+  width: 13%;             /* 동작 */
   text-align: center;
 }
 
@@ -427,4 +431,60 @@
 
 .admin-register-content .notes p + p {
   margin-top: 4px;
+}
+
+
+/* 페이지네이션 컨테이너 */
+.pagination-nav {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.pagination {
+  display: inline-flex;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination li {
+  margin: 0 4px;
+}
+
+.pagination li.disabled .page-link {
+  color: #ccc;
+  pointer-events: none;
+}
+
+.pagination li.active .page-link {
+  background-color: #117C88;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.page-link {
+  display: block;
+  padding: 6px 12px;
+  text-decoration: none;
+  color: #117C88;
+  border: 1px solid #117C88;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.page-link:hover {
+  background-color: #117C88;
+  color: #fff;
+}
+
+.tableWarp{
+  width: 85%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.wrap2{
+  display: flex;
+  justify-content: left;  
 }
