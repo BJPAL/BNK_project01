@@ -58,7 +58,7 @@
           </li>
   
           <!-- ─── 관리자 설정 ─── -->
-          <li class="menu-group">
+          <li th:if="${session.admin.role == 'super'}" class="menu-group" >
             <button type="button" class="group-btn" onclick="link()">
             관리자 설정 
             </button>
