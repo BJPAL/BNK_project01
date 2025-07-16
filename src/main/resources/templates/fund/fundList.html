@@ -1,56 +1,861 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
     <head>
-        <meta charset="UTF-8">
-        <title>투자 성향 펀드 목록</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>펀드 투자 - 맞춤 추천</title>
         <style>
-            a.active {
-                font-weight: bold;
-                color: red;
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Malgun Gothic", sans-serif;
+                background-color: #f8f9fa;
+                color: #333;
+                line-height: 1.6;
+            }
+
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            /* 헤더 섹션 */
+            .header {
+                /* background: white; */
+                /* padding: 24px; */
+                /* border-radius: 12px; */
+                /* margin-bottom: 24px; */
+                /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); */
+            }
+
+            .header h1 {
+                font-size: 28px;
+                color: #1a1a1a;
+                /* margin-bottom: 8px; */
+            }
+
+            .header-info {
+                color: #666;
+                font-size: 14px;
+            }
+
+            .invest-type-badge {
+                display: inline-block;
+                background: #e3f2fd;
+                color: #1976d2;
+                padding: 6px 12px;
+                border-radius: 16px;
+                font-size: 13px;
+                font-weight: 600;
+                margin-left: 8px;
+            }
+
+            /* 필터 섹션 */
+            .filter-section {
+                /* background: white; */
+                /* padding: 20px 24px; */
+                /* border-radius: 12px; */
+                /* margin-bottom: 24px; */
+                /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); */
+            }
+
+            .filter-info {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 16px;
+            }
+
+            .total-count {
+                font-size: 16px;
+                color: #333;
+            }
+
+            .total-count .count {
+                color: #1976d2;
+                font-weight: 600;
+            }
+
+            .view-options {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .view-toggle {
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                background: white;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 12px;
+            }
+
+            .view-toggle.active {
+                background: #1976d2;
+                color: white;
+                border-color: #1976d2;
+            }
+
+            /* 펀드 리스트 테이블 */
+            .fund-table {
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            }
+
+            .table-header {
+                background: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            .table-header-row {
+                display: grid;
+                grid-template-columns: 4fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr 0.8fr;
+                padding: 16px;
+                font-weight: 600;
+                font-size: 14px;
+                color: #495057;
+                align-items: center;
+                border-right: 1px solid #e9ecef;
+            }
+
+            .table-header-row > div {
+                border-right: 1px solid #e9ecef;
+                padding-right: 8px;
+                text-align: center;
+            }
+
+            .table-header-row > div:first-child {
+                /* text-align: left; */
+                /* padding-left: 0; */
+            }
+
+            .table-header-row > div:last-child {
+                border-right: none;
+            }
+
+            /* 수익률(%) 헤더 스타일 */
+            .returns-header {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                grid-column: span 5;
+                border-right: 1px solid #e9ecef;
+                padding: 8px;
+            }
+
+            .returns-title {
+                font-weight: 700;
+                font-size: 15px;
+                color: #333;
+                margin-bottom: 8px;
+                border-bottom: 1px solid #e9ecef;
+                padding-bottom: 4px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .returns-periods {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                width: 100%;
+                gap: 1px;
+            }
+
+            .period-header {
+                font-size: 12px;
+                color: #666;
+                text-align: center;
+                padding: 2px;
+            }
+
+            .fund-item {
+                display: grid;
+                grid-template-columns: 4fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr 0.8fr;
+                padding: 16px;
+                border-bottom: 1px solid #f1f3f4;
+                align-items: center;
+                transition: background-color 0.2s ease;
+            }
+
+            .fund-item > div {
+                border-right: 1px solid #f1f3f4;
+                padding-right: 8px;
+            }
+
+            .fund-item > div:first-child {
+                padding-left: 0;
+            }
+
+            .fund-item > div:last-child {
+                border-right: none;
+            }
+
+            .fund-item:hover {
+                background-color: #f8f9fa;
+            }
+
+            .fund-item:last-child {
+                border-bottom: none;
+            }
+
+            /* 펀드 정보 영역 */
+            .fund-info {
+                padding-right: 16px;
+            }
+
+            .fund-name {
+                font-size: 16px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin-bottom: 8px;
+                line-height: 1.4;
+                cursor: pointer;
+                transition: color 0.2s ease;
+            }
+
+            .fund-name:hover {
+                color: #1976d2;
+                text-decoration: underline;
+            }
+
+            .fund-name-link {
+                color: inherit;
+                text-decoration: none;
+                display: block;
+            }
+
+            .fund-name-link:hover {
+                color: #1976d2;
+            }
+
+            .fund-details {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                font-size: 12px;
+                color: #666;
+            }
+
+            .fund-tag {
+                background: #f1f3f4;
+                padding: 3px 8px;
+                border-radius: 4px;
+                white-space: nowrap;
+            }
+
+            .risk-level {
+                background: #fff3e0;
+                color: #ef6c00;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-weight: 500;
+            }
+
+            /* 수익률 표시 */
+            .return-value {
+                text-align: center;
+                font-weight: 600;
+                font-size: 14px;
+            }
+
+            .return-positive {
+                color: #d32f2f;
+            }
+
+            .return-negative {
+                color: #1976d2;
+            }
+
+            .return-neutral {
+                color: #666;
+            }
+
+            /* 기타 정보 */
+            .fund-scale {
+                text-align: center;
+                color: #666;
+                font-size: 13px;
+            }
+
+            .fund-fee {
+                text-align: center;
+                color: #666;
+                font-size: 13px;
+            }
+
+            /* 더보기 버튼 */
+            .load-more-container {
+                text-align: center;
+                margin-top: 32px;
+            }
+
+            .load-more-btn {
+                background: #d32f2f;
+                color: white;
+                border: none;
+                padding: 14px 32px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .load-more-btn:hover {
+                background: #b71c1c;
+            }
+
+            .load-more-btn:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+            }
+
+            /* 로딩 스피너 */
+            .loading-spinner {
+                width: 16px;
+                height: 16px;
+                border: 2px solid #ffffff;
+                border-top: 2px solid transparent;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* 에러 및 상태 메시지 */
+            .message {
+                padding: 16px;
+                border-radius: 8px;
+                margin-bottom: 16px;
+                text-align: center;
+            }
+
+            .message.error {
+                background: #ffebee;
+                color: #c62828;
+                border: 1px solid #ffcdd2;
+            }
+
+            .message.info {
+                background: #e3f2fd;
+                color: #1976d2;
+                border: 1px solid #bbdefb;
+            }
+
+            .no-data {
+                text-align: center;
+                padding: 60px 20px;
+                color: #666;
+                background: white;
+                border-radius: 12px;
+            }
+
+            .no-data-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.3;
+            }
+
+            /* 반응형 디자인 */
+            @media (max-width: 1000px) {
+                .table-header-row,
+                .fund-item {
+                    grid-template-columns: 4fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr 0.8fr 0.6fr;
+                }
+
+                .returns-periods {
+                    font-size: 11px;
+                }
+
+                .fund-scale,
+                .fund-fee {
+                    font-size: 12px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    padding: 16px;
+                }
+
+                .table-header-row,
+                .fund-item {
+                    grid-template-columns: 1fr;
+                    gap: 12px;
+                }
+
+                .returns-header {
+                    grid-column: span 1;
+                }
+
+                .fund-table {
+                    overflow-x: auto;
+                }
+
+                .returns-periods {
+                    grid-template-columns: repeat(5, 1fr);
+                    gap: 4px;
+                }
             }
         </style>
     </head>
     <body>
-        <h1>펀드 성향 펀드 목록</h1>
+        <div class="container">
+            <!-- 헤더 섹션 -->
+            <div class="header">
+                <h1>맞춤 펀드 추천</h1>
+                <div class="header-info">
+                    <span id="user-welcome"
+                        >귀하의 투자성향에 맞는 펀드를 추천해드립니다.</span
+                    >
+                    <span
+                        id="invest-type-display"
+                        class="invest-type-badge"
+                        style="display: none"
+                    ></span>
+                </div>
+            </div>
 
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>펀드 ID</th>
-                    <th>펀드 이름</th>
-                    <th>위험 등급</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="fund : ${fundList}">
-                    <td th:text="${fund.fundId}">펀드ID</td>
-                    <td th:text="${fund.fundName}">펀드이름</td>
-                    <td th:text="${fund.riskLevel}">위험등급</td>
-                </tr>
-            </tbody>
-        </table>
+            <!-- 필터 및 정보 섹션 -->
+            <div class="filter-section">
+                <div class="filter-info">
+                    <div class="total-count">
+                        전체에 대한
+                        <span id="total-count" class="count">0</span>건의
+                        검색결과가 있습니다.
+                    </div>
+                    <!-- 
+                        <div class="view-options">
+                            <button class="view-toggle active">리스트 보기</button>
+                            <button class="view-toggle">카드 보기</button>
+                        </div>
+                    -->
+                </div>
+            </div>
 
-        <div style="margin-top: 20px;">
-            <!-- 이전 페이지 버튼 -->
-            <a th:if="${currentPage > 1}"
-               th:href="@{'/fund/list'(page=${currentPage - 1})}">
-                이전
-            </a>
+            <!-- 메시지 영역 -->
+            <div id="message-container"></div>
 
-            <!-- 페이지 숫자 -->
-            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                <a th:href="@{'/fund/list'(page=${i})}"
-                   th:text="${i}"
-                   th:classappend="${i == currentPage} ? 'active' : ''">
-                </a>
-                &nbsp;
-            </span>
+            <!-- 펀드 리스트 테이블 -->
+            <div class="fund-table">
+                <div class="table-header">
+                    <div class="table-header-row">
+                        <div>펀드명</div>
+                        <div class="returns-header">
+                            <div class="returns-title">수익률(%)</div>
+                            <div class="returns-periods">
+                                <div class="period-header">1개월</div>
+                                <div class="period-header">3개월</div>
+                                <div class="period-header">6개월</div>
+                                <div class="period-header">1년</div>
+                                <div class="period-header">누적</div>
+                            </div>
+                        </div>
+                        <div>순자산<br />(단위:억)</div>
+                        <div>총보수(%)</div>
+                    </div>
+                </div>
 
-            <!-- 다음 페이지 버튼 -->
-            <a th:if="${currentPage < totalPages}"
-               th:href="@{'/fund/list'(page=${currentPage + 1})}">
-                다음
-            </a>
+                <div id="fund-list"></div>
+            </div>
+
+            <!-- 더보기 버튼 -->
+            <div
+                id="load-more-container"
+                class="load-more-container"
+                style="display: none"
+            >
+                <button id="load-more-btn" class="load-more-btn">
+                    <span class="btn-text">더보기</span>
+                </button>
+            </div>
         </div>
+
+        <script th:inline="javascript">
+            // Thymeleaf에서 전달받은 데이터
+            const USER_ID = /*[[${userId}]]*/ null;
+            const INVEST_TYPE = /*[[${investType}]]*/ null;
+
+            /**
+             * 펀드 리스트 관리 클래스
+             * - 페이지 로드 시 자동으로 사용자 투자성향에 맞는 펀드 조회
+             * - 무한 스크롤 형태의 더보기 기능 제공
+             */
+            class FundListManager {
+                constructor() {
+                    // 상태 변수들
+                    this.funds = []; // 로드된 펀드 목록
+                    this.loading = false; // 로딩 상태
+                    this.hasMore = true; // 더 가져올 데이터 존재 여부
+                    this.page = 1; // 현재 페이지
+                    this.limit = 10; // 한 번에 로드할 펀드 수
+                    this.userId = USER_ID; // 사용자 ID
+                    this.investType = INVEST_TYPE; // 투자 성향
+
+                    // DOM 요소들
+                    this.fundListEl = document.getElementById("fund-list");
+                    this.loadMoreBtn = document.getElementById("load-more-btn");
+                    this.loadMoreContainer = document.getElementById(
+                        "load-more-container"
+                    );
+                    this.messageContainer =
+                        document.getElementById("message-container");
+                    this.totalCountEl = document.getElementById("total-count");
+                    this.investTypeDisplayEl = document.getElementById(
+                        "invest-type-display"
+                    );
+                    this.userWelcomeEl =
+                        document.getElementById("user-welcome");
+
+                    this.init();
+                }
+
+                /**
+                 * 초기화 - 이벤트 리스너 등록 및 데이터 로드
+                 */
+                init() {
+                    console.log("FundListManager 초기화 시작");
+                    console.log("사용자 정보:", {
+                        userId: this.userId,
+                        investType: this.investType,
+                    });
+
+                    // 더보기 버튼 이벤트 등록
+                    this.loadMoreBtn.addEventListener("click", () =>
+                        this.handleLoadMore()
+                    );
+
+                    // 투자성향이 있으면 자동으로 펀드 조회
+                    if (this.investType) {
+                        this.updateInvestTypeDisplay();
+                        this.loadFunds(true);
+                    } else {
+                        this.showMessage(
+                            "투자 성향 정보를 찾을 수 없습니다.",
+                            "error"
+                        );
+                    }
+                }
+
+                /**
+                 * 투자성향 표시 업데이트
+                 */
+                updateInvestTypeDisplay() {
+                    const investTypeNames = {
+                        1: "안정형",
+                        2: "안정 추구형",
+                        3: "위험 중립형",
+                        4: "적극 투자형",
+                        5: "공격 투자형",
+                    };
+
+                    const typeName =
+                        investTypeNames[this.investType] || "알 수 없음";
+                    this.investTypeDisplayEl.textContent = typeName;
+                    this.investTypeDisplayEl.style.display = "inline-block";
+
+                    this.userWelcomeEl.textContent = `${typeName} 투자자님께 맞는 펀드를 추천해드립니다.`;
+                }
+
+                /**
+                 * 펀드 데이터 조회
+                 * @param {boolean} isInitial - 초기 로드 여부
+                 */
+                async loadFunds(isInitial = false) {
+                    if (this.loading) return;
+
+                    console.log(
+                        `펀드 조회 시작: page=${this.page}, investType=${this.investType}`
+                    );
+
+                    this.setLoading(true);
+                    this.clearMessage();
+
+                    try {
+                        // API 호출
+                        const response = await fetch(
+                            `/api/funds/list?page=${this.page}&limit=${this.limit}&investType=${this.investType}`
+                        );
+                        const data = await response.json();
+
+                        if (!data.success) {
+                            throw new Error(
+                                data.message || "데이터 로드에 실패했습니다."
+                            );
+                        }
+
+                        console.log("API 응답:", data);
+
+                        // 데이터 업데이트
+                        if (isInitial) {
+                            this.funds = data.data.funds;
+                        } else {
+                            this.funds = [...this.funds, ...data.data.funds];
+                        }
+
+                        // 페이지네이션 정보 업데이트
+                        this.hasMore = data.pagination.hasNext;
+                        this.updateTotalCount(data.pagination.total);
+
+                        // 화면에 렌더링
+                        this.renderFunds(
+                            isInitial ? this.funds : data.data.funds
+                        );
+                        this.updateLoadMoreButton();
+
+                        console.log(
+                            `펀드 조회 완료: ${data.data.funds.length}개 로드됨`
+                        );
+                    } catch (error) {
+                        console.error("펀드 조회 실패:", error);
+                        this.showMessage(
+                            "펀드 정보를 불러오는 중 오류가 발생했습니다.",
+                            "error"
+                        );
+                    } finally {
+                        this.setLoading(false);
+                    }
+                }
+
+                /**
+                 * 펀드 목록 화면에 렌더링
+                 * @param {Array} fundsToRender - 렌더링할 펀드 배열
+                 */
+                renderFunds(fundsToRender) {
+                    if (this.page === 1) {
+                        this.fundListEl.innerHTML = "";
+                    }
+
+                    if (fundsToRender.length === 0 && this.page === 1) {
+                        this.fundListEl.innerHTML = `
+                        <div class="no-data">
+                            <div class="no-data-icon">📊</div>
+                            <h3>추천할 펀드가 없습니다</h3>
+                            <p>현재 투자성향에 맞는 펀드가 없습니다.</p>
+                        </div>
+                    `;
+                        return;
+                    }
+
+                    // 각 펀드를 화면에 추가
+                    fundsToRender.forEach((fund) => {
+                        const fundElement = this.createFundElement(fund);
+                        this.fundListEl.appendChild(fundElement);
+                    });
+                }
+
+                /**
+                 * 개별 펀드 요소 생성
+                 * @param {Object} fund - 펀드 데이터
+                 * @returns {HTMLElement} 펀드 요소
+                 */
+                createFundElement(fund) {
+                    const fundEl = document.createElement("div");
+                    fundEl.className = "fund-item";
+
+                    // 수익률 포맷팅 및 클래스 결정
+                    const formatReturn = (value) => {
+                        if (value === null || value === undefined) return "-";
+                        return `${value > 0 ? "+" : ""}${parseFloat(
+                            value
+                        ).toFixed(2)}%`;
+                    };
+
+                    const getReturnClass = (value) => {
+                        if (value === null || value === undefined)
+                            return "return-neutral";
+                        return value > 0
+                            ? "return-positive"
+                            : value < 0
+                            ? "return-negative"
+                            : "return-neutral";
+                    };
+
+                    // 위험등급 텍스트
+                    const getRiskLevelText = (level) => {
+                        const levels = {
+                            1: "매우높음",
+                            2: "높음",
+                            3: "보통",
+                            4: "낮음",
+                            5: "매우낮음",
+                            6: "매우낮음",
+                        };
+                        return levels[level] || "-";
+                    };
+
+                    // 운용규모 포맷팅 (억원 단위)
+                    const formatAUM = (aum) => {
+                        if (!aum) return "-";
+                        return aum;
+                        // return `${Math.round(aum / 100000000)}억원`;
+                    };
+
+                    fundEl.innerHTML = `
+                    <div class="fund-info">
+                        <div class="fund-name">
+                            <a href="/fund/${
+                                fund.fundId
+                            }" class="fund-name-link">
+                                ${fund.fundName}
+                            </a>
+                        </div>
+                        <div class="fund-details">
+                            <span class="fund-tag">${
+                                fund.fundType || "-"
+                            }</span>
+                            <span class="fund-tag">${
+                                fund.investmentRegion || "-"
+                            }</span>
+                            <span class="fund-tag">${
+                                fund.managementCompany || "-"
+                            }</span>
+                            <span class="risk-level">위험등급 ${
+                                fund.riskLevel
+                            } (${getRiskLevelText(fund.riskLevel)})</span>
+                        </div>
+                    </div>
+                    <div class="return-value ${getReturnClass(
+                        fund.month1Return
+                    )}">
+                        ${formatReturn(fund.month1Return)}
+                    </div>
+                    <div class="return-value ${getReturnClass(
+                        fund.month3Return
+                    )}">
+                        ${formatReturn(fund.month3Return)}
+                    </div>
+                    <div class="return-value ${getReturnClass(
+                        fund.month6Return
+                    )}">
+                        ${formatReturn(fund.month6Return)}
+                    </div>
+                    <div class="return-value ${getReturnClass(
+                        fund.month12Return
+                    )}">
+                        ${formatReturn(fund.month12Return)}
+                    </div>
+                    <div class="return-value ${getReturnClass(
+                        fund.month12Return
+                    )}">
+                        ${formatReturn(fund.month12Return)}
+                    </div>
+                    <div class="fund-scale">
+                        ${formatAUM(fund.aum)}
+                    </div>
+                    <div class="fund-fee">
+                        ${
+                            fund.totalExpenseRatio
+                                ? fund.totalExpenseRatio + "%"
+                                : "-"
+                        }
+                    </div>
+                `;
+
+                    return fundEl;
+                }
+
+                /**
+                 * 더보기 버튼 클릭 핸들러
+                 */
+                handleLoadMore() {
+                    this.page += 1;
+                    this.loadFunds(false);
+                }
+
+                /**
+                 * 로딩 상태 설정
+                 * @param {boolean} loading - 로딩 상태
+                 */
+                setLoading(loading) {
+                    this.loading = loading;
+                    const btnText = this.loadMoreBtn.querySelector(".btn-text");
+
+                    if (loading) {
+                        btnText.textContent = "로딩 중...";
+                        this.loadMoreBtn.disabled = true;
+
+                        // 스피너 추가
+                        const spinner = document.createElement("div");
+                        spinner.className = "loading-spinner";
+                        this.loadMoreBtn.insertBefore(spinner, btnText);
+                    } else {
+                        btnText.textContent = "더보기";
+                        this.loadMoreBtn.disabled = false;
+
+                        // 스피너 제거
+                        const spinner =
+                            this.loadMoreBtn.querySelector(".loading-spinner");
+                        if (spinner) {
+                            spinner.remove();
+                        }
+                    }
+                }
+
+                /**
+                 * 더보기 버튼 표시/숨김 업데이트
+                 */
+                updateLoadMoreButton() {
+                    if (this.hasMore && this.funds.length > 0) {
+                        this.loadMoreContainer.style.display = "block";
+                    } else {
+                        this.loadMoreContainer.style.display = "none";
+                    }
+                }
+
+                /**
+                 * 전체 개수 업데이트
+                 * @param {number} total - 전체 펀드 수
+                 */
+                updateTotalCount(total) {
+                    this.totalCountEl.textContent = total.toLocaleString();
+                }
+
+                /**
+                 * 메시지 표시
+                 * @param {string} message - 메시지 내용
+                 * @param {string} type - 메시지 타입 (error, info)
+                 */
+                showMessage(message, type = "info") {
+                    this.messageContainer.innerHTML = `
+                    <div class="message ${type}">
+                        ${message}
+                    </div>
+                `;
+                }
+
+                /**
+                 * 메시지 제거
+                 */
+                clearMessage() {
+                    this.messageContainer.innerHTML = "";
+                }
+            }
+
+            // 페이지 로드 완료 시 펀드 리스트 관리자 초기화
+            document.addEventListener("DOMContentLoaded", () => {
+                console.log("페이지 로드 완료, FundListManager 시작");
+                new FundListManager();
+            });
+        </script>
     </body>
 </html>

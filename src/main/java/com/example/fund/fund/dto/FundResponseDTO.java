@@ -17,8 +17,11 @@ public class FundResponseDTO {
     private String investmentRegion;    // 투자 지역    
     private String managementCompany;   // 운용사
     private Integer riskLevel;          // 위험도
-    private Integer aum;        // 순자산 규모
+    private Integer aum;        // 순자산 규모 (aum) - 아직 안됨
+    private BigDecimal basePrice;  // 기준금
+    private Integer fundScale;  // 설정액
     private LocalDate establishDate;    // 설정일
+    private BigDecimal totalExpenseRatio;   // 총 보수율
 
     // 수익률
     private BigDecimal month1Return;    // 1개월
@@ -29,5 +32,4 @@ public class FundResponseDTO {
 
 /*
 추가 고려 필드
-    - 펀드 총 보수률
 */

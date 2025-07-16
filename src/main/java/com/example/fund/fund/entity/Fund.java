@@ -1,5 +1,6 @@
 package com.example.fund.fund.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.example.fund.common.entity.BaseEntity;
@@ -43,6 +44,9 @@ public class Fund extends BaseEntity {
 
     @Column(name = "establish_date")
     private LocalDate establishDate;
+
+    @Column(name = "total_expense_ratio", precision = 10, scale = 4)
+    private BigDecimal totalExpenseRatio;
 
     @Column(name = "risk_level", length = 3)
     private Integer riskLevel;

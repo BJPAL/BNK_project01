@@ -2,12 +2,17 @@ package com.example.fund.fund.repository;
 
 import com.example.fund.fund.dto.FundReturnDTO;
 import com.example.fund.fund.entity.FundDailyPrice;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public interface FundDailyPriceRepository extends JpaRepository<FundDailyPrice, Long> {
 
     /** 특정 펀드 상품의 1개월, 3개월, 6개월, 12개울 수익률 계산 */
@@ -64,4 +69,7 @@ public interface FundDailyPriceRepository extends JpaRepository<FundDailyPrice, 
         """, nativeQuery = true)
     FundReturnDTO getFundReturnByFundId(@Param("fundId") Long fundId);
 
+
+    /** 최신 기준가 데이터 조회 */
+    Optional<FundDailyPrice> findTopByFundFundIdOrderByBaseDateDesc(Long fundId);
 }
