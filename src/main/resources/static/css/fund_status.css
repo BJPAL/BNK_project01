@@ -1,0 +1,149 @@
+@charset "UTF-8";
+
+/* 기본 설정 */
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f3f3f3;
+  margin: 0;
+  padding: 40px 20px;
+  color: #222;
+}
+
+/* 카드 컨테이너 */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* 상단 제목과 총 건수 정렬 */
+.header-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* ✅ baseline → center */
+  margin-bottom: 12px;
+}
+
+.header-box h1 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.total-count {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* 테이블 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px; /* ✅ 너무 큰 여백 방지 */
+}
+
+thead th {
+  background-color: #e4e4e4;
+  color: #222;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  border-bottom: 2px solid #ccc;
+  text-align: center;
+}
+
+tbody td {
+  padding: 14px 10px;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  line-height: 1.6;
+}
+
+/* 마우스 hover */
+tbody tr:hover {
+  background-color: #fafafa;
+}
+
+/* 페이지네이션 영역 */
+.pagination {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.pagination button,
+.pagination span {
+  margin: 0 3px;
+  padding: 6px 10px;
+  border: none;
+  background-color: #ccc;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination .active {
+  background-color: #444;
+  font-weight: bold;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .container {
+    padding: 24px;
+  }
+
+  .header-box h1 {
+    font-size: 18px;
+  }
+
+  .total-count {
+    font-size: 13px;
+  }
+
+  thead th,
+  tbody td {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.pagination a {
+  display: inline-block;
+  margin: 0 4px;
+  padding: 6px 12px;
+  background-color: #ddd;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.pagination a.active {
+  background-color: #555;
+  color: white;
+  font-weight: bold;
+}
+
+a,
+a:visited,
+a:active,
+a:focus {
+  color: #222; /* 검정 또는 진한 회색 */
+  text-decoration: none;
+}
+
+a:hover {
+  color: #000;
+  text-decoration: underline;
+}
+

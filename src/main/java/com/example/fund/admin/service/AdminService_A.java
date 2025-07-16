@@ -5,6 +5,8 @@ import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.repository.AdminRepository_A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,26 +53,40 @@ public class AdminService_A {
     }
 
     //전체 관리자 목록 (Entity => DTO로 변환해서 출력)
-    public List<AdminDTO> getAllAdmins(){
-        List<Admin> admins = adminRepository_a.findAll();
-        List<AdminDTO> adminDTOS = new ArrayList<>();
-        for(Admin admin : admins){
-            AdminDTO convertAdmin = adminConverter.toAdminDTO(admin);
-            adminDTOS.add(convertAdmin);
-        }
-        return adminDTOS;
-    }
+    // public List<AdminDTO> getAllAdmins(){
+    //     List<Admin> admins = adminRepository_a.findAll();
+    //     List<AdminDTO> adminDTOS = new ArrayList<>();
+    //     for(Admin admin : admins){
+    //         AdminDTO convertAdmin = adminConverter.toAdminDTO(admin);
+    //         adminDTOS.add(convertAdmin);
+    //     }
+    //     return adminDTOS;
+    // }
 
     //Role별로 관리자 조회하여 출력(Entity => DTO로 변환해서 출력)
-    public List<AdminDTO> getAdminsByRole(String role){
-        List<Admin> admins = adminRepository_a.findByRole(role);
-        List<AdminDTO> adminDTOS = new ArrayList<>();
-        for(Admin admin : admins){
-            AdminDTO convertAdmin = adminConverter.toAdminDTO(admin);
-            adminDTOS.add(convertAdmin);
-        }
-        return adminDTOS;
+    // public List<AdminDTO> getAdminsByRole(String role){
+    //     List<Admin> admins = adminRepository_a.findByRole(role);
+    //     List<AdminDTO> adminDTOS = new ArrayList<>();
+    //     for(Admin admin : admins){
+    //         AdminDTO convertAdmin = adminConverter.toAdminDTO(admin);
+    //         adminDTOS.add(convertAdmin);
+    //     }
+    //     return adminDTOS;
+    // }
+
+
+    //전체 관리자 목록 (Entity => DTO로 변환해서 출력) + 페이지네이션
+    public Page<AdminDTO> getAllAdmins(Pageable pageable) {
+        return adminRepository_a.findAll(pageable) 
+            .map(adminConverter::toAdminDTO);
     }
+
+    //Role별로 관리자 조회하여 출력(Entity => DTO로 변환해서 출력) + 페이지네이션
+    public Page<AdminDTO> getAdminsByRole(String role, Pageable pageable) {
+        return adminRepository_a.findByRole(role, pageable)
+            .map(adminConverter::toAdminDTO);
+    }
+
 
     //관리자 ID로 정보 찾기
     public AdminDTO findById(Integer id){
