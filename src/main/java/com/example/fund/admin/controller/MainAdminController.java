@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -119,17 +123,36 @@ public class MainAdminController {
     }
 
     //관리자 리스트 컨트롤러(role 파라미터는 필수값 X)
+    // @GetMapping("/list")
+    // public String getAdminList(@RequestParam(required = false) String role, Model model){
+    //     List<AdminDTO> admins = new ArrayList<>();
+    //     if (role == null || role.isEmpty()) {
+    //         admins = adminService_a.getAllAdmins();
+    //     } else {
+    //         admins = adminService_a.getAdminsByRole(role); // 역할별 조회
+    //     }
+    //     model.addAttribute("adminList", admins);
+    //     return "admin/super/adminList :: admin-list-content";
+    // }
+
+    //관리자 리스트 컨트롤러(role 파라미터는 필수값 X) + 페이지네이션
     @GetMapping("/list")
-    public String getAdminList(@RequestParam(required = false) String role, Model model){
-        List<AdminDTO> admins = new ArrayList<>();
-        if (role == null || role.isEmpty()) {
-            admins = adminService_a.getAllAdmins();
-        } else {
-            admins = adminService_a.getAdminsByRole(role); // 역할별 조회
-        }
-        model.addAttribute("adminList", admins);
+    public String getAdminList(
+        @RequestParam(required = false) String role,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AdminDTO> adminPage = (role == null || role.isEmpty())
+            ? adminService_a.getAllAdmins(pageable)
+            : adminService_a.getAdminsByRole(role, pageable);
+
+        model.addAttribute("adminPage", adminPage);
+        model.addAttribute("adminList", adminPage.getContent());
         return "admin/super/adminList :: admin-list-content";
     }
+
 
     //관리자 리스트 >> 상세정보 조회
     @GetMapping("/detail/{id}")

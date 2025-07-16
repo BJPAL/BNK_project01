@@ -25,10 +25,9 @@ import com.example.fund.user.entity.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @Controller
 public class QnaController {
-	
+
 	@Autowired
 	QnaRepository qnaRepository;
 
@@ -37,44 +36,43 @@ public class QnaController {
 
 	@GetMapping("/qna")
 	public String qnaPage(HttpSession session, Model model) {
-		User loginUser = (User)session.getAttribute("user");
-		if(loginUser == null) {
+		User loginUser = (User) session.getAttribute("user");
+		if (loginUser == null) {
 			return "redirect:/auth/login";
 		}
 		model.addAttribute("user", loginUser);
 		return "qna";
 	}
-	
+
 	@PostMapping("/regQna")
 	@ResponseBody
 	public Map<String, Object> regQna(@RequestBody Qna qna, HttpSession session) {
-		User loginUser = (User)session.getAttribute("user");
-	    qna.setStatus("대기");
-	    qna.setUser(loginUser);
-	    qnaRepository.save(qna);
-	    
-	    Map<String, Object> result = new HashMap<>();
-	    result.put("result", "success");
-	    result.put("redirectUrl", "/qnaSuccess");
+		User loginUser = (User) session.getAttribute("user");
+		qna.setStatus("대기");
+		qna.setUser(loginUser);
+		qnaRepository.save(qna);
 
-	    return result;
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		result.put("redirectUrl", "/qnaSuccess");
+
+		return result;
 	}
-	
+
 	@GetMapping("qnaSuccess")
 	public String qnaSuccess(HttpSession session) {
 		User loginUser = (User) session.getAttribute("user");
-		if(loginUser == null) {
+		if (loginUser == null) {
 			return "redirect:/auth/login";
 		}
 		return "qna_success";
 	}
 
 	@GetMapping("/admin/qna")
-	public String listQnaByStatus(@RequestParam(defaultValue = "대기") String status, 
-								  @RequestParam(defaultValue = "0") int page,
-								  Model model) {
+	public String listQnaByStatus(@RequestParam(defaultValue = "대기") String status,
+			@RequestParam(defaultValue = "0") int page,
+			Model model) {
 		List<Qna> qnaList = qnaService.getQnaList(status);
-		System.out.println(qnaList);
 
 		Page<Qna> qnaPage = qnaService.getQnaListByStatus(status, page);
 		model.addAttribute("qnaList", qnaPage.getContent());
@@ -84,7 +82,7 @@ public class QnaController {
 			qnaList = new ArrayList<>();
 		}
 
-		if(status.equals("완료")){
+		if (status.equals("완료")) {
 			model.addAttribute("qnaList", qnaPage.getContent());
 			model.addAttribute("page", qnaPage);
 			return "admin/cs/qnaList :: qna-AnsweredList";
@@ -99,20 +97,20 @@ public class QnaController {
 	public String showQnaDetail(@PathVariable("qnaId") Integer id, Model model) {
 		Qna qna = qnaService.getQna(id);
 		model.addAttribute("qna", qna);
-		return "admin/cs/qnaDetailAndAnswer"; 
+		return "admin/cs/qnaDetailAndAnswer";
 	}
-	
+
 	@PostMapping("/admin/qna/answer")
-	public String answer(@RequestParam("id") Integer qnaId, 
-						 @RequestParam("answer")String answer, 
-						 RedirectAttributes rttr){
+	public String answer(@RequestParam("id") Integer qnaId,
+			@RequestParam("answer") String answer,
+			RedirectAttributes rttr) {
 		qnaService.SubmitAnswer(qnaId, answer);
-		
+
 		String msg = "답변이 성공적으로 등록되었습니다";
 		rttr.addFlashAttribute("msg", msg);
 
 		return "redirect:/admin/qnaList";
-	} 
+	}
 
 	@GetMapping("/admin/qna/answeredDetail/{qnaId}")
 	public String showAnsweredQnaDetail(@PathVariable("qnaId") Integer id, Model model) {
@@ -121,24 +119,27 @@ public class QnaController {
 
 		return "admin/cs/qnaAnsweredDetail";
 	}
+
 	@GetMapping("/qna/{qnaId}")
 	public String qnaDetail(@PathVariable Long qnaId, Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
-		if (user == null) return "redirect:/auth/login";
+		if (user == null)
+			return "redirect:/auth/login";
 
 		Qna qna = qnaService.getQnaById(qnaId); // 서비스에서 가져오기
 		model.addAttribute("qna", qna);
 		return "mypage/qna-detail";
 	}
+
 	@GetMapping("/mypage/qna/{qnaId}")
 	public String mypageQnaDetail(@PathVariable Long qnaId, Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
-		if (user == null) return "redirect:/auth/login";
+		if (user == null)
+			return "redirect:/auth/login";
 
 		Qna qna = qnaService.getQnaById(qnaId);
 		model.addAttribute("qna", qna);
 		return "mypage/qna-detail"; // 상세 보기 페이지 경로
 	}
-
 
 }

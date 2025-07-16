@@ -19,44 +19,44 @@ public class QnaService {
 
     @Autowired
     private QnaRepository qnaRepository;
-    
-    public int countUnanwseQna(){
+
+    public int countUnanwseQna() {
         return qnaRepository.countByStatus("대기");
     }
 
-    public List<Qna> getQnaList(String status){
+    public List<Qna> getQnaList(String status) {
         return qnaRepository.findByStatus(status);
     }
 
-    public Qna getQna(Integer id){
+    public Qna getQna(Integer id) {
         Optional<Qna> optionalQna = qnaRepository.findById(id);
         Qna qna = optionalQna.get();
 
         return qna;
     }
 
-    public void SubmitAnswer(Integer qnaId, String answer){
-		Qna qna = qnaRepository.findById(qnaId).orElseThrow();
+    public void SubmitAnswer(Integer qnaId, String answer) {
+        Qna qna = qnaRepository.findById(qnaId).orElseThrow();
 
-		qna.setAnswer(answer);
-		qna.setStatus("완료");
+        qna.setAnswer(answer);
+        qna.setStatus("완료");
 
-		qnaRepository.save(qna);
-	}
-
+        qnaRepository.save(qna);
+    }
 
     public List<Qna> getQnaListByUser(int userId) {
         return qnaRepository.findByUser_UserIdOrderByRegDateDesc(userId);
     }
+
     public Qna getQnaById(Long qnaId) {
         return qnaRepository.findById(Math.toIntExact(qnaId))
                 .orElseThrow(() -> new NoSuchElementException("문의가 존재하지 않습니다."));
     }
 
-    //한페이지당 15개 게시글 보이도록 return
+    // 한페이지당 15개 게시글 보이도록 return
     public Page<Qna> getQnaListByStatus(String status, int page) {
-        Pageable pageable = PageRequest.of(page, 15, Sort.by("regDate").descending()); //최신순 정렬
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("regDate").descending()); // 최신순 정렬
         return qnaRepository.findByStatus(status, pageable);
     }
-    
+
 }

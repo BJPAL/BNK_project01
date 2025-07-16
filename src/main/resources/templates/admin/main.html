@@ -16,7 +16,7 @@
         </strong>건
     </p>
 </div>
-<div th:unless="${session.admin != null and session.admin.role == 'cs' and unansweredCount > 0}">
+<div th:if="${session.admin != null and session.admin.role == 'cs' and unansweredCount == 0}">
     <p>모든 문의가 답변되었습니다</p>
 </div>
 
