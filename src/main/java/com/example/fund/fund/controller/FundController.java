@@ -8,7 +8,9 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
@@ -18,12 +20,18 @@ public class FundController {
     private final FundRepository fundRepo;
     private final FundFavoriteService favoriteService;
 
-    /** 펀드 상세 페이지 */
-    @GetMapping("/{id}")
-    public String detail(@PathVariable Long id,
-                         HttpSession session,
-                         Model model) {
 
+    /**
+     * 펀드 상세 페이지 - legacy
+     */
+    /*
+    @GetMapping("/{id}")
+    public String detail(
+            @PathVariable Long id,
+            HttpSession session,
+            Model model
+    ) {
+        // 잠시 주석 처리
         Fund fund = fundRepo.findById(id).orElseThrow();
         model.addAttribute("fund", fund);
 
@@ -34,8 +42,11 @@ public class FundController {
 
         return "mypage/fund-detail";
     }
+    */
 
-    /** 보유 펀드 목록 */
+    /**
+     * 보유 펀드 목록
+     */
     @GetMapping("/my")
     public String myFundHoldings(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
