@@ -1,7 +1,6 @@
 package com.example.fund.fund.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import com.example.fund.common.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -20,41 +19,44 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "fund_asset_allocation")
+@Table(name = "fund_asset")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FundAssetAllocation extends BaseEntity {
+public class FundAsset extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "allocation_id")
-    private Long allocationId;
+    @Column(name = "asset_id")
+    private Long assetId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fund_id", nullable = false)
     private Fund fund;
 
+    // 국내 주식
     @Column(name = "domestic_stock", precision = 5, scale = 2)
     private BigDecimal domesticStock;
 
+    // 해외 주식
     @Column(name = "overseas_stock", precision = 5, scale = 2)
     private BigDecimal overseasStock;
 
+    // 국내 채권
     @Column(name = "domestic_bond", precision = 5, scale = 2)
     private BigDecimal domesticBond;
 
+    // 해외 채권
     @Column(name = "overseas_bond", precision = 5, scale = 2)
     private BigDecimal overseasBond;
 
-    @Column(name = "fund_asset", precision = 5, scale = 2)
-    private BigDecimal fundAsset;
+    // 펀드 투자
+    @Column(name = "fund_investment", precision = 5, scale = 2)
+    private BigDecimal fundInvestment;
 
+    // 유동성
     @Column(name = "liquidity", precision = 5, scale = 2)
     private BigDecimal liquidity;
-
-    @Column(name = "updated_date")
-    private LocalDate updatedDate;
 }

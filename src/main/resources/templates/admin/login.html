@@ -7,18 +7,17 @@
 </head>
 <body>
     <div class="login-container">
-        <!-- 페이지 타이틀 추가 -->
-        <div class="page-title">관리자 페이지</div>
-
         <div class="logo-container">
-            <!-- 로고 경로만 실제 파일 위치로 변경하세요 -->
             <img src="/images/BnkLogo.png" alt="로고">
         </div>
 
+        <!-- 페이지 타이틀 -->
+        <div class="page-title">관리자 페이지</div>
+
         <form action="/admin/login" method="post">
-            <input type="text" name="adminname" id="adminname" placeholder="ID를 입력해주세요"
+            <input type="text" name="adminname" id="adminname" placeholder="ID"
                    required oninvalid="this.setCustomValidity('아이디를 입력해주세요')" oninput="this.setCustomValidity('')">
-            <input type="password" name="password" id="password" placeholder="PW를 입력해주세요"
+            <input type="password" name="password" id="password" placeholder="PW"
                    required oninvalid="this.setCustomValidity('비밀번호를 입력해주세요')" oninput="this.setCustomValidity('')">
             <input type="submit" value="로그인">
         </form>

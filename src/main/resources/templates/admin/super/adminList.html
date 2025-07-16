@@ -9,20 +9,26 @@
     <table border="1">
         <thead>
         <tr>
-            <th>번호</th>
+            <th>No.</th>
             <th>이름</th>
             <th>아이디</th>
             <th>권한</th>
+            <th>동작</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="admin, stat : ${adminList}">
             <td th:text="${stat.index + 1}"></td> <!-- 0부터 시작하므로 +1 -->
-            <td>
-                <a href="#" class="open-modal" th:data-id="${admin.admin_id}" th:text="${admin.name}"></a>
-            </td>
+            <td th:text="${admin.name}"></td>
             <td th:text="${admin.adminname}"></td>
             <td th:text="${admin.role}"></td>
+            <td>
+                <button>
+                    <a href="#" class="open-modal" th:data-id="${admin.admin_id}">
+                    수정
+                    </a>
+                </button>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -44,9 +50,9 @@
             </select>
         </p>
 
-        <button type="button" id="submitEditBtn">확인</button>
-        <button type="button" id="deleteAdminBtn">삭제</button>
-        <button type="button" id="closeModalBtn">닫기</button>
+        <button type="button" id="submitEditBtn">수정</button>
+        <button type="button" id="deleteAdminBtn" class="btn-delete">삭제</button>
+        <button type="button" id="closeModalBtn">X</button>
     </form>
 </div>
 </body>

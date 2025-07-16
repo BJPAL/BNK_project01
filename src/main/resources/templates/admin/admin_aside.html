@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <aside th:fragment="adminAside" class="admin-aside">
+      <nav>
+        <ul class="menu-list">
+  
+          <!-- ─── 펀드 상품 관리 ─── -->
+          <li class="menu-group">
+            <button type="button" class="group-btn">
+              펀드 상품 관리
+              <span class="arrow"></span>
+            </button>
+            <ul class="submenu">
+              <li><a th:href="@{/admin/fund/list}">펀드 조회</a></li>
+              <li><a th:href="@{/admin/fund/new}">펀드 등록</a></li>
+              <li><a th:href="@{/admin/fund/edit}">펀드 수정</a></li>
+              <li><a th:href="@{/admin/fund/delete}">펀드 삭제</a></li>
+            </ul>
+          </li>
+  
+          <!-- ─── 공시 관리 ─── -->
+          <li class="menu-group">
+            <button type="button" class="group-btn">
+              공시 관리
+              <span class="arrow"></span>
+            </button>
+            <ul class="submenu">
+              <li><a th:href="@{/admin/terms/new}">약관 등록</a></li>
+              <li><a th:href="@{/admin/terms/edit}">약관 수정</a></li>
+              <li><a th:href="@{/admin/doc/investment/new}">투자설명서 등록</a></li>
+              <li><a th:href="@{/admin/doc/investment/edit}">투자설명서 수정</a></li>
+              <li><a th:href="@{/admin/doc/simple/new}">간이투자설명서 등록</a></li>
+              <li><a th:href="@{/admin/doc/simple/edit}">간이투자설명서 수정</a></li>
+            </ul>
+          </li>
+  
+          <!-- ─── 상품 통계 ─── -->
+          <li class="menu-group">
+            <button type="button" class="group-btn">
+              상품 통계
+              <span class="arrow"></span>
+            </button>
+            <ul class="submenu">
+              <li><a th:href="@{/admin/statistics}">통계 보기</a></li>
+            </ul>
+          </li>
+  
+          <!-- ─── 결재 관리 ─── -->
+          <li class="menu-group">
+            <button type="button" class="group-btn">
+              결재 관리
+              <span class="arrow"></span>
+            </button>
+            <ul class="submenu">
+              <li><a th:href="@{/admin/approval}">결재 현황</a></li>
+            </ul>
+          </li>
+  
+          <!-- ─── 관리자 설정 ─── -->
+          <li th:if="${session.admin.role == 'super'}" class="menu-group" >
+            <button type="button" class="group-btn" onclick="link()">
+            관리자 설정 
+            </button>
+          </li>
+        </ul>
+        <!-- 아코디언 토글 스크립트 -->
+      <script th:inline="javascript">
+        document.querySelectorAll('.admin-aside .group-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const grp = btn.closest('.menu-group');
+            grp.classList.toggle('open');
+          });
+        });
+        function link(){
+            location.href="/admin/adminSetting";
+        }
+      </script>
+      </nav>
+    </aside>
+  </body>
+</html>
