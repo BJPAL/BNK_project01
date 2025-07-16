@@ -1,23 +1,25 @@
 package com.example.fund.fund.service;
 
-import com.example.fund.fund.dto.*;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.example.fund.fund.dto.FundDetailResponse;
+import com.example.fund.fund.dto.FundResponseDTO;
+import com.example.fund.fund.dto.FundReturnDTO;
 import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.entity.FundAsset;
 import com.example.fund.fund.entity.FundDailyPrice;
 import com.example.fund.fund.repository.FundAssetRepository;
 import com.example.fund.fund.repository.FundDailyPriceRepository;
 import com.example.fund.fund.repository.FundRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service

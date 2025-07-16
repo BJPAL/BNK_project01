@@ -30,9 +30,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.fund.fund.entity.FileHistory;
+import com.example.fund.fund.dto.FundRegisterRequest;
 import com.example.fund.fund.entity.Fund;
-import com.example.fund.fund.repository.FileHistoryRepository;
+import com.example.fund.fund.entity.FundDocument;
+import com.example.fund.fund.entity.FundPolicy;
 import com.example.fund.fund.service.FundService;
 
 @CrossOrigin(origins = "*")
@@ -42,9 +43,6 @@ public class FundServiceController {
 
     @Autowired
     private FundService fundService;
-
-    @Autowired
-    private FileHistoryRepository fileHistoryRepository;
     
     // 펀드 CRUD
 
@@ -78,7 +76,7 @@ public class FundServiceController {
 
     // 파일 업로드
 
-    private final String UPLOAD_DIR = "C:/uploads/";
+    private final String UPLOAD_DIR = "C:bnk_project/data/uploads/fund_document/";
 
     @PostMapping("/upload/manual")
     public ResponseEntity<String> uploadManual(
@@ -137,36 +135,11 @@ public class FundServiceController {
                     ImageIO.write(bim, "jpg", jpgPath.toFile());
                 }
             }
-
-            // DB 기록
-            FileHistory history = FileHistory.builder()
-                    .originalFilename(originalFilename)
-                    .storedFilename(storedFilename)
-                    .fileType(fileType)
-                    .filePath(dirPath.toString())
-                    .uploadedAt(LocalDateTime.now())
-                    .build();
-
-            fileHistoryRepository.save(history);
-
             return ResponseEntity.ok("Uploaded and converted successfully.");
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed: " + e.getMessage());
         }
     }
-
-@GetMapping("/history")
-public ResponseEntity<List<FileHistory>> getFileHistories(@RequestParam(required = false) String type) {
-    List<FileHistory> histories;
-
-    if (type != null && !type.isBlank()) {
-        histories = fileHistoryRepository.findByFileTypeOrderByUploadedAtDesc(type); // 🔽 정렬된 메서드 사용
-    } else {
-        histories = fileHistoryRepository.findAllByOrderByUploadedAtDesc();
-    }
-
-    return ResponseEntity.ok(histories);
-}
 
 }
