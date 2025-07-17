@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>결재 상세 보기</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+  <link rel="stylesheet" href="/css/admin/admin_layout.css" />
   <style>
     :root{--primary:#337D89;--bg:#eef3f5;--card:#fff;--border:#ddd;--shadow:rgba(0,0,0,.06);}
     body{margin:0;padding:0;font-family:'Segoe UI',sans-serif;background:var(--bg);}
@@ -25,9 +26,20 @@
     textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
     .action-box{margin-top:20px;padding:20px;border:1px dashed #ccc;border-radius:10px;background:#fafafa;}
     .action-box form{display:inline-block;margin-right:12px;}
+    /* ▼ 로고를 아래로 내리기 */
+          .admin-header .logo{
+            position:relative;   /* 기준위치 확보 */
+            top:15px;             /* +6px 만큼 아래로 이동 */
+          }
   </style>
 </head>
 <body>
+<div class="layout">
+  <div th:replace="admin/admin_header :: adminHeader"></div>
+
+  <div class="main-wrapper">
+    <div th:replace="admin/admin_aside :: adminAside"></div>
+    <main class="content">
 <div class="detail-container">
   <h1><i class="far fa-file-alt"></i> 결재 상세 보기</h1>
 
@@ -86,5 +98,8 @@
     ← 목록으로
   </a>
 </div>
+    </main>
+  </div><!--main-wrapper end-->
+</div><!--layout end-->
 </body>
 </html>

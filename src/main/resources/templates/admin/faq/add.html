@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="/css/admin/admin_layout.css" />
 <head>
     <meta charset="UTF-8">
     <title>FAQ 등록/수정</title>
@@ -153,9 +154,24 @@
           from { opacity: 0; transform: translateY(-10px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        /* ▼ 로고를 아래로 내리기 */
+          .admin-header .logo{
+            position:relative;   /* 기준위치 확보 */
+            top:15px;             /* +6px 만큼 아래로 이동 */
+          }
+        .container > h1::before{        /* ❱ 구체성 ↑ */
+        content:none !important;      /* 아이콘 완전 제거 */
+        content:none !important;
+        }
     </style>
 </head>
 <body>
+<div class="layout">
+    <div th:replace="admin/admin_header :: adminHeader"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="admin/admin_aside :: adminAside"></div>
+        <main class="content">
 <div class="container">
     <h1>FAQ 등록</h1>
 
@@ -182,5 +198,8 @@
         </button>
     </form>
 </div>
+        </main>
+    </div><!--main-wrapper end-->
+</div><!--layout end-->
 </body>
 </html>

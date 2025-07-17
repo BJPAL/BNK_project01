@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title th:text="'[' + ${writerName} + '] 요청 목록'"></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="stylesheet" href="/css/admin/admin_layout.css" />
   <style>
     :root { --primary:#337D89; --bg:#eef3f5; --card:#fff; --border:#ddd; --shadow:rgba(0,0,0,.06); }
     *{box-sizing:border-box;}
@@ -26,9 +27,20 @@
     .reject-reason{background:#fdecea;color:#c0392b;padding:6px 10px;border-radius:8px;margin-top:8px;font-size:14px;}
     .card-footer{font-size:14px;color:#666;}
     a.back{display:inline-block;margin-top:30px;color:var(--primary);font-weight:600;text-decoration:none;}
+    /* ▼ 로고를 아래로 내리기 */
+          .admin-header .logo{
+            position:relative;   /* 기준위치 확보 */
+            top:20px;             /* +6px 만큼 아래로 이동 */
+          }
   </style>
 </head>
 <body>
+<div class="layout">
+  <div th:replace="admin/admin_header :: adminHeader"></div>
+
+  <div class="main-wrapper">
+    <div th:replace="admin/admin_aside :: adminAside"></div>
+    <main class="content">
 <div class="container">
   <h1><i class="far fa-user"></i><span th:text="'[' + ${writerName} + '] 결재 요청 목록'"></span></h1>
 
@@ -95,5 +107,8 @@
 
   <a th:href="@{/admin/approval/manage}" class="back"><i class="fas fa-arrow-left"></i> 승인 관리로 돌아가기</a>
 </div>
+    </main>
+  </div><!--main-wrapper end-->
+</div><!--layout end-->
 </body>
 </html>

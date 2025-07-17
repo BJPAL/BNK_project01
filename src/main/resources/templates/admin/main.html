@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>펀드 관리자 메인페이지</title>
-
+    <link rel="stylesheet" href="/css/admin/admin_layout.css" />
     <!-- 아이콘·차트 CDN -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -38,8 +38,13 @@
     </style>
 </head>
 <body>
+<div class="layout">
+    <div th:replace="admin/admin_header :: adminHeader"></div>
 
-<header th:replace="admin/a_header :: adminHeader"></header>
+    <div class="main-wrapper">
+        <div th:replace="admin/admin_aside :: adminAside"></div>
+        <main class="content">
+<!--<header th:replace="admin/a_header :: adminHeader"></header>-->
 
 <!-- ===== 상단 정보 바 ===== -->
 <div class="topbar">
@@ -129,7 +134,7 @@
     <div class="card" th:if="${role == 'planner'}">
         <h3><i class="fas fa-file-signature"></i> 내 결재 대기</h3>
         <span class="metric" th:text="${myPendingCount}">0</span>
-        <a th:href="@{/admin/approval/my}" class="quick-link">
+        <a th:href="@{/admin/approval/my-list}" class="quick-link">
             <i class="fas fa-list"></i> 내 요청 보기
         </a>
     </div>
@@ -160,7 +165,9 @@
         <p>7/20(일) 02:00~04:00 서버 정기 점검 예정 • 점검 시간 동안 서비스 이용이 제한됩니다.</p>
     </div>
 </main>
-
+        </main>
+    </div><!--main-wrapper end-->
+</div><!--layout end-->
 <!-- ── 더미 라인 차트 스크립트 ───────────────────────── -->
 <script>
     const ctx=document.getElementById('aumChart');

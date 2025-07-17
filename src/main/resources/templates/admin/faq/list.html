@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
+  <link rel="stylesheet" href="/css/admin/admin_layout.css" />
   <meta charset="UTF-8">
   <title>FAQ 목록</title>
   <style>
@@ -166,11 +167,28 @@
       color: white;
       background-color: #337D89;
     }
+
+    /* 헤더 로고 살짝 내리기 */
+    .admin-header .logo{position:relative;top:15px;}
+
+    /* ─── 아이콘 제거(헤더 & 페이지 제목) ─── */
+    .container h1::before,
+    .admin-header .logo i,
+    .admin-header .logo::before,
+    .admin-header .logo *::before{
+      content:none !important;
+      display:none !important;
+    }
   </style>
 </head>
 <body>
+<div class="layout">
+  <div th:replace="admin/admin_header :: adminHeader"></div>
 
-<div th:replace="admin/a_header :: adminHeader"></div>
+  <div class="main-wrapper">
+    <div th:replace="admin/admin_aside :: adminAside"></div>
+    <main class="content">
+<!--<div th:replace="admin/a_header :: adminHeader"></div>-->
 
 <div class="container">
 
@@ -244,6 +262,8 @@
   </div>
 
 </div>
-
+    </main>
+  </div><!--main-wrapper end-->
+</div><!--layout end-->
 </body>
 </html>

@@ -59,7 +59,7 @@ public class DashboardController {
         /* 4) 빠른 액세스 링크 */
         model.addAttribute("quickLinks", buildQuickLinks(role));
 
-        return "admin/main";   // 뷰 파일은 딱 한 장
+        return "admin/main";   // 뷰
     }
 
     /* -------- 링크 빌더 -------- */
@@ -72,8 +72,8 @@ public class DashboardController {
                 links.add(new QuickLink("/admin/faq/list", "fas fa-question", "FAQ 관리"));
             }
             case "planner" -> {
-                links.add(new QuickLink("/admin/approval/my", "fas fa-file-signature", "내 결재 요청"));
-                links.add(new QuickLink("/admin/fund/draft", "fas fa-sitemap", "펀드 초안 등록"));
+                links.add(new QuickLink("/admin/approval/list", "fas fa-file-signature", "내 결재 요청"));
+                links.add(new QuickLink("/admin/approval/form", "fas fa-sitemap", "펀드 초안 등록"));
             }
             case "approver" -> {
                 links.add(new QuickLink("/admin/approval/manage", "fas fa-gavel", "승인 관리"));

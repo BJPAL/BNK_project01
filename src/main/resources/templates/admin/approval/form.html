@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title th:text="${approval != null} ? '결재 요청 수정' : '결재 요청 등록'"></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+    <link rel="stylesheet" href="/css/admin/admin_layout.css" />
     <style>
         :root { --primary:#337D89; --bg:#eef3f5; --card:#fff; --border:#ddd; }
         body{margin:0;padding:0;font-family:'Segoe UI',sans-serif;background:var(--bg);}
@@ -20,9 +21,44 @@
         .btn-submit{margin-top:30px;background:var(--primary);color:#fff;border:none;padding:12px 24px;
           border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:filter .2s;}
         .btn-submit:hover{filter:brightness(.9);}
+
+        /* ▼ 로고를 아래로 내리기 */
+          .admin-header .logo{
+            position:relative;   /* 기준위치 확보 */
+            top:15px;             /* +6px 만큼 아래로 이동 */
+          }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', () => {
+          const form   = document.querySelector('form');
+          const submit = form.querySelector('.btn-submit');
+
+          submit.addEventListener('click', e => {
+            e.preventDefault();                 // ↓ 확인 모달
+            Swal.fire({
+              title: '등록하시겠습니까?',
+              icon:  'question',
+              showCancelButton: true,
+              confirmButtonText: '예',
+              cancelButtonText: '아니오'
+            }).then(result => {
+              if (result.isConfirmed) form.submit();   // “예” → 실제 제출
+            });
+          });
+        });
+        /*]]>*/
+    </script>
 </head>
 <body>
+<div class="layout">
+    <div th:replace="admin/admin_header :: adminHeader"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="admin/admin_aside :: adminAside"></div>
+        <main class="content">
 <div class="form-container">
     <h1><i class="fas fa-edit"></i><span th:text="${approval != null} ? '결재 요청 수정' : '결재 요청 등록'"></span></h1>
 
@@ -38,5 +74,8 @@
                 th:text="${approval != null} ? '수정 후 재기안' : '등록'"></button>
     </form>
 </div>
+        </main>
+    </div><!--main-wrapper end-->
+</div><!--layout end-->
 </body>
 </html>

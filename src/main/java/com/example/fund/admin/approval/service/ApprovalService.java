@@ -4,6 +4,7 @@ import com.example.fund.admin.approval.entity.Approval;
 import com.example.fund.admin.approval.repository.ApprovalRepository;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.repository.AdminRepository_A;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -94,8 +95,25 @@ public class ApprovalService {
         // TODO: fundService.register(approval) 등 실제 펀드 등록 로직 호출
     }
 
+//    /* createApproval 아래로 변경 ( css 추가로) */
+//    public void createApproval(String title, String content, Integer adminId) {
+//
+//        Admin writer = adminRepository.findById(adminId)
+//                .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
+//
+//        Approval approval = Approval.builder()
+//                .title(title)
+//                .content(content)
+//                .writer(writer)
+//                .status("결재대기")
+//                .build();
+//
+//        approvalRepository.save(approval);
+//    }
+
     /* ───── 5. 결재 요청 등록 (요청자) ───── */
-    public void createApproval(String title, String content, Integer adminId) {
+    @Transactional
+    public Long createApproval(String title, String content, Integer adminId) {   // ⬅️ 반환형 Long
 
         Admin writer = adminRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
@@ -107,7 +125,8 @@ public class ApprovalService {
                 .status("결재대기")
                 .build();
 
-        approvalRepository.save(approval);
+        approvalRepository.save(approval);   // save 후 PK 채워짐
+        return approval.getApprovalId();     // ⬅️ 바로 리턴
     }
 
     /* ───── 6. 목록 조회 (요청자·승인자) ───── */
