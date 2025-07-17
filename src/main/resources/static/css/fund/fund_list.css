@@ -1,0 +1,367 @@
+/* ─────────── 폰트 설정 ─────────── */
+@font-face {
+    font-family: "BNK";
+    src: url("../../font/BNKGothic-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: "BNK";
+    src: url("../../font/BNKGothic-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
+
+:root {
+    --gap: 8px;
+    --text: #222;
+    --sub: #666;
+    --primary: #a00000;
+    --border: #dcdfe4;
+    --fund-item-bg: #fff;
+    --fund-item-border: #e4e6ef;
+    --pos: #d73a49;
+    --neg: #1a6ed8;
+    --risk1: #e53935;
+    --risk2: #ff7043;
+    --risk3: #ffa726;
+    --risk4: #d4d916;
+    --risk5: #68b62e;
+    --risk6: #2f9dff;
+    /* --primary-border: #e4e6ef; */
+    /* --bg: #f5f6fa; */
+}
+
+/* ─────────── 기본 리셋 및 레이아웃 ─────────── */
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "BNK";
+    font-weight: 400;
+    color: #262626;
+}
+.container {
+    max-width: 1080px;
+    padding: 0px 20px 0px;
+    margin: 0 auto; /* 가로 중앙 정렬 */
+}
+
+/* ─────────── 제목 영역 ─────────── */
+.title-container {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.title {
+    font-size: 42px;
+    margin: 0;
+}
+.title-sub {
+    font-size: 16px;
+    margin: 8px 0 0;
+}
+
+/* ─────────── 필터 영역 ─────────── */
+.filter-container {
+    /* border-top: 6px solid var(#a00000); */
+    /* background: var(#ffffff); */
+    /* border: 1px solid #ddd; */
+    /* border-radius: 8px; */
+
+    /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); */
+    /* padding: 32px 40px 40px; */
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    margin: 56px auto 56px auto;
+    gap: 16px;
+}
+/* 개별 행 */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    align-items: center;
+}
+.row-label {
+    /* width: 110px; */
+    font-weight: 700;
+}
+/* 옵션 그룹 */
+.options label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+    gap: 6px;
+    line-height: 1;
+    margin-right: 8px;
+    cursor: pointer;
+}
+/* 체크박스 자체 */
+.options input[type="checkbox"] {
+    margin: 0; /* 기본 여백 초기화 */
+}
+/* 입력·셀렉트 공통 */
+input[type="text"] {
+    min-width: 240px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 15px;
+}
+/* 버튼 */
+.filter-btn-container {
+    display: flex;
+    justify-content: center;
+}
+.filter-search-btn {
+    padding: 6px 24px;
+    font-family: "BNK";
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    /* border: none; */
+    /* border-radius: 2px; */
+    /* background-color: white; */
+    /* background-color: #d4d4d4; */
+    /* transition: background 0.3s ease; */
+}
+.search-btn:hover {
+    /* background: #9d9d9d; */
+}
+
+/* ─────────── 메시지 ─────────── */
+.message {
+    margin-top: 28px;
+    font-size: 15px;
+    color: var(--primary);
+    display: none;
+}
+.message.show {
+    display: block;
+}
+
+/* ─────────── 펀드 리스트 ─────────── */
+.fund-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 800px;
+    margin: 40px auto 0 auto;
+    /* max-width: 1000px; */
+}
+/* 펀드 아이템 */
+.fund-item {
+    /* box-shadow: var(--card-shadow); */
+    /* padding: 20px 24px; */
+    display: flex; /* 가로 정렬 */
+    justify-content: center;
+    align-items: center; /* 수직 가운데 */
+    gap: var(--gap);
+    border: 1px solid var(--fund-item-border);
+    border-radius: 8px;
+    background: var(--fund-item-bg);
+    padding: 16px;
+}
+/* 메타 영역 */
+.fund-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--gap);
+}
+.fund-name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+.fund-detail {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 10px;
+    color: #666;
+}
+.fund-detail li::before {
+    content: "• ";
+    color: #999; /* 구분자 색상 */
+}
+.badge-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+}
+.type {
+    background: #f3f6ff;
+    color: #1a5fcc;
+}
+.region {
+    background: #f5f5f5;
+    color: #555;
+}
+.company {
+    background: #fff4cc;
+    color: #a46d00;
+}
+.risk {
+    color: #fff;
+}
+.risk-1 {
+    background: var(--risk1);
+}
+.risk-2 {
+    background: var(--risk2);
+}
+.risk-3 {
+    background: var(--risk3);
+}
+.risk-4 {
+    background: var(--risk4);
+}
+.risk-5 {
+    background: var(--risk5);
+}
+.risk-6 {
+    background: var(--risk6);
+}
+/* 수익률 */
+.fund-return {
+    display: flex;
+    flex: 1;
+    /* flex: 0 0 30%; */
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    /* gap: var(--gap); */
+}
+.stat {
+    /* text-align: center; */
+    /* justify-content: space-evenly; */
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    text-align: center;
+    justify-content: space-evenly;
+    gap: 16px;
+}
+.stat span {
+    font-size: 12px;
+    color: #777;
+}
+.stat strong {
+    font-size: 16px;
+    font-weight: 700;
+}
+.pos {
+    color: var(--pos);
+}
+.neg {
+    color: var(--neg);
+}
+
+/* ─────────── 더보기 버튼 ─────────── */
+.load-more-container {
+    text-align: center; /* 가운데 정렬 */
+    margin: 16px 0px; /* 카드와 여백 */
+}
+.load-more-btn {
+    padding: 6px 24px;
+    font-family: "BNK";
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}
+.load-more-btn:hover {
+    /* background: #eee; */
+}
+
+/* ─────────── Footer ─────────── */
+.page-footer {
+    margin-top: 60px;
+    padding: 40px 0;
+    background: #1f1f1f;
+    color: #cfcfcf;
+    font-size: 14px;
+}
+.footer-inner {
+    padding: 0px 20px;
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: space-between;
+}
+
+.footer-info {
+    flex: 1 1 260px;
+    line-height: 1.5;
+}
+.footer-logo {
+    margin: 0 0 12px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+.footer-logo span {
+    color: var(--risk2);
+} /* 포인트 컬러 사용 */
+
+.footer-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.footer-nav a {
+    color: #cfcfcf;
+    text-decoration: none;
+}
+.footer-nav a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.footer-contact {
+    flex: 1 1 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.sns a {
+    font-size: 20px;
+    margin-right: 10px;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+.sns a:hover {
+    opacity: 0.7;
+}
+
+/* ─────────── 반응형 ─────────── */
+/*
+@media (max-width: 640px) {
+    .row-label {
+        margin-bottom: 4px;
+    }
+    .options label {
+        font-size: 13px;
+    }
+}
+*/

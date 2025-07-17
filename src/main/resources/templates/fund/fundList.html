@@ -3,7 +3,10 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="../../static/css/fund/fund_list.css" />
         <title>펀드 투자 - 맞춤 추천</title>
+
+        <!-- 
         <style>
             * {
                 margin: 0;
@@ -417,445 +420,706 @@
                 }
             }
         </style>
+        -->
     </head>
     <body>
         <div class="container">
-            <!-- 헤더 섹션 -->
-            <div class="header">
-                <h1>맞춤 펀드 추천</h1>
-                <div class="header-info">
-                    <span id="user-welcome"
-                        >귀하의 투자성향에 맞는 펀드를 추천해드립니다.</span
-                    >
-                    <span
-                        id="invest-type-display"
-                        class="invest-type-badge"
-                        style="display: none"
-                    ></span>
-                </div>
+            <!-- 제목 영역 -->
+            <div class="title-container">
+                <h1 class="title">맞춤 펀드 추천</h1>
+                <p class="title-sub">
+                    원하는 조건을 선택하고 원하는 펀드를 찾아보세요.
+                </p>
             </div>
 
-            <!-- 필터 및 정보 섹션 -->
-            <div class="filter-section">
-                <div class="filter-info">
-                    <div class="total-count">
-                        전체에 대한
-                        <span id="total-count" class="count">0</span>건의
-                        검색결과가 있습니다.
+            <!-- 필터 영역 -->
+            <form id="fundForm" class="filter-container">
+                <!-- 위험등급 -->
+                <fieldset class="row">
+                    <legend class="row-label">위험등급</legend>
+                    <div class="options">
+                        <label for="risk1">
+                            <input
+                                type="checkbox"
+                                id="risk1"
+                                name="risk[]"
+                                value="1"
+                            />
+                            매우높은위험(1등급)
+                        </label>
+
+                        <label for="risk2">
+                            <input
+                                type="checkbox"
+                                id="risk2"
+                                name="risk[]"
+                                value="2"
+                            />
+                            높은위험(2등급)
+                        </label>
+
+                        <label for="risk3">
+                            <input
+                                type="checkbox"
+                                id="risk3"
+                                name="risk[]"
+                                value="3"
+                            />
+                            다소높은위험(3등급)
+                        </label>
+
+                        <label for="risk4">
+                            <input
+                                type="checkbox"
+                                id="risk4"
+                                name="risk[]"
+                                value="4"
+                            />
+                            보통위험(4등급)
+                        </label>
+
+                        <label for="risk5">
+                            <input
+                                type="checkbox"
+                                id="risk5"
+                                name="risk[]"
+                                value="5"
+                            />
+                            낮은위험(5등급)
+                        </label>
+
+                        <label for="risk6">
+                            <input
+                                type="checkbox"
+                                id="risk6"
+                                name="risk[]"
+                                value="6"
+                            />
+                            매우낮은위험(6등급)
+                        </label>
                     </div>
-                    <!-- 
-                        <div class="view-options">
-                            <button class="view-toggle active">리스트 보기</button>
-                            <button class="view-toggle">카드 보기</button>
-                        </div>
-                    -->
-                </div>
-            </div>
+                </fieldset>
 
-            <!-- 메시지 영역 -->
-            <div id="message-container"></div>
+                <!-- 펀드유형 -->
+                <fieldset class="row">
+                    <legend class="row-label">펀드유형</legend>
+                    <div class="options">
+                        <label for="type_mmf">
+                            <input
+                                type="checkbox"
+                                id="type_mmf"
+                                name="type[]"
+                                value="MMF"
+                            />
+                            MMF
+                        </label>
 
-            <!-- 펀드 리스트 테이블 -->
-            <div class="fund-table">
-                <div class="table-header">
-                    <div class="table-header-row">
-                        <div>펀드명</div>
-                        <div class="returns-header">
-                            <div class="returns-title">수익률(%)</div>
-                            <div class="returns-periods">
-                                <div class="period-header">1개월</div>
-                                <div class="period-header">3개월</div>
-                                <div class="period-header">6개월</div>
-                                <div class="period-header">1년</div>
-                                <div class="period-header">누적</div>
-                            </div>
-                        </div>
-                        <div>순자산<br />(단위:억)</div>
-                        <div>총보수(%)</div>
+                        <label for="type_bond">
+                            <input
+                                type="checkbox"
+                                id="type_bond"
+                                name="type[]"
+                                value="채권형"
+                            />
+                            채권형
+                        </label>
+
+                        <label for="type_bmix">
+                            <input
+                                type="checkbox"
+                                id="type_bmix"
+                                name="type[]"
+                                value="채권혼합형"
+                            />
+                            채권혼합형
+                        </label>
+
+                        <label for="type_smix">
+                            <input
+                                type="checkbox"
+                                id="type_smix"
+                                name="type[]"
+                                value="주식혼합형"
+                            />
+                            주식혼합형
+                        </label>
+
+                        <label for="type_stock">
+                            <input
+                                type="checkbox"
+                                id="type_stock"
+                                name="type[]"
+                                value="주식형"
+                            />
+                            주식형
+                        </label>
+
+                        <label for="type_deriv">
+                            <input
+                                type="checkbox"
+                                id="type_deriv"
+                                name="type[]"
+                                value="파생상품형"
+                            />
+                            파생상품형
+                        </label>
+
+                        <label for="type_fof">
+                            <input
+                                type="checkbox"
+                                id="type_fof"
+                                name="type[]"
+                                value="재간접"
+                            />
+                            재간접
+                        </label>
                     </div>
+                </fieldset>
+
+                <!-- 투자 지역 -->
+                <fieldset class="row">
+                    <legend class="row-label">투자 지역</legend>
+                    <div class="options">
+                        <label for="reg_kr">
+                            <input
+                                type="checkbox"
+                                id="reg_kr"
+                                name="region[]"
+                                value="KR"
+                            />
+                            국내
+                        </label>
+
+                        <label for="reg_gl">
+                            <input
+                                type="checkbox"
+                                id="reg_gl"
+                                name="region[]"
+                                value="GL"
+                            />
+                            글로벌
+                        </label>
+                    </div>
+                </fieldset>
+
+                <!-- 검색 버튼 -->
+                <div class="row filter-btn-container">
+                    <button type="submit" class="filter-search-btn">
+                        필터 검색
+                    </button>
+                </div>
+            </form>
+
+            <!-- 검색 결과 메세지 영역 -->
+            <div class="message"></div>
+
+            <!-- 펀드 리스트 영역 -->
+            <div id="fund-list" class="fund-list">
+                <!-- 카드 1개 예시 -->
+                <div class="fund-item" data-id="1">
+                    <!-- 메타 데이터 -->
+                    <section class="fund-item-section fund-meta">
+                        <div class="fund-name-container">
+                            <h3 class="fund-name">
+                                삼성KRX300 2배레버리지증권투자신탁
+                            </h3>
+                        </div>
+                        <ul class="fund-detail">
+                            <li>설정일&nbsp;2021-09-29</li>
+                            <li>기준가&nbsp;1,303.92</li>
+                            <li>순자산&nbsp;45.2억</li>
+                        </ul>
+                        <div class="badge-list">
+                            <span class="badge company">삼성자산운용</span>
+                            <span class="badge type">주식형</span>
+                            <span class="badge region">글로벌</span>
+                            <span class="badge risk risk-2"
+                                >높은위험(2등급)</span
+                            >
+                        </div>
+                    </section>
+
+                    <!-- 수익률 -->
+                    <section class="fund-item-section fund-return">
+                        <div class="stat">
+                            <span>1개월</span>
+                            <strong class="pos">22.81%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>3개월</span>
+                            <strong class="pos">69.95%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>6개월</span>
+                            <strong class="pos">62.87%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>12개월</span>
+                            <strong class="pos">75.22%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>누적</span>
+                            <strong class="pos">32.08%</strong>
+                        </div>
+                    </section>
                 </div>
 
-                <div id="fund-list"></div>
+                <!-- 카드 1개 예시 -->
+                <div class="fund-item" data-id="1">
+                    <!-- 메타 데이터 -->
+                    <section class="fund-item-section fund-meta">
+                        <div class="fund-name-container">
+                            <h3 class="fund-name">
+                                삼성KRX300 2배레버리지증권투자신탁
+                            </h3>
+                        </div>
+                        <ul class="fund-detail">
+                            <li>설정일&nbsp;2021-09-29</li>
+                            <li>기준가&nbsp;1,303.92</li>
+                            <li>순자산&nbsp;45.2억</li>
+                        </ul>
+                        <div class="badge-list">
+                            <span class="badge company">삼성자산운용</span>
+                            <span class="badge type">주식형</span>
+                            <span class="badge region">글로벌</span>
+                            <span class="badge risk risk-2"
+                                >높은위험(2등급)</span
+                            >
+                        </div>
+                    </section>
+
+                    <!-- 수익률 -->
+                    <section class="fund-item-section fund-return">
+                        <div class="stat">
+                            <span>1개월</span>
+                            <strong class="pos">22.81%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>3개월</span>
+                            <strong class="pos">69.95%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>6개월</span>
+                            <strong class="pos">62.87%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>12개월</span>
+                            <strong class="pos">75.22%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>누적</span>
+                            <strong class="pos">32.08%</strong>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 카드 1개 예시 -->
+                <div class="fund-item" data-id="1">
+                    <!-- 메타 데이터 -->
+                    <section class="fund-item-section fund-meta">
+                        <div class="fund-name-container">
+                            <h3 class="fund-name">
+                                삼성KRX300 2배레버리지증권투자신탁
+                            </h3>
+                        </div>
+                        <ul class="fund-detail">
+                            <li>설정일&nbsp;2021-09-29</li>
+                            <li>기준가&nbsp;1,303.92</li>
+                            <li>순자산&nbsp;45.2억</li>
+                        </ul>
+                        <div class="badge-list">
+                            <span class="badge company">삼성자산운용</span>
+                            <span class="badge type">주식형</span>
+                            <span class="badge region">글로벌</span>
+                            <span class="badge risk risk-2"
+                                >높은위험(2등급)</span
+                            >
+                        </div>
+                    </section>
+
+                    <!-- 수익률 -->
+                    <section class="fund-item-section fund-return">
+                        <div class="stat">
+                            <span>1개월</span>
+                            <strong class="pos">22.81%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>3개월</span>
+                            <strong class="pos">69.95%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>6개월</span>
+                            <strong class="pos">62.87%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>12개월</span>
+                            <strong class="pos">75.22%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>누적</span>
+                            <strong class="pos">32.08%</strong>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 카드 1개 예시 -->
+                <div class="fund-item" data-id="1">
+                    <!-- 메타 데이터 -->
+                    <section class="fund-item-section fund-meta">
+                        <div class="fund-name-container">
+                            <h3 class="fund-name">
+                                삼성KRX300 2배레버리지증권투자신탁
+                            </h3>
+                        </div>
+                        <ul class="fund-detail">
+                            <li>설정일&nbsp;2021-09-29</li>
+                            <li>기준가&nbsp;1,303.92</li>
+                            <li>순자산&nbsp;45.2억</li>
+                        </ul>
+                        <div class="badge-list">
+                            <span class="badge company">삼성자산운용</span>
+                            <span class="badge type">주식형</span>
+                            <span class="badge region">글로벌</span>
+                            <span class="badge risk risk-2"
+                                >높은위험(2등급)</span
+                            >
+                        </div>
+                    </section>
+
+                    <!-- 수익률 -->
+                    <section class="fund-item-section fund-return">
+                        <div class="stat">
+                            <span>1개월</span>
+                            <strong class="pos">22.81%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>3개월</span>
+                            <strong class="pos">69.95%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>6개월</span>
+                            <strong class="pos">62.87%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>12개월</span>
+                            <strong class="pos">75.22%</strong>
+                        </div>
+                        <div class="stat">
+                            <span>누적</span>
+                            <strong class="pos">32.08%</strong>
+                        </div>
+                    </section>
+                </div>
             </div>
 
-            <!-- 더보기 버튼 -->
-            <div
-                id="load-more-container"
-                class="load-more-container"
-                style="display: none"
-            >
-                <button id="load-more-btn" class="load-more-btn">
-                    <span class="btn-text">더보기</span>
-                </button>
+            <!-- 더보기 버튼 영역 -->
+            <div class="load-more-container">
+                <button id="load-more-btn" class="load-more-btn">더보기</button>
             </div>
         </div>
 
-        <script th:inline="javascript">
-            // Thymeleaf에서 전달받은 데이터
-            const USER_ID = /*[[${userId}]]*/ null;
-            const INVEST_TYPE = /*[[${investType}]]*/ null;
+        <footer class="page-footer">
+            <div class="footer-inner">
+                <!-- 회사·서비스 정보 -->
+                <section class="footer-info">
+                    <h4 class="footer-logo">FUND<span>INFO</span></h4>
+                    <p>
+                        (주) 펀드인포 &nbsp;|&nbsp; 대표 홍길동 &nbsp;|&nbsp;
+                        사업자등록번호 123‑45‑67890<br />
+                        서울특별시 영등포구 여의대로 97 3F&nbsp; ( 우 07320 )
+                    </p>
+                    <p class="copyright">
+                        © 2025 FUNDINFO Co., Ltd. All rights reserved.
+                    </p>
+                </section>
 
-            /**
-             * 펀드 리스트 관리 클래스
-             * - 페이지 로드 시 자동으로 사용자 투자성향에 맞는 펀드 조회
-             * - 무한 스크롤 형태의 더보기 기능 제공
-             */
-            class FundListManager {
-                constructor() {
-                    // 상태 변수들
-                    this.funds = []; // 로드된 펀드 목록
-                    this.loading = false; // 로딩 상태
-                    this.hasMore = true; // 더 가져올 데이터 존재 여부
-                    this.page = 1; // 현재 페이지
-                    this.limit = 10; // 한 번에 로드할 펀드 수
-                    this.userId = USER_ID; // 사용자 ID
-                    this.investType = INVEST_TYPE; // 투자 성향
+                <!-- 메뉴 링크 -->
+                <nav class="footer-nav">
+                    <ul>
+                        <li><a href="#">서비스 소개</a></li>
+                        <li><a href="#">이용약관</a></li>
+                        <li><a href="#">개인정보처리방침</a></li>
+                        <li><a href="#">고객센터</a></li>
+                    </ul>
+                </nav>
 
-                    // DOM 요소들
-                    this.fundListEl = document.getElementById("fund-list");
-                    this.loadMoreBtn = document.getElementById("load-more-btn");
-                    this.loadMoreContainer = document.getElementById(
-                        "load-more-container"
+                <!-- SNS / 연락처 -->
+                <section class="footer-contact">
+                    <p>
+                        <strong>고객센터 | 1588‑0000</strong
+                        ><br />평일 09:00‑18:00
+                    </p>
+                    <div class="sns">
+                        <a href="#" aria-label="페이스북">📘</a>
+                        <a href="#" aria-label="트위터">🐦</a>
+                        <a href="#" aria-label="링크드인">💼</a>
+                    </div>
+                </section>
+            </div>
+        </footer>
+
+        <script>
+            // 전역 변수
+            let currentPage = 1; // 현재 로딩할 페이지 번호를 저장
+            let pageSize = 10; // 페이지의 최대 요청 갯수
+            let isLoading = false; // 현재 API 호출 중인지 상태를 나타내는 플래그
+            let hasMoreData = true; // 더 가져올 데이터가 있는지 여부를 나타내는 플래그
+            let investType = null; // 사용자의 투자 성향 타입 번호를 저장
+            let investTypeName = ""; // 투자 성향 타입의 한글 이름을 저장
+
+            // 페이지 로드 시 초기화
+            // HTML 문서가 완전히 로드된 후 초기화 작업 수행
+            document.addEventListener("DOMContentLoaded", function () {
+                // Thymeleaf에서 전달된 데이터 가져오기
+                // 메타 태그 검색: document.querySelector()로 HTML의 메타 태그에서 투자 성향 정보 찾기
+                const investTypeElement = document.querySelector(
+                    'meta[name="invest-type"]'
+                );
+                const userIdElement = document.querySelector(
+                    'meta[name="user-id"]'
+                );
+
+                // 데이터 파싱: parseInt()로 문자열을 숫자로 변환하여 investType 변수에 저장
+                if (investTypeElement) {
+                    investType = parseInt(
+                        investTypeElement.getAttribute("content")
                     );
-                    this.messageContainer =
-                        document.getElementById("message-container");
-                    this.totalCountEl = document.getElementById("total-count");
-                    this.investTypeDisplayEl = document.getElementById(
-                        "invest-type-display"
-                    );
-                    this.userWelcomeEl =
-                        document.getElementById("user-welcome");
-
-                    this.init();
                 }
 
-                /**
-                 * 초기화 - 이벤트 리스너 등록 및 데이터 로드
-                 */
-                init() {
-                    console.log("FundListManager 초기화 시작");
-                    console.log("사용자 정보:", {
-                        userId: this.userId,
-                        investType: this.investType,
-                    });
+                // 투자 성향 정보 설정
+                // setInvestTypeInfo() 호출로 화면에 표시할 투자 성향 이름 설정
+                setInvestTypeInfo();
 
-                    // 더보기 버튼 이벤트 등록
-                    this.loadMoreBtn.addEventListener("click", () =>
-                        this.handleLoadMore()
+                // 초기 데이터 로드
+                // loadMoreFunds() 호출로 첫 번째 페이지 데이터 가져오기
+                loadMoreFunds();
+            });
+
+            // 투자 성향 정보 설정
+            // 투자 성향 숫자를 한글 이름으로 변환하여 화면에 표시
+            function setInvestTypeInfo() {
+                const investTypeNames = {
+                    1: "안전 추구형",
+                    2: "안전 선호형",
+                    3: "위험 중립형",
+                    4: "적극 투자형",
+                    5: "공격 투자형",
+                };
+
+                investTypeName = investTypeNames[investType] || "알 수 없음";
+                document.getElementById("investTypeName").textContent =
+                    investTypeName;
+            }
+
+            // 더 많은 펀드 로드
+            // 서버에서 펀드 데이터를 가져와 화면에 추가하는 핵심 함수
+            async function loadMoreFunds() {
+                // 중복 호출 방지
+                if (isLoading || !hasMoreData) return;
+
+                // 로딩 상태 설정
+                isLoading = true;
+                showLoading(true);
+                updateLoadMoreButton();
+
+                try {
+                    // API 호출
+                    const response = await fetch(
+                        `/api/funds/list?page=${currentPage}&limit=${pageSize}&investType=${investType}`
                     );
+                    const data = await response.json();
 
-                    // 투자성향이 있으면 자동으로 펀드 조회
-                    if (this.investType) {
-                        this.updateInvestTypeDisplay();
-                        this.loadFunds(true);
+                    if (data.success) {
+                        // 성공 시 데이터 처리
+                        const funds = data.data.funds;
+                        const pagination = data.pagination;
+
+                        // 펀드 목록 렌더링
+                        renderFunds(funds);
+
+                        // 페이지 정보 업데이트
+                        currentPage++;
+                        hasMoreData = pagination.hasNext;
+
+                        // 더보기 버튼 상태 업데이트
+                        if (!hasMoreData) {
+                            document.getElementById(
+                                "loadMoreBtn"
+                            ).style.display = "none";
+                            document.getElementById(
+                                "noMoreData"
+                            ).style.display = "block";
+                        }
+
+                        // 에러 메시지 제거
+                        clearErrorMessage();
                     } else {
-                        this.showMessage(
-                            "투자 성향 정보를 찾을 수 없습니다.",
-                            "error"
+                        // 실패 시 에러 처리
+                        showErrorMessage(
+                            data.message ||
+                                "펀드 정보를 불러오는데 실패했습니다."
                         );
                     }
-                }
-
-                /**
-                 * 투자성향 표시 업데이트
-                 */
-                updateInvestTypeDisplay() {
-                    const investTypeNames = {
-                        1: "안정형",
-                        2: "안정 추구형",
-                        3: "위험 중립형",
-                        4: "적극 투자형",
-                        5: "공격 투자형",
-                    };
-
-                    const typeName =
-                        investTypeNames[this.investType] || "알 수 없음";
-                    this.investTypeDisplayEl.textContent = typeName;
-                    this.investTypeDisplayEl.style.display = "inline-block";
-
-                    this.userWelcomeEl.textContent = `${typeName} 투자자님께 맞는 펀드를 추천해드립니다.`;
-                }
-
-                /**
-                 * 펀드 데이터 조회
-                 * @param {boolean} isInitial - 초기 로드 여부
-                 */
-                async loadFunds(isInitial = false) {
-                    if (this.loading) return;
-
-                    console.log(
-                        `펀드 조회 시작: page=${this.page}, investType=${this.investType}`
+                } catch (error) {
+                    // 네트워크 오류 처리
+                    console.error("펀드 로드 오류:", error);
+                    showErrorMessage(
+                        "서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요."
                     );
-
-                    this.setLoading(true);
-                    this.clearMessage();
-
-                    try {
-                        // API 호출
-                        const response = await fetch(
-                            `/api/funds/list?page=${this.page}&limit=${this.limit}&investType=${this.investType}`
-                        );
-                        const data = await response.json();
-
-                        if (!data.success) {
-                            throw new Error(
-                                data.message || "데이터 로드에 실패했습니다."
-                            );
-                        }
-
-                        console.log("API 응답:", data);
-
-                        // 데이터 업데이트
-                        if (isInitial) {
-                            this.funds = data.data.funds;
-                        } else {
-                            this.funds = [...this.funds, ...data.data.funds];
-                        }
-
-                        // 페이지네이션 정보 업데이트
-                        this.hasMore = data.pagination.hasNext;
-                        this.updateTotalCount(data.pagination.total);
-
-                        // 화면에 렌더링
-                        this.renderFunds(
-                            isInitial ? this.funds : data.data.funds
-                        );
-                        this.updateLoadMoreButton();
-
-                        console.log(
-                            `펀드 조회 완료: ${data.data.funds.length}개 로드됨`
-                        );
-                    } catch (error) {
-                        console.error("펀드 조회 실패:", error);
-                        this.showMessage(
-                            "펀드 정보를 불러오는 중 오류가 발생했습니다.",
-                            "error"
-                        );
-                    } finally {
-                        this.setLoading(false);
-                    }
-                }
-
-                /**
-                 * 펀드 목록 화면에 렌더링
-                 * @param {Array} fundsToRender - 렌더링할 펀드 배열
-                 */
-                renderFunds(fundsToRender) {
-                    if (this.page === 1) {
-                        this.fundListEl.innerHTML = "";
-                    }
-
-                    if (fundsToRender.length === 0 && this.page === 1) {
-                        this.fundListEl.innerHTML = `
-                        <div class="no-data">
-                            <div class="no-data-icon">📊</div>
-                            <h3>추천할 펀드가 없습니다</h3>
-                            <p>현재 투자성향에 맞는 펀드가 없습니다.</p>
-                        </div>
-                    `;
-                        return;
-                    }
-
-                    // 각 펀드를 화면에 추가
-                    fundsToRender.forEach((fund) => {
-                        const fundElement = this.createFundElement(fund);
-                        this.fundListEl.appendChild(fundElement);
-                    });
-                }
-
-                /**
-                 * 개별 펀드 요소 생성
-                 * @param {Object} fund - 펀드 데이터
-                 * @returns {HTMLElement} 펀드 요소
-                 */
-                createFundElement(fund) {
-                    const fundEl = document.createElement("div");
-                    fundEl.className = "fund-item";
-
-                    // 수익률 포맷팅 및 클래스 결정
-                    const formatReturn = (value) => {
-                        if (value === null || value === undefined) return "-";
-                        return `${value > 0 ? "+" : ""}${parseFloat(
-                            value
-                        ).toFixed(2)}%`;
-                    };
-
-                    const getReturnClass = (value) => {
-                        if (value === null || value === undefined)
-                            return "return-neutral";
-                        return value > 0
-                            ? "return-positive"
-                            : value < 0
-                            ? "return-negative"
-                            : "return-neutral";
-                    };
-
-                    // 위험등급 텍스트
-                    const getRiskLevelText = (level) => {
-                        const levels = {
-                            1: "매우높음",
-                            2: "높음",
-                            3: "보통",
-                            4: "낮음",
-                            5: "매우낮음",
-                            6: "매우낮음",
-                        };
-                        return levels[level] || "-";
-                    };
-
-                    // 운용규모 포맷팅 (억원 단위)
-                    const formatAUM = (aum) => {
-                        if (!aum) return "-";
-                        return aum;
-                        // return `${Math.round(aum / 100000000)}억원`;
-                    };
-
-                    fundEl.innerHTML = `
-                    <div class="fund-info">
-                        <div class="fund-name">
-                            <a href="/fund/${
-                                fund.fundId
-                            }" class="fund-name-link">
-                                ${fund.fundName}
-                            </a>
-                        </div>
-                        <div class="fund-details">
-                            <span class="fund-tag">${
-                                fund.fundType || "-"
-                            }</span>
-                            <span class="fund-tag">${
-                                fund.investmentRegion || "-"
-                            }</span>
-                            <span class="fund-tag">${
-                                fund.managementCompany || "-"
-                            }</span>
-                            <span class="risk-level">위험등급 ${
-                                fund.riskLevel
-                            } (${getRiskLevelText(fund.riskLevel)})</span>
-                        </div>
-                    </div>
-                    <div class="return-value ${getReturnClass(
-                        fund.month1Return
-                    )}">
-                        ${formatReturn(fund.month1Return)}
-                    </div>
-                    <div class="return-value ${getReturnClass(
-                        fund.month3Return
-                    )}">
-                        ${formatReturn(fund.month3Return)}
-                    </div>
-                    <div class="return-value ${getReturnClass(
-                        fund.month6Return
-                    )}">
-                        ${formatReturn(fund.month6Return)}
-                    </div>
-                    <div class="return-value ${getReturnClass(
-                        fund.month12Return
-                    )}">
-                        ${formatReturn(fund.month12Return)}
-                    </div>
-                    <div class="return-value ${getReturnClass(
-                        fund.month12Return
-                    )}">
-                        ${formatReturn(fund.month12Return)}
-                    </div>
-                    <div class="fund-scale">
-                        ${formatAUM(fund.aum)}
-                    </div>
-                    <div class="fund-fee">
-                        ${
-                            fund.totalExpenseRatio
-                                ? fund.totalExpenseRatio + "%"
-                                : "-"
-                        }
-                    </div>
-                `;
-
-                    return fundEl;
-                }
-
-                /**
-                 * 더보기 버튼 클릭 핸들러
-                 */
-                handleLoadMore() {
-                    this.page += 1;
-                    this.loadFunds(false);
-                }
-
-                /**
-                 * 로딩 상태 설정
-                 * @param {boolean} loading - 로딩 상태
-                 */
-                setLoading(loading) {
-                    this.loading = loading;
-                    const btnText = this.loadMoreBtn.querySelector(".btn-text");
-
-                    if (loading) {
-                        btnText.textContent = "로딩 중...";
-                        this.loadMoreBtn.disabled = true;
-
-                        // 스피너 추가
-                        const spinner = document.createElement("div");
-                        spinner.className = "loading-spinner";
-                        this.loadMoreBtn.insertBefore(spinner, btnText);
-                    } else {
-                        btnText.textContent = "더보기";
-                        this.loadMoreBtn.disabled = false;
-
-                        // 스피너 제거
-                        const spinner =
-                            this.loadMoreBtn.querySelector(".loading-spinner");
-                        if (spinner) {
-                            spinner.remove();
-                        }
-                    }
-                }
-
-                /**
-                 * 더보기 버튼 표시/숨김 업데이트
-                 */
-                updateLoadMoreButton() {
-                    if (this.hasMore && this.funds.length > 0) {
-                        this.loadMoreContainer.style.display = "block";
-                    } else {
-                        this.loadMoreContainer.style.display = "none";
-                    }
-                }
-
-                /**
-                 * 전체 개수 업데이트
-                 * @param {number} total - 전체 펀드 수
-                 */
-                updateTotalCount(total) {
-                    this.totalCountEl.textContent = total.toLocaleString();
-                }
-
-                /**
-                 * 메시지 표시
-                 * @param {string} message - 메시지 내용
-                 * @param {string} type - 메시지 타입 (error, info)
-                 */
-                showMessage(message, type = "info") {
-                    this.messageContainer.innerHTML = `
-                    <div class="message ${type}">
-                        ${message}
-                    </div>
-                `;
-                }
-
-                /**
-                 * 메시지 제거
-                 */
-                clearMessage() {
-                    this.messageContainer.innerHTML = "";
+                } finally {
+                    // 로딩 상태 해제
+                    isLoading = false;
+                    showLoading(false);
+                    updateLoadMoreButton();
                 }
             }
 
-            // 페이지 로드 완료 시 펀드 리스트 관리자 초기화
-            document.addEventListener("DOMContentLoaded", () => {
-                console.log("페이지 로드 완료, FundListManager 시작");
-                new FundListManager();
-            });
+            // 펀드 목록 렌더링
+            // 펀드 배열을 받아서 화면에 렌더링
+            function renderFunds(funds) {
+                // 펀드 목록을 담을 컨테이너 요소 찾기
+                const fundList = document.getElementById("fund-list");
+
+                funds.forEach((fund) => {
+                    // 각 펀드의 HTML 요소 생성
+                    const fundElement = createFundElement(fund);
+                    // 생성된 요소를 컨테이너에 추가
+                    fundList.appendChild(fundElement);
+                });
+            }
+
+            // 펀드 요소 생성
+            // 개별 펀드 데이터를 HTML 요소로 변환
+            function createFundElement(fund) {
+                const fundDiv = document.createElement("div"); // div 요소 생성
+                fundDiv.className = "fund-item"; // 클래스 fund-item 적용
+
+                // 수익률 클래스 결정
+                // 기간별 수익률
+                const return1mStatClassName =
+                    fund.return1m >= 0 ? "pos" : "neg";
+                const return3mStatClassName =
+                    fund.return3m >= 0 ? "pos" : "neg";
+                const return6mStatClassName =
+                    fund.return6m >= 0 ? "pos" : "neg";
+                const return12mStatClassName =
+                    fund.return12m >= 0 ? "pos" : "neg";
+
+                // 펀드ID 추출
+
+                // 펀드명 추출
+                // 설정일 추출
+                // 기준가 추출
+                // 순자산 추출
+
+                // 운용사 추출
+                // 펀드 유형 추출
+                // 투자 지역 추출
+                //
+
+                const returnClass =
+                    fund.return1Year >= 0
+                        ? "return-positive"
+                        : "return-negative";
+                const returnSign = fund.return1Year >= 0 ? "+" : "";
+
+                fundDiv.innerHTML = `
+                    <div class="fund-header">
+                        <div>
+                            <div class="fund-name">${fund.fundName}</div>
+                            <div class="fund-company">${fund.company}</div>
+                        </div>
+                        <div class="fund-type">${fund.fundType}</div>
+                    </div>
+                    <div class="fund-details">
+                        <div class="detail-item">
+                            <span class="detail-label">기준가</span>
+                            <span class="detail-value">${formatNumber(
+                                fund.basePrice
+                            )}원</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">전일대비</span>
+                            <span class="detail-value ${returnClass}">${returnSign}${formatNumber(
+                    fund.dailyChange
+                )}원</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">1년 수익률</span>
+                            <span class="detail-value ${returnClass}">${returnSign}${
+                    fund.return1Year
+                }%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">위험등급</span>
+                            <span class="detail-value">${
+                                fund.riskLevel
+                            }등급</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">투자지역</span>
+                            <span class="detail-value">${
+                                fund.investmentRegion
+                            }</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">최소가입금액</span>
+                            <span class="detail-value">${formatNumber(
+                                fund.minInvestAmount
+                            )}원</span>
+                        </div>
+                    </div>
+                `;
+
+                return fundDiv;
+            }
+
+            // 숫자 포맷팅
+            function formatNumber(number) {
+                return new Intl.NumberFormat("ko-KR").format(number);
+            }
+
+            // 로딩 상태 표시
+            function showLoading(show) {
+                const loading = document.getElementById("loading");
+                if (show) {
+                    loading.classList.add("show");
+                } else {
+                    loading.classList.remove("show");
+                }
+            }
+
+            // 더보기 버튼 상태 업데이트
+            function updateLoadMoreButton() {
+                const loadMoreBtn = document.getElementById("loadMoreBtn");
+                loadMoreBtn.disabled = isLoading;
+                loadMoreBtn.textContent = isLoading ? "로딩 중..." : "더보기";
+            }
+
+            // 에러 메시지 표시
+            function showErrorMessage(message) {
+                const errorContainer =
+                    document.getElementById("errorContainer");
+                errorContainer.innerHTML = `
+                <div class="error-message">
+                    ${message}
+                </div>
+            `;
+            }
+
+            // 에러 메시지 제거
+            function clearErrorMessage() {
+                const errorContainer =
+                    document.getElementById("errorContainer");
+                errorContainer.innerHTML = "";
+            }
+
+            // 무한 스크롤 옵션 (선택사항)
+            // window.addEventListener('scroll', function() {
+            //     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
+            //         loadMoreFunds();
+            //     }
+            // });
         </script>
     </body>
 </html>
