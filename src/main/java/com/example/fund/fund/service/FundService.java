@@ -1,23 +1,45 @@
 package com.example.fund.fund.service;
 
-import com.example.fund.fund.dto.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+
+import javax.imageio.ImageIO;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.example.fund.fund.dto.FundDetailResponse;
+import com.example.fund.fund.dto.FundRegisterRequest;
+import com.example.fund.fund.dto.FundResponseDTO;
+import com.example.fund.fund.dto.FundReturnDTO;
 import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.entity.FundAsset;
 import com.example.fund.fund.entity.FundDailyPrice;
+import com.example.fund.fund.entity.FundDocument;
+import com.example.fund.fund.entity.FundPolicy;
 import com.example.fund.fund.repository.FundAssetRepository;
 import com.example.fund.fund.repository.FundDailyPriceRepository;
+import com.example.fund.fund.repository.FundDocumentRepository;
+import com.example.fund.fund.repository.FundPolicyRepository;
 import com.example.fund.fund.repository.FundRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -147,4 +169,92 @@ public class FundService {
     public void delete(Long id) {
         fundRepository.deleteById(id);
     }
+
+    /*PDF 저장 & JPG 변환*/
+    private final FundPolicyRepository fundPolicyRepository;
+    private final FundDocumentRepository fundDocumentRepository;
+
+    private final String UPLOAD_DIR = "C:\\bnk_project\\data\\uploads\\fund_document\\";
+
+    @Transactional
+    public void registerFundWithAllDocuments(FundRegisterRequest request,
+                                            MultipartFile fileTerms,
+                                            MultipartFile fileManual,
+                                            MultipartFile fileProspectus) throws IOException {
+        Fund fund = fundRepository.findByFundId(request.getFundId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 펀드 ID"));
+
+        // 정책 저장 (한 번만)
+        FundPolicy policy = FundPolicy.builder()
+                .fund(fund)
+                .fundPayout(request.getFundPayout())
+                .fundTheme(request.getFundTheme())
+                .fundActive(request.getFundActive())
+                .fundRelease(request.getFundRelease())
+                .build();
+        fundPolicyRepository.save(policy);
+
+        // 문서 저장
+        saveFundDocument(fund, fileTerms, "약관");
+        saveFundDocument(fund, fileManual, "상품설명서");
+        saveFundDocument(fund, fileProspectus, "투자설명서");
+    }
+
+    private void saveFundDocument(Fund fund, MultipartFile file, String docType) throws IOException {
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String generatedDocTitle = fund.getFundName() + "_" + docType + "_" + today;
+        String filePath = savePdfAndConvertToJpg(file, "fund_doc", generatedDocTitle);
+
+        FundDocument doc = FundDocument.builder()
+                .fund(fund)
+                .docType(docType)
+                .docTitle(generatedDocTitle)
+                .filePath(filePath)
+                .fileFormat("PDF")
+                .uploadedAt(LocalDate.now())
+                .build();
+
+        fundDocumentRepository.save(doc);
+    }
+
+
+    private String savePdfAndConvertToJpg(MultipartFile file, String fileType, String filename) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".pdf")) {
+            throw new IOException("Only PDF files are allowed.");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.equals("application/pdf")) {
+            throw new IOException("Invalid file type.");
+        }
+
+        String dateFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String storedFilename = filename;
+
+        Path dirPath = Paths.get(UPLOAD_DIR, fileType, dateFolder);
+        Files.createDirectories(dirPath);
+
+        Path pdfPath = dirPath.resolve(storedFilename + ".pdf");
+        Files.copy(file.getInputStream(), pdfPath, StandardCopyOption.REPLACE_EXISTING);
+
+        try (PDDocument document = PDDocument.load(pdfPath.toFile())) {
+            PDFRenderer renderer = new PDFRenderer(document);
+            for (int i = 0; i < document.getNumberOfPages(); i++) {
+                BufferedImage image = renderer.renderImageWithDPI(i, 125);
+                String jpgName = String.format("%s_%d.jpg", storedFilename, i + 1);
+                Path jpgPath = dirPath.resolve(jpgName);
+                ImageIO.write(image, "jpg", jpgPath.toFile());
+            }
+        }
+
+        return pdfPath.toString(); // DB에는 PDF 경로 저장
+    }
+
+    public List<Fund> getAllFunds() {
+        return fundRepository.findAll(); 
+    }
+
+
+
 }
