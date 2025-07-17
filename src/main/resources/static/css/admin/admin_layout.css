@@ -149,10 +149,6 @@ body {
   border-bottom: 1px solid rgba(255,255,255,0.3);
 }
 .admin-aside nav li a {
-  display: block;
-  padding: 10px 24px;
-  font-size: 0.9rem;
-  color: #fff;
   text-decoration: none;
 }
 .admin-aside nav li a:hover,

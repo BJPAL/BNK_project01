@@ -14,6 +14,12 @@
       <div class="main-wrapper">
         <div th:replace="admin/admin_aside :: adminAside"></div>
         <main class="content qna-answered-detail">
+          <!-- 목록으로 돌아가기 버튼 -->
+          <div class="back-container">
+            <a th:href="@{/admin/qnaList}" class="btn-back">
+              << 목록으로 돌아가기</a
+            >
+          </div>
           <!-- 전체 내용 감싸는 박스 -->
           <div class="detail-container">
             <h2 class="qna-title" th:text="${qna.title}">문의 제목</h2>
@@ -40,13 +46,6 @@
                 문의 답변 내용
               </div>
             </div>
-          </div>
-
-          <!-- 목록으로 돌아가기 버튼 -->
-          <div class="back-container">
-            <a th:href="@{/admin/qnaList}" class="btn-back">
-              << 목록으로 돌아가기</a
-            >
           </div>
         </main>
       </div>
