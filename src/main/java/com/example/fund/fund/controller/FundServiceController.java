@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,45 +35,15 @@ import com.example.fund.fund.dto.FundRegisterRequest;
 import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.entity.FundDocument;
 import com.example.fund.fund.entity.FundPolicy;
+import com.example.fund.fund.repository.FundDocumentRepository;
+import com.example.fund.fund.repository.FundPolicyRepository;
+import com.example.fund.fund.repository.FundRepository;
 import com.example.fund.fund.service.FundService;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/fund")
+@RequestMapping("/fund")
 public class FundServiceController {
-
-    @Autowired
-    private FundService fundService;
-    
-    // 펀드 CRUD
-
-    @GetMapping
-    public List<Fund> getAllFunds() {
-        return fundService.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Fund> getFund(@PathVariable Long id) {
-        return fundService.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public ResponseEntity<Fund> createFund(@RequestBody Fund fund) {
-        return ResponseEntity.ok(fundService.save(fund));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Fund> updateFund(@PathVariable Long id, @RequestBody Fund fund) {
-        return ResponseEntity.ok(fundService.update(id, fund));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFund(@PathVariable Long id) {
-        fundService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
 
     // 파일 업로드
 
@@ -141,5 +112,91 @@ public class FundServiceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed: " + e.getMessage());
         }
     }
+
+    @Autowired
+    private FundRepository fundRepository;
+    @Autowired
+    private FundPolicyRepository fundPolicyRepository;
+    @Autowired
+    private FundDocumentRepository fundDocumentRepository;
+
+    @PostMapping("/register")
+        public ResponseEntity<String> registerFund(
+                @RequestPart("data") FundRegisterRequest request,
+                @RequestPart("file") MultipartFile file) {
+
+            try {
+                // 1. 기존 펀드 정보 가져오기
+                Fund fund = fundRepository.findByFundId(request.getFundId())
+                        .orElse(null);
+                if (fund == null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("존재하지 않는 펀드 ID");
+                }
+
+                // 2. 정책 저장
+                FundPolicy policy = FundPolicy.builder()
+                        .fund(fund)
+                        .fundPayout(request.getFundPayout())
+                        .fundTheme(request.getFundTheme())
+                        .fundActive(request.getFundActive())
+                        .fundRelease(request.getFundRelease())
+                        .build();
+                fundPolicyRepository.save(policy);
+
+                // 3. 파일 저장 및 변환
+                String filePath = savePdfAndConvert(file, "fund_doc", fund.getFundId());
+
+                // 4. 문서 저장
+                FundDocument doc = FundDocument.builder()
+                        .fund(fund)
+                        .docType(request.getDocType())
+                        .docTitle(request.getDocTitle())
+                        .filePath(filePath)
+                        .fileFormat(request.getFileFormat())
+                        .uploadedAt(LocalDate.now())
+                        .build();
+                fundDocumentRepository.save(doc);
+
+                return ResponseEntity.ok("펀드 + 정책 + 문서 등록 완료");
+
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("에러: " + e.getMessage());
+            }
+        }
+        
+        private String savePdfAndConvert(MultipartFile file, String fileType, String filename) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".pdf")) {
+            throw new IOException("Only PDF files are allowed.");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.equals("application/pdf")) {
+            throw new IOException("Invalid file type.");
+        }
+
+        String dateFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmmss"));
+        String storedFilename = filename + "_" + timestamp;
+        Path dirPath = Paths.get(UPLOAD_DIR, fileType, dateFolder);
+        Files.createDirectories(dirPath);
+
+        Path pdfPath = dirPath.resolve(storedFilename + ".pdf");
+        Files.copy(file.getInputStream(), pdfPath, StandardCopyOption.REPLACE_EXISTING);
+
+        try (PDDocument document = PDDocument.load(pdfPath.toFile())) {
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+            int pageCount = document.getNumberOfPages();
+            for (int i = 0; i < pageCount; i++) {
+                BufferedImage bim = pdfRenderer.renderImage(i);
+                String jpgName = String.format("%s_%d.jpg", storedFilename, i + 1);
+                Path jpgPath = dirPath.resolve(jpgName);
+                ImageIO.write(bim, "jpg", jpgPath.toFile());
+            }
+        }
+
+        return pdfPath.toString();
+    }
+
 
 }
