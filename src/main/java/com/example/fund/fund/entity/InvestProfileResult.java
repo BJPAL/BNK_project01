@@ -39,7 +39,7 @@ public class InvestProfileResult {
 
     // 선택한 옵션 정보: { "1": 2, "2": 3, "3": [1, 4] } 등 JSON 형태
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String answerSnapshot;
 
     @Column(nullable = false)
