@@ -1,6 +1,7 @@
 package com.example.fund.fund.controller;
 
 import com.example.fund.fund.dto.*;
+import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.entity.InvestProfileResult;
 import com.example.fund.fund.repository.InvestProfileResultRepository;
 import com.example.fund.fund.service.FundService;
@@ -118,6 +119,10 @@ public class FundApiController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam int investType
+            // 추가 필터링 항목
+            // 펀드 유형 - 체크 박스 - (MMF, 채권형, 채권 혼합형, 주식 혼합형, 주식형, 파생 상품형, 재간접)
+            // 투자 지역 - 체크 박스 - (국내, 글로벌)
+            // 위험 등급 - 체크 박스 (1, 2, 3, 4, 5, 6)
     ) {
         try {
             // 투자성향 유효성 검사
@@ -176,14 +181,8 @@ public class FundApiController {
 
     /** 펀드 상세 데이터 조회 - REST API */
     @GetMapping("/{fundId}")
-    public ResponseEntity<FundDetailResponse> getFundDetail(@PathVariable Long fundId) {
-        try {
-            FundDetailResponse response = fundService.getFundDetail(fundId);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace(); // 간단한 로그
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Fund> getFundDetail(@PathVariable Long fundId) {
+        return null;
     }
 
 
