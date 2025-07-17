@@ -21,19 +21,35 @@
                       box-shadow:0 6px 18px rgba(0,0,0,.06);}
     h1{font-size:26px;color:var(--primary);margin-bottom:28px;}
 
-    /* 요약 버튼 */
-    .summary-bar{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap;}
-    .sum-item{
-      display:flex;align-items:center;gap:8px;
-      min-width:140px;justify-content:center;
-      padding:10px 24px;border-radius:9999px;
-      border:2px solid var(--primary);background:#fff;color:var(--primary);
-      font:700 15px/1 "Segoe UI";cursor:pointer;user-select:none;
-      transition:background .15s,color .15s,box-shadow .15s;
-      box-shadow:0 2px 6px rgba(0,0,0,.05);
-    }
-    .sum-item:hover,
-    .sum-item.active{background:var(--primary);color:#fff;}
+    /* 요약 버튼 (총 건수 제거 + 디자인 정리) */
+.summary-bar{
+  display:flex;
+  gap:20px;
+  margin-bottom:32px;
+  flex-wrap:wrap;
+}
+
+.sum-item{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:160px;
+  padding:14px 36px;
+  border:2px solid var(--primary);
+  border-radius:9999px;         /* pill */
+  background:#fff;
+  color:var(--primary);
+  font:700 17px/1 "Segoe UI";
+  cursor:pointer;
+  user-select:none;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+  transition:background .15s,color .15s,box-shadow .15s;
+}
+.sum-item:hover,
+.sum-item.active{
+  background:var(--primary);
+  color:#fff;
+}
 
     /* 섹션 헤더 */
     .sec-head{display:flex;justify-content:space-between;align-items:center;margin:16px 0;}
@@ -72,9 +88,9 @@
 
         <!-- 요약 버튼 -->
         <div class="summary-bar">
-          <button class="sum-item" data-target="sec-pending">결재대기&nbsp;<strong th:text="${pendingTotal}">0</strong></button>
-          <button class="sum-item" data-target="sec-ready">배포대기&nbsp;<strong th:text="${waitingTotal}">0</strong></button>
-          <button class="sum-item" data-target="sec-rejected">반려&nbsp;<strong th:text="${rejectedTotal}">0</strong></button>
+          <button type="button" class="sum-item active" data-target="sec-pending">결재대기</button>
+          <button type="button" class="sum-item"           data-target="sec-ready">배포대기</button>
+          <button type="button" class="sum-item"           data-target="sec-rejected">반려</button>
         </div>
 
         <!-- 결재대기 -->
