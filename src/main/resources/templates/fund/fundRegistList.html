@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>펀드 목록</title>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <link rel="stylesheet" href="/css/reset.css">
+</head>
+<body>
+
+<h2>펀드 목록</h2>
+
+<button onclick="location.href='/admin/fund/new'">+ 펀드 등록</button>
+<table border="1" width="100%">
+  <thead>
+    <tr>
+      <th>펀드ID</th>
+      <th>펀드명</th>
+      <th>테마</th>
+      <th>운용중</th>
+      <th>수정</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="policy : ${policyList}">
+        <td th:text="${policy.fund != null ? policy.fund.fundId : '미등록'}"></td>
+        <td th:text="${policy.fund != null ? policy.fund.fundName : '미등록'}"></td>
+        <td th:text="${policy.fundTheme}"></td>
+        <td th:text="${policy.fundActive ? 'Y' : 'N'}"></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 수정용 모달창 템플릿 -->
+<div id="editModal" style="display:none;">
+  <!-- 여기에 선택된 펀드 정보 입력 폼 생성 -->
+</div>
+
+<script>
+  function editFund(fundId) {
+    // 수정용 모달 로딩 및 표시 (AJAX로 데이터 불러오기 또는 모달로 페이지 이동)
+    alert("펀드 수정 페이지 연결 예정. ID: " + fundId);
+  }
+</script>
+
+</body>
+</html>

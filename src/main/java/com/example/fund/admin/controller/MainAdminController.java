@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.service.AdminService_A;
+import com.example.fund.fund.entity.FundPolicy;
+import com.example.fund.fund.repository.FundPolicyRepository;
+import com.example.fund.fund.service.FundService;
 import com.example.fund.qna.service.QnaService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,6 +38,12 @@ public class MainAdminController {
 
     @Autowired
     QnaService qnaService;
+
+    @Autowired
+    FundService fundService;
+
+    @Autowired
+    FundPolicyRepository fundPolicyRepository;
 
     @GetMapping("/")
     public String root(HttpSession session){
@@ -163,5 +171,17 @@ public class MainAdminController {
         return "admin/cs/qnaSetting";
     }
     
+    //펀드 등록 폼으로 이동
+    @GetMapping("/fund/new")
+    public String newFundForm() {
 
+        return "fund/fundRegister";
+    }
+
+    @GetMapping("/fund/list")
+    public String fundListPage(Model model) {
+        List<FundPolicy> policyList = fundPolicyRepository.findAllWithFund();
+        model.addAttribute("policyList", policyList);
+        return "fund/fundRegistList";
+    }
 }

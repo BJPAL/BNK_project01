@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class FundRegisterRequest {
-    private String fundId; 
+    private Long fundId; 
     private BigDecimal fundPayout;
     private String fundTheme;
     private Boolean fundActive;
