@@ -76,7 +76,7 @@
     table{
     width:100%;
     border-collapse:collapse;
-    margin-top:5px;
+    margin: 10px 0;
     background:#fff;
     border-radius:10px;
           overflow:hidden;
@@ -152,7 +152,7 @@
     /* 페이징 */
     .pagination{
     text-align:center;
-    margin-top:8px;
+    margin : 10px 0;
     }
 
     .pagination a{
@@ -169,46 +169,18 @@
     color:#fff
     }
 
-    /* 헤더 로고 살짝 내리기 */
-    .admin-header .logo{
-    position:relative;
-    top:15px;
-    }
     /* 검색 폼 전용 스타일 */
     .search-form{
       display:flex;
       gap:10px;
-      margin-bottom:10px;
+      margin-bottom:15px;
     }
 
-    /* ── 헤더/사이드바 여백 제거 ── */
-    .admin-header,
-    .admin-aside {
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
-    /* ── 전체 레이아웃 탑 패딩/마진 제거 ── */
-    .layout,
-    .main-wrapper,
-    .content {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
-    }
-
-    /* ── 헤더/사이드바 여백 제거 ── */
-    .admin-header,
-    .admin-aside {
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
-    /* ── 전체 레이아웃 탑 패딩/마진 제거 ── */
-    .layout,
-    .main-wrapper,
-    .content {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
+    /* 헤더 왼쪽 정렬 (질문, 답변 요약) */
+    th:nth-child(2),
+    th:nth-child(3) {
+      text-align: left;
+      padding-left: 12px;
     }
   </style>
 </head>
@@ -260,7 +232,7 @@
               class="click-row"
               th:data-href="@{'/admin/faq/edit/' + ${faq.faqId}}">
             <td th:text="${faq.faqId}">1</td>
-            <td th:text="${faq.question}">질문</td>
+            <td th:text="${#strings.abbreviate(faq.question,30)}" class="ellipsis">질문</td>
             <td th:text="${#strings.abbreviate(faq.answer,40)}" class="ellipsis">답변</td>
             <td>
                 <span th:class="${faq.active} ? 'badge active' : 'badge inactive'"

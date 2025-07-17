@@ -12,7 +12,6 @@
   />
 
   <style>
-    /* ── 변수 & 리셋 ── */
     :root {
       --primary: #337D89;
       --bg: #eef3f5;
@@ -25,8 +24,6 @@
       margin: 0;
       padding: 0;
     }
-
-    /* ── 레이아웃 ── */
     body {
       background: var(--bg);
       font-family: "Segoe UI", sans-serif;
@@ -35,17 +32,14 @@
     .layout { display: flex; flex-direction: column; }
     .main-wrapper { flex: 1; }
 
-    /* ── 상세 컨테이너 ── */
     .detail-container {
-      max-width: 900px;
+      max-width: 1300px;
       margin: 40px auto;
       background: var(--card);
       padding: 30px 40px;
       border-radius: 12px;
       box-shadow: 0 8px 24px var(--shadow);
     }
-
-    /* ── 제목 ── */
     .detail-container h1 {
       display: flex;
       align-items: center;
@@ -56,7 +50,29 @@
     }
     .detail-container h1 i { font-size: 24px; }
 
-    /* ── 데이터 테이블 ── */
+    /* 좌/우 레이아웃 */
+    .detail-content {
+      display: flex;
+      gap: 24px;
+    }
+    .detail-left {
+      flex: 2;
+    }
+    .detail-right {
+      flex: 1.5;
+      /* 높이가 너무 길면 스크롤 */
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .detail-right h3 {
+      margin-bottom: 12px;
+      font-size: 20px;
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 4px;
+    }
+
+    /* 데이터 테이블 */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -75,7 +91,7 @@
     }
     tr:last-child td { border-bottom: none; }
 
-    /* ── 상태 배지 ── */
+    /* 상태 배지 */
     .badge {
       padding: 4px 10px;
       border-radius: 12px;
@@ -89,7 +105,7 @@
     .badge-반려     { background: #e74c3c; }
     .badge-배포     { background: #2ecc71; }
 
-    /* ── 액션 박스 ── */
+    /* 액션 박스 */
     .action-box {
       margin-top: 20px;
       padding: 20px;
@@ -122,11 +138,12 @@
     .btn-reject  { background: #e74c3c; }
     .btn:hover   { filter: brightness(.9); }
 
-    /* ── 로고 위치 보정 top: 15px 삭제── */
-    .admin-header .logo {
-      position: relative;
+    /* action-box 안의 두 form 사이 공간 확보 */
+    .action-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
     }
-
   </style>
 </head>
 
@@ -138,87 +155,80 @@
 
     <main class="content">
       <div class="detail-container">
-        <h1><i class="far fa-file-alt"></i>결재 상세 보기</h1>
+        <h1><i class="far fa-file-alt"></i> 결재 상세 보기</h1>
 
-        <!-- 데이터 테이블 -->
-        <table>
-          <tr>
-            <th>제목</th>
-            <td th:text="${approval.title}"></td>
-          </tr>
-          <tr>
-            <th>내용</th>
-            <td th:text="${approval.content}"></td>
-          </tr>
-          <tr>
-            <th>작성자</th>
-            <td>
-              <a th:if="${approval.writer != null}"
-                 th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
-                 th:text="${approval.writer.adminname}"></a>
-              <span th:if="${approval.writer == null}">알 수 없음</span>
-            </td>
-          </tr>
-          <tr>
-            <th>상태</th>
-            <td>
-                <span class="badge"
-                      th:classappend="' badge-' + ${approval.status}"
-                      th:text="${approval.status}"></span>
-            </td>
-          </tr>
-          <tr th:if="${approval.rejectReason != null}">
-            <th>반려 사유</th>
-            <td th:text="${approval.rejectReason}"></td>
-          </tr>
-          <tr>
-            <th>작성일</th>
-            <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}"></td>
-          </tr>
-        </table>
+        <div class="detail-content">
+          <!-- 왼쪽: 상세 정보 + 액션 -->
+          <div class="detail-left">
+            <table>
+              <tr><th>제목</th><td th:text="${approval.title}"></td></tr>
+              <tr><th>내용</th><td th:text="${approval.content}"></td></tr>
+              <tr><th>작성자</th>
+                <td>
+                  <a th:if="${approval.writer != null}"
+                     th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
+                     th:text="${approval.writer.adminname}"></a>
+                  <span th:if="${approval.writer == null}">알 수 없음</span>
+                </td>
+              </tr>
+              <tr><th>상태</th>
+                <td>
+                  <span class="badge"
+                        th:classappend="' badge-' + ${approval.status}"
+                        th:text="${approval.status}"></span>
+                </td>
+              </tr>
+              <tr th:if="${approval.rejectReason != null}">
+                <th>반려 사유</th>
+                <td th:text="${approval.rejectReason}"></td>
+              </tr>
+              <tr><th>작성일</th>
+                <td th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></td>
+              </tr>
+            </table>
 
-        <!-- 승인/반려 액션 -->
-        <div class="action-box"
-             th:if="${admin != null and (admin.role=='approver' or admin.role=='super') and approval.status=='결재대기'}">
-          <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post">
-            <textarea name="reason" rows="3" placeholder="승인 사유(선택)"></textarea>
-            <button type="submit" class="btn btn-approve">
-              <i class="fas fa-check"></i> 승인 (배포대기)
-            </button>
-          </form>
+            <!-- 승인/반려 액션 -->
+            <div class="action-box"
+                 th:if="${admin != null and (admin.role=='approver' or admin.role=='super')
+                        and approval.status=='결재대기'}">
+              <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post">
+                <textarea name="reason" rows="3" placeholder="승인 사유(선택)"></textarea>
+                <button type="submit" class="btn btn-approve">
+                  <i class="fas fa-check"></i> 승인 (배포대기)
+                </button>
+              </form>
+              <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post">
+                <textarea name="reason" rows="3" placeholder="반려 사유" required></textarea>
+                <button type="submit" class="btn btn-reject">
+                  <i class="fas fa-times"></i> 반려
+                </button>
+              </form>
+            </div>
+          </div>
 
-          <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post">
-            <textarea name="reason" rows="3" placeholder="반려 사유" required></textarea>
-            <button type="submit" class="btn btn-reject">
-              <i class="fas fa-times"></i> 반려
-            </button>
-          </form>
-        </div>
-
-        <!-- 변경 이력 -->
-        <h3 th:if="${logs != null and #lists.size(logs) > 0}">
-          결재 상태 변경 이력
-        </h3>
-        <table class="logs-table"
+          <!-- 오른쪽: 상태 변경 이력 -->
+          <div class="detail-right"
                th:if="${logs != null and #lists.size(logs) > 0}">
-          <thead>
-          <tr>
-            <th>변경자</th><th>상태</th><th>사유</th><th>일시</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="log : ${logs}">
-            <td th:text="${log.changerId}"></td>
-            <td th:text="${log.status}"></td>
-            <td th:text="${log.reason}"></td>
-            <td th:text="${#temporals.format(log.changedAt, 'yyyy-MM-dd HH:mm')}"></td>
-          </tr>
-          </tbody>
-        </table>
+            <h3>결재 상태 변경 이력</h3>
+            <table class="logs-table">
+              <thead>
+              <tr><th>변경자</th><th>상태</th><th>사유</th><th>일시</th></tr>
+              </thead>
+              <tbody>
+              <tr th:each="log : ${logs}">
+                <td th:text="${log.changerId}"></td>
+                <td th:text="${log.status}"></td>
+                <td th:text="${log.reason}"></td>
+                <td th:text="${#temporals.format(log.changedAt,'yyyy-MM-dd HH:mm')}"></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <a th:href="@{/admin/approval/manage}"
            style="display:inline-block; margin-top:20px;
-                    color:var(--primary); font-weight:600; text-decoration:none;">
+                  color:var(--primary); font-weight:600; text-decoration:none;">
           ← 목록으로
         </a>
       </div>

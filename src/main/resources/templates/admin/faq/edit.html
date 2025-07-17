@@ -22,7 +22,7 @@
       max-width: 700px;
       margin: 50px auto;
       background-color: #fff;
-      padding: 40px;
+      padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
@@ -159,31 +159,6 @@
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-    /* ▼ 로고를 아래로 내리기 */
-          .admin-header .logo{
-            position:relative;   /* 기준위치 확보 */
-            top:15px;             /* +6px 만큼 아래로 이동 */
-          }
-
-    .container > h1::before{        /* ❱ 구체성 ↑ */
-    content:none !important;
-    display:none !important;
-    }
-
-    /* ── 헤더/사이드바 여백 제거 ── */
-    .admin-header,
-    .admin-aside {
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
-    /* ── 전체 레이아웃 탑 패딩/마진 제거 ── */
-    .layout,
-    .main-wrapper,
-    .content {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
     }
   </style>
 </head>

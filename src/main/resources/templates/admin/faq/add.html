@@ -22,7 +22,7 @@
           max-width: 700px;
           margin: 50px auto;
           background-color: #fff;
-          padding: 40px;
+          padding: 30px;
           border-radius: 12px;
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
@@ -159,15 +159,6 @@
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(-10px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        /* ▼ 로고를 아래로 내리기 */
-          .admin-header .logo{
-            position:relative;   /* 기준위치 확보 */
-            top:15px;             /* +6px 만큼 아래로 이동 */
-          }
-        .container > h1::before{        /* ❱ 구체성 ↑ */
-        content:none !important;      /* 아이콘 완전 제거 */
-        content:none !important;
         }
     </style>
 </head>
