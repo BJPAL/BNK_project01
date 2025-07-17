@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.service.AdminService_A;
@@ -30,46 +29,45 @@ import com.example.fund.admin.service.AdminService_A;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class MainAdminController {
 
     private final AdminService_A adminService_a;
-    private final QnaService     qnaService;
+    private final QnaService qnaService;
 
-    /* 1)  /admin/ → 세션 O : 대시보드로 / 세션 X : 로그인 */
-    @GetMapping({"/", ""})
+    /* 1) /admin/ → 세션 O : 대시보드로 / 세션 X : 로그인 */
+    @GetMapping({ "/", "" })
     public String root(HttpSession session) {
         return (session.getAttribute("admin") != null)
-                ? "redirect:/admin/dashboard"      // ★ 지표 있는 화면으로 보냄
+                ? "redirect:/admin/dashboard" // ★ 지표 있는 화면으로 보냄
                 : "admin/login";
     }
 
-    /* 2)  /admin/main  → 과거 주소로 들어와도 대시보드로 보냄 */
+    /* 2) /admin/main → 과거 주소로 들어와도 대시보드로 보냄 */
     @GetMapping("/main")
     public String legacyMain() {
-        return "redirect:/admin/dashboard";         // ★ 한 줄로 끝
+        return "redirect:/admin/dashboard"; // ★ 한 줄로 끝
     }
 
-    //기존 2번
-//    @GetMapping("/main")
-//    public String main(HttpSession session, Model model) {
-//        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-//
-//        if (admin != null && "cs".equals(admin.getRole())) {
-//            int unanswered = qnaService.countUnanwseQna();
-//            model.addAttribute("unansweredCount", unanswered);
-//        }
-//        return "admin/main";
-//    }
+    // 기존 2번
+    // @GetMapping("/main")
+    // public String main(HttpSession session, Model model) {
+    // AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+    //
+    // if (admin != null && "cs".equals(admin.getRole())) {
+    // int unanswered = qnaService.countUnanwseQna();
+    // model.addAttribute("unansweredCount", unanswered);
+    // }
+    // return "admin/main";
+    // }
 
-    /* 3)  로그인 성공 후 → /admin/dashboard */
+    /* 3) 로그인 성공 후 → /admin/dashboard */
     @PostMapping("/login")
     public String login(AdminDTO adminDTO,
-                        HttpServletRequest request,
-                        RedirectAttributes rttr) {
+            HttpServletRequest request,
+            RedirectAttributes rttr) {
 
         if (!adminService_a.login(adminDTO)) {
             rttr.addFlashAttribute("msg", "아이디 또는 비밀번호를 확인하세요");
@@ -86,7 +84,7 @@ public class MainAdminController {
 
         request.getSession().setAttribute("admin", sess);
 
-        return "redirect:/admin/dashboard";   // ★ 대시보드로 이동
+        return "redirect:/admin/dashboard"; // ★ 대시보드로 이동
     }
 
     /* ------------- 이하 기존 코드(로그아웃·관리자 CRUD 등) 그대로 -------------- */
@@ -104,61 +102,64 @@ public class MainAdminController {
     }
 
     @GetMapping("/adminRegistForm")
-    public String adminRegistForm() { return "admin/super/admin_register"; }
+    public String adminRegistForm() {
+        return "admin/super/admin_register";
+    }
 
     @GetMapping("/adminSetting")
-    public String adminSetting() { return "admin/super/adminSetting"; }
+    public String adminSetting() {
+        return "admin/super/adminSetting";
+    }
 
     @PostMapping("/adminRegist")
     public String adminRegist(AdminDTO adminDTO, RedirectAttributes rttr) {
         adminService_a.adminRegist(adminDTO);
-        rttr.addFlashAttribute("msg", "관리자 등록을 완료하였습니다.");
+        rttr.addFlashAttribute("msg", "관리자 등록을 완료하였습니다");
         return "admin/super/adminSetting";
     }
 
     // @GetMapping("/list")
     // public String getAdminList(@RequestParam(required = false) String role,
-    //                            Model model) {
-    //     List<AdminDTO> admins = (role == null || role.isEmpty())
-    //             ? adminService_a.getAllAdmins()
-    //             : adminService_a.getAdminsByRole(role);
-    //     model.addAttribute("adminList", admins);
-    //     return "admin/super/adminList :: admin-list-content";
+    // Model model) {
+    // List<AdminDTO> admins = (role == null || role.isEmpty())
+    // ? adminService_a.getAllAdmins()
+    // : adminService_a.getAdminsByRole(role);
+    // model.addAttribute("adminList", admins);
+    // return "admin/super/adminList :: admin-list-content";
     // }
 
-    //관리자 리스트 컨트롤러(role 파라미터는 필수값 X)
+    // 관리자 리스트 컨트롤러(role 파라미터는 필수값 X)
     // @GetMapping("/list")
-    // public String getAdminList(@RequestParam(required = false) String role, Model model){
-    //     List<AdminDTO> admins = new ArrayList<>();
-    //     if (role == null || role.isEmpty()) {
-    //         admins = adminService_a.getAllAdmins();
-    //     } else {
-    //         admins = adminService_a.getAdminsByRole(role); // 역할별 조회
-    //     }
-    //     model.addAttribute("adminList", admins);
-    //     return "admin/super/adminList :: admin-list-content";
+    // public String getAdminList(@RequestParam(required = false) String role, Model
+    // model){
+    // List<AdminDTO> admins = new ArrayList<>();
+    // if (role == null || role.isEmpty()) {
+    // admins = adminService_a.getAllAdmins();
+    // } else {
+    // admins = adminService_a.getAdminsByRole(role); // 역할별 조회
+    // }
+    // model.addAttribute("adminList", admins);
+    // return "admin/super/adminList :: admin-list-content";
     // }
 
-    //관리자 리스트 컨트롤러(role 파라미터는 필수값 X) + 페이지네이션
+    // 관리자 리스트 컨트롤러(role 파라미터는 필수값 X) + 페이지네이션
     @GetMapping("/list")
     public String getAdminList(
-        @RequestParam(required = false) String role,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size,
-        Model model
-    ) {
+            @RequestParam(required = false) String role,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<AdminDTO> adminPage = (role == null || role.isEmpty())
-            ? adminService_a.getAllAdmins(pageable)
-            : adminService_a.getAdminsByRole(role, pageable);
+                ? adminService_a.getAllAdmins(pageable)
+                : adminService_a.getAdminsByRole(role, pageable);
 
         model.addAttribute("adminPage", adminPage);
         model.addAttribute("adminList", adminPage.getContent());
         return "admin/super/adminList :: admin-list-content";
     }
 
-
-    //관리자 리스트 >> 상세정보 조회
+    // 관리자 리스트 >> 상세정보 조회
     @GetMapping("/detail/{id}")
     public String getAdminDetail(@PathVariable Integer id, Model model) {
         model.addAttribute("admin", adminService_a.findById(id));
@@ -180,5 +181,7 @@ public class MainAdminController {
     }
 
     @GetMapping("/qnaList")
-    public String qnaList() { return "admin/cs/qnaSetting"; }
+    public String qnaList() {
+        return "admin/cs/qnaSetting";
+    }
 }

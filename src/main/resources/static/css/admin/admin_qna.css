@@ -15,7 +15,6 @@
 
 #qna-content .table th {
   background: #f8f9fa;
-  color: #117C88;
   font-weight: 600;
   font-size: 16px;
 }
@@ -158,7 +157,6 @@
 }
 #qna-content thead th {
   background-color: #f0f4f5;
-  color: #117C88;
   font-weight: 600;
 }
 #qna-content tbody tr:nth-child(even) {

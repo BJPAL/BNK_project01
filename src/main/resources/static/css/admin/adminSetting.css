@@ -162,16 +162,13 @@
   text-align: left;
   font-size: 14px;
 }
-#adminListContainer table th{
-  font-size: 16px;
-}
 
 #adminListContainer table td a{
     text-decoration: none;
 }
 #adminListContainer table th {
   background-color: #f0f4f5;
-  color: #117C88;
+  font-size: 16px;
   font-weight: 600;
 }
 #adminListContainer table tr:nth-child(even) {
