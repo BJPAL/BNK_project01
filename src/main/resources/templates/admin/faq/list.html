@@ -1,183 +1,214 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <link rel="stylesheet" href="/css/admin/admin_layout.css" />
   <meta charset="UTF-8">
   <title>FAQ 목록</title>
+  <link rel="stylesheet" href="/css/admin/admin_layout.css"/>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #eef3f5;
-      margin: 0;
-      padding: 0;
-      color: #333;
+    body{
+    background:#eef3f5;
+    margin:0;color:#333;
     }
-
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      background-color: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      padding: 30px 40px;
-    }
-
-    h1 {
+    .container{
+    font-family: 'Segoe UI', sans-serif;
+    max-width:1100px;
+    margin:10px auto;
+    background:#fff;
+    border-radius:12px;
+               box-shadow:0 4px 12px rgba(0,0,0,.1);
+               padding:15px 20px;
+               }
+    /* 제목 */
+    .faq-title {
       color: #337D89;
       font-size: 28px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       border-left: 6px solid #337D89;
       padding-left: 12px;
     }
 
-    form {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    button, a.button-link {
-      background-color: #337D89;
-      color: white;
+    /* 검색 버튼 */
+    .btn-search {
+      background: #337D89;
+      color: #fff;
       border: none;
       padding: 10px 18px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      text-decoration: none;
-      transition: background-color 0.3s;
+      transition: .3s;
+    }
+    .btn-search:hover {
+      background: #2a6673;
     }
 
-    button:hover, a.button-link:hover {
-      background-color: #2a6673;
+    input[type=text]{flex:1;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:8px;
     }
 
-    .message {
-      margin: 10px 0;
-      font-weight: bold;
+    button,a.button-link{
+    background:#337D89;
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+                         cursor:pointer;
+                         font-weight:bold;
+                         text-decoration:none;
+                         transition:.3s;
+                         }
+    button:hover,a.button-link:hover{
+    background:#2a6673;
     }
 
-    .message.error {
-      color: red;
+    .message{
+    margin:10px 0;
+    font-weight:bold;
+    }
+    .message.error{
+    color:red
+    }.message.success{
+    color:green
     }
 
-    .message.success {
-      color: green;
+    table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:5px;
+    background:#fff;
+    border-radius:10px;
+          overflow:hidden;
+          box-shadow:0 0 8px rgba(0,0,0,.05);
+          }
+    th{
+    background:#337D89;
+    color:#fff;
+    padding:12px;
+    text-align:center;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      background-color: #fff;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+    td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+    text-align:center;
     }
-
-    th {
-      background-color: #337D89;
-      color: white;
-      padding: 12px;
-      text-align: center;
+    tbody tr{
+    transition:background .2s,box-shadow .2s;
     }
-
-    td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-      text-align: center;
+    tbody tr:hover{
+    background:#f4f9fa;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
     }
-
-    tbody tr {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    td:nth-child(2),
+    /* 질문  */
+    td:nth-child(3){
+    text-align:left;
     }
-
-    tbody tr:hover {
-      background-color: #f4f9fa;
-      transform: scale(1.01);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
+    /* 답변요약 */
+    td.ellipsis{
+    max-width:280px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    } /*셀 폭 줄이기*/
 
     /* 상태 뱃지 */
-    .badge {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: bold;
-      display: inline-block;
+    .badge{
+      padding:4px 10px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:bold;
+      display:inline-block;
+     }
+    .badge.active{
+    background:#d4f4dd;
+    color:#2e7d32
+    }.badge.inactive{
+    background:#e0e0e0;color:#616161
     }
 
-    .badge.active {
-      background-color: #d4f4dd;
-      color: #2e7d32;
+    /* 요약 셀 말줄임 */
+    td.ellipsis{
+    max-width:320px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
     }
 
-    .badge.inactive {
-      background-color: #e0e0e0;
-      color: #616161;
-    }
-
-    /* 툴팁 버튼 */
-    .tooltip-btn {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-    }
-
-    .tooltip-btn:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      top: -28px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: white;
-      padding: 4px 8px;
-      font-size: 12px;
-      border-radius: 5px;
-      white-space: nowrap;
-      z-index: 10;
+    /* 삭제 버튼 */
+    .delete-btn{
+      background:#e74c3c;
+      color:#fff;
+      border:none;
+      padding:6px 12px;
+      border-radius:6px;
+      font-weight:600;cursor:pointer;
+     }
+    .delete-btn:hover{
+    filter:brightness(.9)
     }
 
     /* 페이징 */
-    .pagination {
-      margin-top: 30px;
-      text-align: center;
+    .pagination{
+    text-align:center;
+    margin-top:8px;
     }
 
-    .pagination a {
-      margin: 0 6px;
-      text-decoration: none;
-      color: #337D89;
-      font-weight: bold;
-      border: 1px solid #337D89;
-      padding: 6px 12px;
-      border-radius: 6px;
-    }
-
-    .pagination a.active {
-      color: white;
-      background-color: #337D89;
+    .pagination a{
+    margin:0 6px;
+    padding:6px 12px;
+    border:1px solid #337D89;
+    border-radius:6px;
+                  color:#337D89;
+                  font-weight:bold;
+                  text-decoration:none;
+                  }
+    .pagination a.active,.pagination a:hover{
+    background:#337D89;
+    color:#fff
     }
 
     /* 헤더 로고 살짝 내리기 */
-    .admin-header .logo{position:relative;top:15px;}
+    .admin-header .logo{
+    position:relative;
+    top:15px;
+    }
+    /* 검색 폼 전용 스타일 */
+    .search-form{
+      display:flex;
+      gap:10px;
+      margin-bottom:10px;
+    }
 
-    /* ─── 아이콘 제거(헤더 & 페이지 제목) ─── */
-    .container h1::before,
-    .admin-header .logo i,
-    .admin-header .logo::before,
-    .admin-header .logo *::before{
-      content:none !important;
-      display:none !important;
+    /* ── 헤더/사이드바 여백 제거 ── */
+    .admin-header,
+    .admin-aside {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* ── 전체 레이아웃 탑 패딩/마진 제거 ── */
+    .layout,
+    .main-wrapper,
+    .content {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+
+    /* ── 헤더/사이드바 여백 제거 ── */
+    .admin-header,
+    .admin-aside {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* ── 전체 레이아웃 탑 패딩/마진 제거 ── */
+    .layout,
+    .main-wrapper,
+    .content {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
     }
   </style>
 </head>
@@ -188,82 +219,109 @@
   <div class="main-wrapper">
     <div th:replace="admin/admin_aside :: adminAside"></div>
     <main class="content">
-<!--<div th:replace="admin/a_header :: adminHeader"></div>-->
+      <div class="container">
+        <h1 class="faq-title">FAQ 목록</h1>
 
-<div class="container">
+        <!-- 메시지 -->
+        <div th:if="${errorMessage}" class="message error"   th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
 
-  <h1>FAQ 목록</h1>
-
-  <!-- 메시지 출력 -->
-  <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
-  <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
-
-  <!-- 검색 폼 -->
-  <form th:action="@{/admin/faq/list}" method="get">
-    <input type="text" name="keyword" th:value="${keyword}" placeholder="질문 또는 답변 검색"/>
-    <button type="submit">검색</button>
-  </form>
-
-  <!-- 등록 버튼 -->
-  <div style="margin-bottom: 15px;">
-    <a th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}"
-       th:href="@{/admin/faq/add}" class="button-link">+ 등록</a>
-  </div>
-
-  <!-- FAQ 테이블 -->
-  <table>
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>질문</th>
-      <th>답변</th>
-      <th>상태</th>
-      <th th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">수정</th>
-      <th th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">삭제</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="faq : ${faqPage.content}">
-      <td th:text="${faq.faqId}">ID</td>
-      <td th:text="${faq.question}">질문</td>
-      <td th:text="${faq.answer}">답변</td>
-      <td>
-        <span th:class="${faq.active} ? 'badge active' : 'badge inactive'"
-              th:text="${faq.active ? '활성화' : '비활성'}">상태</span>
-      </td>
-      <td th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">
-        <a th:href="@{'/admin/faq/edit/' + ${faq.faqId}}"
-           class="tooltip-btn"
-           data-tooltip="수정"
-           style="color: #337D89; text-decoration: none; font-weight: bold;">수정</a>
-      </td>
-      <td th:if="${admin != null and (admin.role == 'cs' or admin.role == 'super')}">
-        <form th:action="@{'/admin/faq/delete/' + ${faq.faqId}}" method="post"
-              onsubmit="return confirm('정말 삭제하시겠습니까?');" style="margin: 0;">
-          <button type="submit"
-                  class="tooltip-btn"
-                  data-tooltip="삭제"
-                  style="background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
-            삭제
-          </button>
+        <!-- 검색 -->
+        <form class="search-form"
+              th:action="@{/admin/faq/list}" method="get">
+          <input type="text" name="keyword" th:value="${keyword}" placeholder="질문 또는 답변 검색"/>
+          <button type="submit" class="btn-search">검색</button>
         </form>
-      </td>
-    </tr>
-    </tbody>
-  </table>
 
-  <!-- 페이징 -->
-  <div class="pagination" th:if="${faqPage.totalPages > 1}">
-    <span th:each="i : ${#numbers.sequence(0, faqPage.totalPages - 1)}">
-      <a th:href="@{/admin/faq/list(page=${i}, keyword=${keyword})}"
-         th:text="${i + 1}"
-         th:classappend="${i == faqPage.number} ? 'active' : ''">1</a>
-    </span>
-  </div>
+        <!-- 등록 -->
+        <div style="margin-bottom:15px;">
+          <a th:if="${admin != null and (admin.role=='cs' or admin.role=='super')}"
+             th:href="@{/admin/faq/add}" class="button-link">+ 등록</a>
+        </div>
 
-</div>
+        <!-- 목록 -->
+        <table style="table-layout:fixed;">
+          <colgroup th:if="${admin.role=='super' or admin.role=='cs'}">
+            <col style="width:70px;"><col style="width:25%;"><col style="width:45%;">
+            <col style="width:90px;"><col style="width:90px;">   <!-- 삭제 -->
+          </colgroup>
+          <colgroup th:unless="${admin.role=='super' or admin.role=='cs'}">
+            <col style="width:70px;"><col style="width:30%;"><col style="width:50%;">
+            <col style="width:100px;">                            <!-- 삭제 없음 -->
+          </colgroup>
+          <thead>
+          <tr>
+            <th>ID</th><th>질문</th><th>답변 요약</th><th>상태</th>
+            <th th:if="${admin.role=='super' or admin.role=='cs'}">삭제</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="faq : ${faqPage.content}"
+              class="click-row"
+              th:data-href="@{'/admin/faq/edit/' + ${faq.faqId}}">
+            <td th:text="${faq.faqId}">1</td>
+            <td th:text="${faq.question}">질문</td>
+            <td th:text="${#strings.abbreviate(faq.answer,40)}" class="ellipsis">답변</td>
+            <td>
+                <span th:class="${faq.active} ? 'badge active' : 'badge inactive'"
+                      th:text="${faq.active ? '활성화' : '비활성'}"></span>
+            </td>
+
+            <!-- 삭제 -->
+            <td th:if="${admin.role=='super' or admin.role=='cs'}">
+              <form th:action="@{'/admin/faq/delete/' + ${faq.faqId}}"
+                    method="post" onsubmit="event.stopPropagation();">
+                <button type="button" class="delete-btn"
+                        onclick="openDeleteModal(event,this)">삭제</button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <!-- 페이징 -->
+        <div class="pagination" th:if="${faqPage.totalPages > 1}">
+          <span th:each="i : ${#numbers.sequence(0, faqPage.totalPages - 1)}">
+            <a th:href="@{/admin/faq/list(page=${i}, keyword=${keyword})}"
+               th:text="${i + 1}"
+               th:classappend="${i == faqPage.number} ? 'active' : ''">1</a>
+          </span>
+        </div>
+      </div>
     </main>
-  </div><!--main-wrapper end-->
-</div><!--layout end-->
+  </div>
+</div>
+
+<!-- 행 클릭 → 상세 -->
+<script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('.click-row').forEach(tr=>{
+      tr.addEventListener('click', e=>{
+        if(e.target.closest('.delete-btn')) return;   // 삭제 버튼이면 무시
+        location.href = tr.dataset.href;
+      });
+    });
+  });
+</script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function openDeleteModal(e, btn){
+    e.stopPropagation();
+    const form = btn.closest('form');
+
+    Swal.fire({
+      title:'정말 삭제하시겠습니까?',
+      text:'삭제 후에는 복구할 수 없습니다.',
+      icon:'warning',
+      showCancelButton:true,
+      confirmButtonText:'삭제',
+      cancelButtonText:'취소'
+    }).then(res=>{
+      if(res.isConfirmed) form.submit();
+    });
+  }
+</script>
 </body>
 </html>

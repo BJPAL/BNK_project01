@@ -2,113 +2,337 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8" />
-  <title th:text="'[' + ${writerName} + '] 요청 목록'"></title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <title th:text="'[' + ${writerName} + '] 결재 요청 목록'"></title>
   <link rel="stylesheet" href="/css/admin/admin_layout.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    :root { --primary:#337D89; --bg:#eef3f5; --card:#fff; --border:#ddd; --shadow:rgba(0,0,0,.06); }
-    *{box-sizing:border-box;}
-    body{margin:0;padding:0;font-family:'Segoe UI',sans-serif;background:var(--bg);color:#333;}
-    .container{max-width:1200px;margin:40px auto;padding:0 30px;}
-    h1{font-size:28px;color:var(--primary);margin-bottom:40px;display:flex;align-items:center;gap:8px;}
-    h1 i{font-size:24px;}
-    .section{margin-bottom:60px;}
-    .section h2{font-size:22px;color:var(--primary);margin-bottom:24px;border-left:6px solid var(--primary);padding-left:12px;}
+    :root {
+      --primary: #337D89;
+      --bg: #eef3f5;
+      --card: #fff;
+      --border: #ddd;
+      --shadow: rgba(0,0,0,.06);
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    .page-title {
+      font-size: 28px;
+      color: var(--primary);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page-title i { font-size: 24px; }
 
-    .card-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 4px 12px var(--shadow);padding:24px;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
-    .card:hover{transform:translateY(-6px);box-shadow:0 10px 24px var(--shadow);}
-    .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
-    .card-title a{font-size:18px;font-weight:700;color:var(--primary);text-decoration:none;line-height:1.3;}
-    .card-title a:hover{text-decoration:underline;}
-    .badge{padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:700;color:#fff;}
-    .badge-pending{background:#f39c12;}.badge-waiting{background:#2980b9;}.badge-rejected{background:#e74c3c;}.badge-published{background:#2ecc71;}
-    .card-content{flex:1;line-height:1.5;margin-bottom:14px;white-space:pre-line;}
-    .reject-reason{background:#fdecea;color:#c0392b;padding:6px 10px;border-radius:8px;margin-top:8px;font-size:14px;}
-    .card-footer{font-size:14px;color:#666;}
-    a.back{display:inline-block;margin-top:30px;color:var(--primary);font-weight:600;text-decoration:none;}
-    /* ▼ 로고를 아래로 내리기 */
-          .admin-header .logo{
-            position:relative;   /* 기준위치 확보 */
-            top:20px;             /* +6px 만큼 아래로 이동 */
-          }
+    /* 섹션 토글 버튼 */
+    .summary-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .sum-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 24px;
+      border: 2px solid var(--primary);
+      border-radius: 9999px;
+      background: #fff;
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .sum-item.active,
+    .sum-item:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* 섹션 헤더 */
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 12px 0;
+    }
+    .sec-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .sec-count {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* 테이블 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 14px;
+      table-layout: fixed;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    }
+    table th, table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    table th {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+    table tbody tr:hover {
+      background: #f4f9fa;
+    }
+    .click-row {
+      cursor: pointer;
+    }
+    .click-row:hover {
+      background: #eef7fa;
+    }
+    /* 제목 컬럼만 좌측 정렬 & 말줄임 */
+    table td:nth-child(2) {
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 페이지네이션 */
+    .pagination {
+      text-align: center;
+      margin: 16px 0;
+    }
+    .pagination a {
+      display: inline-block;
+      margin: 0 4px;
+      padding: 6px 12px;
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+    .pagination a.active,
+    .pagination a:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* 헤더 로고 위치 조정 top: 14px 삭제 */
+    .admin-header .logo {
+      position: relative;
+    }
   </style>
 </head>
 <body>
 <div class="layout">
   <div th:replace="admin/admin_header :: adminHeader"></div>
-
   <div class="main-wrapper">
     <div th:replace="admin/admin_aside :: adminAside"></div>
     <main class="content">
-<div class="container">
-  <h1><i class="far fa-user"></i><span th:text="'[' + ${writerName} + '] 결재 요청 목록'"></span></h1>
+      <div class="container">
+        <h1 class="page-title">
+          <i class="far fa-user"></i>
+          <span th:text="'[' + ${writerName} + '] 결재 요청 목록'"></span>
+        </h1>
 
-  <!-- ========== 결재대기 ========== -->
-  <div class="section">
-    <h2>결재대기</h2>
-    <div class="card-list">
-      <div class="card" th:each="approval : ${pendingPage.content}">
-        <div class="card-top">
-          <div class="card-title"><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}"></a></div>
-          <span class="badge badge-pending">대기</span>
+        <!-- 토글 버튼 -->
+        <div class="summary-bar">
+          <button type="button" class="sum-item active"   data-target="sec-pending">결재대기</button>
+          <button type="button" class="sum-item"          data-target="sec-ready">배포대기</button>
+          <button type="button" class="sum-item"          data-target="sec-rejected">반려</button>
+          <button type="button" class="sum-item"          data-target="sec-published">배포완료</button>
         </div>
-        <div class="card-content" th:text="${approval.content}"></div>
-        <div class="card-footer"><i class="far fa-clock"></i>&nbsp;<span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- ========== 배포대기 ========== -->
-  <div class="section">
-    <h2>배포대기</h2>
-    <div class="card-list">
-      <div class="card" th:each="approval : ${waitingPage.content}">
-        <div class="card-top">
-          <div class="card-title"><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}"></a></div>
-          <span class="badge badge-waiting">배포대기</span>
-        </div>
-        <div class="card-content" th:text="${approval.content}"></div>
-        <div class="card-footer"><i class="far fa-clock"></i>&nbsp;<span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span></div>
-      </div>
-    </div>
-  </div>
+        <!-- 결재대기 -->
+        <section id="sec-pending">
+          <div class="sec-head">
+            <span class="sec-title">결재대기</span>
+          </div>
+          <table>
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>등록일</th>
+              <th>경과</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ap,stat : ${pendingPage.content}"
+                class="click-row"
+                th:data-href="@{'/admin/approval/detail/' + ${ap.approvalId}}">
+              <td th:text="${stat.index+1}">1</td>
+              <td th:text="${ap.title}">제목</td>
+              <td th:text="${#temporals.format(ap.regDate,'yyyy-MM-dd HH:mm')}">2025-07-17 14:00</td>
+              <td th:text="${'D+' + T(java.time.Duration).between(ap.regDate,T(java.time.LocalDateTime).now()).toDays()}">D+0</td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="pagination" th:if="${pendingPage.totalPages > 1}">
+              <span th:each="i : ${#numbers.sequence(0, pendingPage.totalPages - 1)}">
+                <a th:href="@{/admin/approval/writer/{name}(name=${writerName},page=${i})}"
+                   th:text="${i+1}"
+                   th:classappend="${i == pendingPage.number} ? 'active' : ''">1</a>
+              </span>
+          </div>
+        </section>
 
-  <!-- ========== 반려 ========== -->
-  <div class="section">
-    <h2>반려</h2>
-    <div class="card-list">
-      <div class="card" th:each="approval : ${rejectedPage.content}">
-        <div class="card-top">
-          <div class="card-title"><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}"></a></div>
-          <span class="badge badge-rejected">반려</span>
-        </div>
-        <div class="card-content" th:text="${approval.content}"></div>
-        <p class="reject-reason" th:text="${approval.rejectReason}"></p>
-        <div class="card-footer"><i class="far fa-clock"></i>&nbsp;<span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span></div>
-      </div>
-    </div>
-  </div>
+        <!-- 배포대기 -->
+        <section id="sec-ready" hidden>
+          <div class="sec-head">
+            <span class="sec-title">배포대기</span>
+          </div>
+          <table>
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>등록일</th>
+              <th>경과</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ap,stat : ${waitingPage.content}"
+                class="click-row"
+                th:data-href="@{'/admin/approval/detail/' + ${ap.approvalId}}">
+              <td th:text="${stat.index+1}">1</td>
+              <td th:text="${ap.title}">제목</td>
+              <td th:text="${#temporals.format(ap.regDate,'yyyy-MM-dd HH:mm')}"></td>
+              <td th:text="${'D+' + T(java.time.Duration).between(ap.regDate,T(java.time.LocalDateTime).now()).toDays()}">D+0</td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="pagination" th:if="${waitingPage.totalPages > 1}">
+              <span th:each="i : ${#numbers.sequence(0, waitingPage.totalPages - 1)}">
+                <a th:href="@{/admin/approval/writer/{name}(name=${writerName},page=${i},status='waiting')}"
+                   th:text="${i+1}"
+                   th:classappend="${i == waitingPage.number} ? 'active' : ''">1</a>
+              </span>
+          </div>
+        </section>
 
-  <!-- ========== 배포 완료 ========== -->
-  <div class="section">
-    <h2>배포 완료</h2>
-    <div class="card-list">
-      <div class="card" th:each="approval : ${publishedPage.content}">
-        <div class="card-top">
-          <div class="card-title"><a th:href="@{'/admin/approval/detail/' + ${approval.approvalId}}" th:text="${approval.title}"></a></div>
-          <span class="badge badge-published">배포</span>
-        </div>
-        <div class="card-content" th:text="${approval.content}"></div>
-        <div class="card-footer"><i class="far fa-clock"></i>&nbsp;<span th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></span></div>
-      </div>
-    </div>
-  </div>
+        <!-- 반려 -->
+        <section id="sec-rejected" hidden>
+          <div class="sec-head">
+            <span class="sec-title">반려</span>
+           </div>
+          <table>
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>등록일</th>
+              <th>경과</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ap,stat : ${rejectedPage.content}"
+                class="click-row"
+                th:data-href="@{'/admin/approval/detail/' + ${ap.approvalId}}">
+              <td th:text="${stat.index+1}">1</td>
+              <td th:text="${ap.title}">제목</td>
+              <td th:text="${#temporals.format(ap.regDate,'yyyy-MM-dd HH:mm')}"></td>
+              <td th:text="${'D+' + T(java.time.Duration).between(ap.regDate,T(java.time.LocalDateTime).now()).toDays()}">D+0</td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="pagination" th:if="${rejectedPage.totalPages > 1}">
+              <span th:each="i : ${#numbers.sequence(0, rejectedPage.totalPages - 1)}">
+                <a th:href="@{/admin/approval/writer/{name}(name=${writerName},page=${i},status='rejected')}"
+                   th:text="${i+1}"
+                   th:classappend="${i == rejectedPage.number} ? 'active' : ''">1</a>
+              </span>
+          </div>
+        </section>
 
-  <a th:href="@{/admin/approval/manage}" class="back"><i class="fas fa-arrow-left"></i> 승인 관리로 돌아가기</a>
-</div>
+        <!-- 배포완료 -->
+        <section id="sec-published" hidden>
+          <div class="sec-head">
+            <span class="sec-title">배포완료</span>
+          </div>
+          <table>
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>등록일</th>
+              <th>경과</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ap,stat : ${publishedPage.content}"
+                class="click-row"
+                th:data-href="@{'/admin/approval/detail/' + ${ap.approvalId}}">
+              <td th:text="${stat.index+1}">1</td>
+              <td th:text="${ap.title}">제목</td>
+              <td th:text="${#temporals.format(ap.regDate,'yyyy-MM-dd HH:mm')}"></td>
+              <td th:text="${'D+' + T(java.time.Duration).between(ap.regDate,T(java.time.LocalDateTime).now()).toDays()}">D+0</td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="pagination" th:if="${publishedPage.totalPages > 1}">
+              <span th:each="i : ${#numbers.sequence(0, publishedPage.totalPages - 1)}">
+                <a th:href="@{/admin/approval/writer/{name}(name=${writerName},page=${i},status='published')}"
+                   th:text="${i+1}"
+                   th:classappend="${i == publishedPage.number} ? 'active' : ''">1</a>
+              </span>
+          </div>
+        </section>
+
+      </div>
     </main>
-  </div><!--main-wrapper end-->
-</div><!--layout end-->
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    /* 행 클릭 → 상세 */
+    document.querySelectorAll('.click-row').forEach(tr => {
+      tr.addEventListener('click', () => location.href = tr.dataset.href);
+    });
+    /* 섹션 토글 */
+    const btns = [...document.querySelectorAll('.sum-item')];
+    const secs = {
+      'sec-pending' : document.getElementById('sec-pending'),
+      'sec-ready'   : document.getElementById('sec-ready'),
+      'sec-rejected': document.getElementById('sec-rejected'),
+      'sec-published': document.getElementById('sec-published')
+    };
+    function show(id) {
+      Object.entries(secs).forEach(([key, sec]) => sec.hidden = key !== id);
+      btns.forEach(b => b.classList.toggle('active', b.dataset.target === id));
+    }
+    show('sec-pending');
+    btns.forEach(b => b.onclick = () => show(b.dataset.target));
+  });
+</script>
 </body>
 </html>

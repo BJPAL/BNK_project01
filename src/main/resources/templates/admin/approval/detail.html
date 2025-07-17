@@ -3,103 +3,227 @@
 <head>
   <meta charset="UTF-8">
   <title>결재 상세 보기</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+
+  <!-- 공통 스타일 -->
   <link rel="stylesheet" href="/css/admin/admin_layout.css" />
+  <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  />
+
   <style>
-    :root{--primary:#337D89;--bg:#eef3f5;--card:#fff;--border:#ddd;--shadow:rgba(0,0,0,.06);}
-    body{margin:0;padding:0;font-family:'Segoe UI',sans-serif;background:var(--bg);}
-    .detail-container{max-width:900px;margin:40px auto;background:var(--card);padding:40px 50px;
-      border-radius:16px;box-shadow:0 8px 24px var(--shadow);}
-    h1{font-size:28px;color:var(--primary);margin-bottom:30px;display:flex;align-items:center;gap:8px;}
-    h1 i{font-size:24px;}
-    table{width:100%;border-collapse:collapse;margin-bottom:30px;}
-    th,td{padding:12px;border-bottom:1px solid var(--border);text-align:left;}
-    th{width:120px;background:var(--primary);color:#fff;font-weight:600;}
-    tr:last-child td{border-bottom:none;}
-    .logs-table th{background:#555;}
-    .badge{padding:4px 10px;border-radius:12px;font-size:13px;font-weight:700;color:#fff;}
-    .badge-결재대기{background:#f39c12;} .badge-배포대기{background:#2980b9;}
-    .badge-반려{background:#e74c3c;} .badge-배포{background:#2ecc71;}
-    .btn{border:none;cursor:pointer;padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;
-      display:inline-flex;align-items:center;gap:6px;transition:filter .2s;}
-    .btn-approve{background:#2ecc71;} .btn-reject{background:#e74c3c;} .btn:hover{filter:brightness(.9);}
-    textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
-    .action-box{margin-top:20px;padding:20px;border:1px dashed #ccc;border-radius:10px;background:#fafafa;}
-    .action-box form{display:inline-block;margin-right:12px;}
-    /* ▼ 로고를 아래로 내리기 */
-          .admin-header .logo{
-            position:relative;   /* 기준위치 확보 */
-            top:15px;             /* +6px 만큼 아래로 이동 */
-          }
+    /* ── 변수 & 리셋 ── */
+    :root {
+      --primary: #337D89;
+      --bg: #eef3f5;
+      --card: #fff;
+      --border: #ddd;
+      --shadow: rgba(0, 0, 0, .06);
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── 레이아웃 ── */
+    body {
+      background: var(--bg);
+      font-family: "Segoe UI", sans-serif;
+      color: #333;
+    }
+    .layout { display: flex; flex-direction: column; }
+    .main-wrapper { flex: 1; }
+
+    /* ── 상세 컨테이너 ── */
+    .detail-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: var(--card);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    /* ── 제목 ── */
+    .detail-container h1 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 28px;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+    .detail-container h1 i { font-size: 24px; }
+
+    /* ── 데이터 테이블 ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    th {
+      width: 120px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* ── 상태 배지 ── */
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      display: inline-block;
+    }
+    .badge-결재대기 { background: #f39c12; }
+    .badge-배포대기 { background: #2980b9; }
+    .badge-반려     { background: #e74c3c; }
+    .badge-배포     { background: #2ecc71; }
+
+    /* ── 액션 박스 ── */
+    .action-box {
+      margin-top: 20px;
+      padding: 20px;
+      background: #fafafa;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+    }
+    .action-box textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      resize: none;
+    }
+    .action-box .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      transition: filter .2s;
+    }
+    .btn-approve { background: #2ecc71; }
+    .btn-reject  { background: #e74c3c; }
+    .btn:hover   { filter: brightness(.9); }
+
+    /* ── 로고 위치 보정 top: 15px 삭제── */
+    .admin-header .logo {
+      position: relative;
+    }
+
   </style>
 </head>
+
 <body>
 <div class="layout">
   <div th:replace="admin/admin_header :: adminHeader"></div>
-
   <div class="main-wrapper">
     <div th:replace="admin/admin_aside :: adminAside"></div>
+
     <main class="content">
-<div class="detail-container">
-  <h1><i class="far fa-file-alt"></i> 결재 상세 보기</h1>
+      <div class="detail-container">
+        <h1><i class="far fa-file-alt"></i>결재 상세 보기</h1>
 
-  <table>
-    <tr><th>제목</th><td th:text="${approval.title}"></td></tr>
-    <tr><th>내용</th><td th:text="${approval.content}"></td></tr>
-    <tr><th>작성자</th>
-      <td>
-        <a th:if="${approval.writer != null}"
-           th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
-           th:text="${approval.writer.adminname}"></a>
-        <span th:if="${approval.writer == null}">알 수 없음</span>
-      </td>
-    </tr>
-    <tr><th>상태</th>
-      <td>
-        <span class="badge" th:classappend="' badge-' + ${approval.status}"
-              th:text="${approval.status}"></span>
-      </td>
-    </tr>
-    <tr th:if="${approval.rejectReason != null}">
-      <th>반려 사유</th><td th:text="${approval.rejectReason}"></td>
-    </tr>
-    <tr><th>작성일</th><td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}"></td></tr>
-  </table>
+        <!-- 데이터 테이블 -->
+        <table>
+          <tr>
+            <th>제목</th>
+            <td th:text="${approval.title}"></td>
+          </tr>
+          <tr>
+            <th>내용</th>
+            <td th:text="${approval.content}"></td>
+          </tr>
+          <tr>
+            <th>작성자</th>
+            <td>
+              <a th:if="${approval.writer != null}"
+                 th:href="@{'/admin/approval/writer/' + ${approval.writer.adminname}}"
+                 th:text="${approval.writer.adminname}"></a>
+              <span th:if="${approval.writer == null}">알 수 없음</span>
+            </td>
+          </tr>
+          <tr>
+            <th>상태</th>
+            <td>
+                <span class="badge"
+                      th:classappend="' badge-' + ${approval.status}"
+                      th:text="${approval.status}"></span>
+            </td>
+          </tr>
+          <tr th:if="${approval.rejectReason != null}">
+            <th>반려 사유</th>
+            <td th:text="${approval.rejectReason}"></td>
+          </tr>
+          <tr>
+            <th>작성일</th>
+            <td th:text="${#temporals.format(approval.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+          </tr>
+        </table>
 
-  <!-- 승인/반려 액션 -->
-  <div class="action-box"
-       th:if="${admin != null and (admin.role == 'approver' or admin.role == 'super') and approval.status == '결재대기'}">
-    <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post">
-      <textarea name="reason" rows="3" placeholder="승인 사유(선택)"></textarea>
-      <button type="submit" class="btn btn-approve"><i class="fas fa-check"></i> 승인 (배포대기)</button>
-    </form>
+        <!-- 승인/반려 액션 -->
+        <div class="action-box"
+             th:if="${admin != null and (admin.role=='approver' or admin.role=='super') and approval.status=='결재대기'}">
+          <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post">
+            <textarea name="reason" rows="3" placeholder="승인 사유(선택)"></textarea>
+            <button type="submit" class="btn btn-approve">
+              <i class="fas fa-check"></i> 승인 (배포대기)
+            </button>
+          </form>
 
-    <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post">
-      <textarea name="reason" rows="3" placeholder="반려 사유" required></textarea>
-      <button type="submit" class="btn btn-reject"><i class="fas fa-times"></i> 반려</button>
-    </form>
-  </div>
+          <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post">
+            <textarea name="reason" rows="3" placeholder="반려 사유" required></textarea>
+            <button type="submit" class="btn btn-reject">
+              <i class="fas fa-times"></i> 반려
+            </button>
+          </form>
+        </div>
 
-  <!-- 상태 변경 로그 -->
-  <h3 th:if="${logs != null && #lists.size(logs) > 0}">결재 상태 변경 이력</h3>
-  <table class="logs-table" th:if="${logs != null && #lists.size(logs) > 0}">
-    <thead><tr><th>변경자</th><th>상태</th><th>사유</th><th>일시</th></tr></thead>
-    <tbody>
-    <tr th:each="log : ${logs}">
-      <td th:text="${log.changerId}"></td>
-      <td th:text="${log.status}"></td>
-      <td th:text="${log.reason}"></td>
-      <td th:text="${#temporals.format(log.changedAt, 'yyyy-MM-dd HH:mm')}"></td>
-    </tr>
-    </tbody>
-  </table>
+        <!-- 변경 이력 -->
+        <h3 th:if="${logs != null and #lists.size(logs) > 0}">
+          결재 상태 변경 이력
+        </h3>
+        <table class="logs-table"
+               th:if="${logs != null and #lists.size(logs) > 0}">
+          <thead>
+          <tr>
+            <th>변경자</th><th>상태</th><th>사유</th><th>일시</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="log : ${logs}">
+            <td th:text="${log.changerId}"></td>
+            <td th:text="${log.status}"></td>
+            <td th:text="${log.reason}"></td>
+            <td th:text="${#temporals.format(log.changedAt, 'yyyy-MM-dd HH:mm')}"></td>
+          </tr>
+          </tbody>
+        </table>
 
-  <a th:href="@{/admin/approval/manage}" style="display:inline-block;margin-top:25px;color:var(--primary);font-weight:600;text-decoration:none;">
-    ← 목록으로
-  </a>
-</div>
+        <a th:href="@{/admin/approval/manage}"
+           style="display:inline-block; margin-top:20px;
+                    color:var(--primary); font-weight:600; text-decoration:none;">
+          ← 목록으로
+        </a>
+      </div>
     </main>
-  </div><!--main-wrapper end-->
-</div><!--layout end-->
+  </div>
+</div>
 </body>
 </html>

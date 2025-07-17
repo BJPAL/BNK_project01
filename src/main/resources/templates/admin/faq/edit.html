@@ -6,13 +6,19 @@
   <title>FAQ 등록/수정</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
       background-color: #eef3f5;
       margin: 0;
       padding: 0;
     }
 
+    /* 수정·등록 전용 스크롤 없는 max-height */
+    .edit-container {
+      max-height: 75vh;      /* 화면 높이의 75% 안에서만 표시 */
+      overflow-y: auto;      /* 컨텐츠 넘치면 내부에서만 스크롤 */
+    }
+
     .container {
+      font-family: 'Segoe UI', sans-serif;
       max-width: 700px;
       margin: 50px auto;
       background-color: #fff;
@@ -21,12 +27,12 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    h1 {
+    .faq-title {
       color: #337D89;
-      font-size: 26px;
+      font-size: 28px;
+      margin-bottom: 20px;
       border-left: 6px solid #337D89;
       padding-left: 12px;
-      margin-bottom: 30px;
     }
 
     .alert-success {
@@ -68,7 +74,7 @@
 
     textarea {
       height: 150px;
-      resize: vertical;
+      resize: none;
     }
 
     .toggle-switch {
@@ -164,6 +170,21 @@
     content:none !important;
     display:none !important;
     }
+
+    /* ── 헤더/사이드바 여백 제거 ── */
+    .admin-header,
+    .admin-aside {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* ── 전체 레이아웃 탑 패딩/마진 제거 ── */
+    .layout,
+    .main-wrapper,
+    .content {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
   </style>
 </head>
 <body>
@@ -173,8 +194,8 @@
   <div class="main-wrapper">
     <div th:replace="admin/admin_aside :: adminAside"></div>
     <main class="content">
-<div class="container">
-  <h1>FAQ 수정</h1>
+<div class="container edit-container">
+  <h1 class="faq-title">FAQ 수정</h1>
 
   <div th:if="${successMessage}" th:text="${successMessage}" class="alert-success"></div>
   <div th:if="${errorMessage}" th:text="${errorMessage}" class="message"></div>

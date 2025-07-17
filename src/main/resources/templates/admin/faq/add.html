@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<link rel="stylesheet" href="/css/admin/admin_layout.css" />
 <head>
     <meta charset="UTF-8">
     <title>FAQ 등록/수정</title>
+    <link rel="stylesheet" href="/css/admin/admin_layout.css" />
     <style>
         body {
           font-family: 'Segoe UI', sans-serif;
           background-color: #eef3f5;
           margin: 0;
           padding: 0;
+        }
+
+        /* 수정·등록 전용 스크롤 없는 max-height */
+        .edit-container {
+          max-height: 75vh;      /* 화면 높이의 75% 안에서만 표시 */
+          overflow-y: auto;      /* 컨텐츠 넘치면 내부에서만 스크롤 */
         }
 
         .container {
@@ -21,12 +27,12 @@
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        h1 {
+        .faq-title {
           color: #337D89;
-          font-size: 26px;
+          font-size: 28px;
+          margin-bottom: 20px;
           border-left: 6px solid #337D89;
           padding-left: 12px;
-          margin-bottom: 30px;
         }
 
         .alert-success {
@@ -68,7 +74,7 @@
 
         textarea {
           height: 150px;
-          resize: vertical;
+          resize: none;
         }
 
         .toggle-switch {
@@ -172,8 +178,8 @@
     <div class="main-wrapper">
         <div th:replace="admin/admin_aside :: adminAside"></div>
         <main class="content">
-<div class="container">
-    <h1>FAQ 등록</h1>
+<div class="container edit-container">
+    <h1 class="faq-title">FAQ 등록</h1>
 
     <div th:if="${successMessage}" th:text="${successMessage}" class="alert-success"></div>
     <div th:if="${errorMessage}" th:text="${errorMessage}" class="message"></div>
