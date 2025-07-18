@@ -1,0 +1,47 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// java selenium crawling
+	implementation 'org.seleniumhq.selenium:selenium-java:4.34.0'
+	// jpa 
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// spring web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	// devtools
+	// developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// maria DB Driver
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
