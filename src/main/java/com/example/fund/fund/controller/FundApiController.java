@@ -3,45 +3,24 @@ package com.example.fund.fund.controller;
 import com.example.fund.fund.dto.*;
 import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.entity.InvestProfileResult;
+import com.example.fund.fund.repository.FundRepository;
 import com.example.fund.fund.repository.InvestProfileResultRepository;
 import com.example.fund.fund.service.FundService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import com.example.fund.fund.dto.ApiResponse;
-import com.example.fund.fund.dto.FundDetailResponse;
-import com.example.fund.fund.dto.FundListResponse;
-import com.example.fund.fund.dto.FundResponseDTO;
-import com.example.fund.fund.dto.InvestTypeResponse;
-import com.example.fund.fund.dto.PaginationInfo;
-import com.example.fund.fund.entity.Fund;
-import com.example.fund.fund.entity.InvestProfileResult;
-import com.example.fund.fund.repository.FundRepository;
-import com.example.fund.fund.repository.InvestProfileResultRepository;
-import com.example.fund.fund.service.FundService;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -231,7 +210,9 @@ public class FundApiController {
 
     // ===========================================================================================
 
-    /** 펀드 상세 데이터 조회 - REST API */
+    /**
+     * 펀드 상세 데이터 조회 - REST API
+     */
     @GetMapping("/{fundId}")
     public ResponseEntity<Fund> getFundDetail(@PathVariable Long fundId) {
         return null;

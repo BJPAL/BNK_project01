@@ -1,23 +1,25 @@
 package com.example.fund.fund.service;
 
+import com.example.fund.fund.dto.FundRegisterRequest;
 import com.example.fund.fund.dto.FundResponseDTO;
 import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.entity.FundDocument;
+import com.example.fund.fund.entity.FundPolicy;
 import com.example.fund.fund.entity.FundReturn;
-import com.example.fund.fund.repository.FundAssetRepository;
-import com.example.fund.fund.repository.FundRepository;
-import com.example.fund.fund.repository.FundReturnRepository;
+import com.example.fund.fund.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,35 +28,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-
-import javax.imageio.ImageIO;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.example.fund.fund.dto.FundDetailResponse;
-import com.example.fund.fund.dto.FundRegisterRequest;
-import com.example.fund.fund.dto.FundResponseDTO;
-import com.example.fund.fund.dto.FundReturnDTO;
-import com.example.fund.fund.entity.Fund;
-import com.example.fund.fund.entity.FundAsset;
-import com.example.fund.fund.entity.FundDailyPrice;
-import com.example.fund.fund.entity.FundDocument;
-import com.example.fund.fund.entity.FundPolicy;
-import com.example.fund.fund.repository.FundAssetRepository;
-import com.example.fund.fund.repository.FundDailyPriceRepository;
-import com.example.fund.fund.repository.FundDocumentRepository;
-import com.example.fund.fund.repository.FundPolicyRepository;
-import com.example.fund.fund.repository.FundRepository;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -113,15 +87,14 @@ public class FundService {
     }
 
 
-
     /**
      * 새로운 메서드 - 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
      *
      * @param investType 투자성향 (1~5)
      * @param riskLevels 사용자가 선택한 위험등급 리스트 (선택사항)
-     * @param fundTypes 사용자가 선택한 펀드유형 리스트 (선택사항)
-     * @param regions 사용자가 선택한 투자지역 리스트 (선택사항)
-     * @param pageable 페이지네이션 정보
+     * @param fundTypes  사용자가 선택한 펀드유형 리스트 (선택사항)
+     * @param regions    사용자가 선택한 투자지역 리스트 (선택사항)
+     * @param pageable   페이지네이션 정보
      * @return 조건에 맞는 펀드 페이지
      */
     public Page<FundResponseDTO> findWithFilters(
@@ -274,9 +247,9 @@ public class FundService {
 
     @Transactional
     public void registerFundWithAllDocuments(FundRegisterRequest request,
-                                            MultipartFile fileTerms,
-                                            MultipartFile fileManual,
-                                            MultipartFile fileProspectus) throws IOException {
+                                             MultipartFile fileTerms,
+                                             MultipartFile fileManual,
+                                             MultipartFile fileProspectus) throws IOException {
         Fund fund = fundRepository.findByFundId(request.getFundId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 펀드 ID"));
 
@@ -348,9 +321,8 @@ public class FundService {
     }
 
     public List<Fund> getAllFunds() {
-        return fundRepository.findAll(); 
+        return fundRepository.findAll();
     }
-
 
 
 }
