@@ -236,4 +236,9 @@ public class MainAdminController {
         model.addAttribute("fund", fund);
         return "fund/fundRegistEdit";
     }
+
+    @GetMapping("/construction")
+    public String construction(){
+        return "admin/constructionPage";
+    }
 }
