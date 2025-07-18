@@ -1,9 +1,7 @@
 package com.example.fund.ai.service;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,6 @@ import com.example.fund.fund.entity.FundReturn;
 import com.example.fund.fund.repository.FundRepository;
 import com.example.fund.fund.repository.FundReturnRepository;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -81,42 +78,76 @@ public class CompareAiService {
 
         promptBuilder.append("다음은 비교하고 싶은 펀드들의 정보입니다.\n\n");
         promptBuilder.append("각 펀드의 이름, 총보수, 수익률(1개월, 3개월, 6개월, 12개월, 누적), 투자국가, 위험도가 포함되어 있습니다.\n\n");
-        promptBuilder.append("또한 아래는 한 사용자의 투자 성향 분석 결과입니다.\n");
-        promptBuilder.append("이 성향에 가장 적합한 펀드를 분석해 주세요.\n\n");
 
-        promptBuilder.append("⚠️ 결과는 반드시 <strong>HTML 형식</strong>으로 출력해 주세요.\n");
-        promptBuilder.append("예: <h2>제목</h2>, <table>, <tr>, <td>, <ul>, <li>, <p> 등을 사용해 시각적으로 보기 좋게 구성해 주세요.\n");
-        promptBuilder.append("이 결과는 innerHTML에 삽입될 것이므로 <pre> 또는 markdown 코드는 사용하지 마세요.\n\n");
+        promptBuilder.append("또한 아래는 한 사용자의 투자 성향 분석 결과입니다. 이 성향에 가장 적합한 펀드를 알려주세요.\n\n");
+
+        promptBuilder.append("⚠️ 다음 HTML 구조는 변경하지 말고, 내부에 내용만 채워 주세요.\n");
+        promptBuilder.append("태그를 추가하거나 삭제하지 말고, 각 블록에 해당하는 내용을 작성해 주세요.\n");
+        promptBuilder.append("불필요한 스타일이나 마크다운 문법은 사용하지 마세요.\n\n");
+
+        promptBuilder.append("아래는 고정된 HTML 구조입니다. 여기에 내용을 채워 주세요:\n\n");
+
+        promptBuilder.append("""
+                <div class="fund-comparison-result">
+
+                  <h2>사용자 투자 성향 요약</h2>
+                  <p class="investor-profile">
+                    [사용자 투자 성향 분석 결과 요약 내용 삽입]
+                  </p>
+
+                  <h2>펀드 비교 표</h2>
+                  <table border="1" cellpadding="5" cellspacing="0">
+                    <thead>
+                      <tr>
+                        <th>펀드명</th>
+                        <th>총보수 (%)</th>
+                        <th>1M 수익률</th>
+                        <th>3M 수익률</th>
+                        <th>6M 수익률</th>
+                        <th>12M 수익률</th>
+                        <th>누적 수익률</th>
+                        <th>투자 국가</th>
+                        <th>위험도</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- 각 펀드의 <tr> 행으로 데이터 삽입 -->
+                    </tbody>
+                  </table>
+
+                  <h2>수익성과 안정성 요약</h2>
+                  <p class="performance-summary">
+                    [수익성과 안정성에 대한 요약 내용 삽입]
+                  </p>
+
+                  <h2>펀드별 장단점</h2>
+                  <ul class="fund-pros-cons">
+                    <!-- 펀드별 <li> 항목으로 장단점 설명 삽입 -->
+                  </ul>
+
+                  <h2>추천 펀드 및 이유</h2>
+                  <p class="recommendation">
+                    [사용자에게 가장 적합한 펀드와 추천 이유 삽입]
+                  </p>
+
+                </div>
+                """);
+
+        promptBuilder.append("\n아래 펀드 리스트와 투자 성향에 기반하여 위 HTML의 내용 부분을 채워 주세요.\n\n");
 
         promptBuilder.append("<h3>사용자 투자 성향 분석 결과</h3>\n");
         promptBuilder.append("<p>").append(investType).append("</p>\n\n");
 
-        promptBuilder.append("<h3>펀드 비교 요청 사항</h3>\n");
-        promptBuilder.append("<ul>\n");
-        promptBuilder.append("<li>각 펀드의 수익성과 안정성 요약</li>\n");
-        promptBuilder.append("<li>펀드별 장단점 비교</li>\n");
-        promptBuilder.append("<li>위 투자 성향에 가장 적합한 펀드 추천 및 이유</li>\n");
-        promptBuilder.append("</ul>\n\n");
-
-        promptBuilder.append("<h3>펀드 정보</h3>\n");
-        promptBuilder.append("<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\">\n");
-        promptBuilder.append(
-                "<tr><th>펀드명</th><th>총보수(%)</th><th>1M</th><th>3M</th><th>6M</th><th>12M</th><th>누적</th><th>투자국가</th><th>위험도</th></tr>\n");
-
+        promptBuilder.append("<h3>펀드 데이터</h3>\n");
         for (FundResponseDTO fund : fundResponseList) {
-            promptBuilder.append("<tr>");
-            promptBuilder.append("<td>").append(fund.getFundName()).append("</td>");
-            promptBuilder.append("<td>").append(fund.getTotalExpenseRatio()).append("</td>");
-            promptBuilder.append("<td>").append(fund.getReturn1m()).append("%</td>");
-            promptBuilder.append("<td>").append(fund.getReturn3m()).append("%</td>");
-            promptBuilder.append("<td>").append(fund.getReturn6m()).append("%</td>");
-            promptBuilder.append("<td>").append(fund.getReturn12m()).append("%</td>");
-            promptBuilder.append("<td>").append(fund.getReturnSince()).append("%</td>");
-            promptBuilder.append("<td>").append(fund.getInvestmentRegion()).append("</td>");
-            promptBuilder.append("<td>").append(fund.getRiskLevel()).append("</td>");
-            promptBuilder.append("</tr>\n");
+            promptBuilder.append("- ").append(fund.getFundName()).append(" | 총보수: ")
+                    .append(fund.getTotalExpenseRatio()).append("% | 수익률(1M/3M/6M/12M/누적): ")
+                    .append(fund.getReturn1m()).append("/").append(fund.getReturn3m()).append("/")
+                    .append(fund.getReturn6m()).append("/").append(fund.getReturn12m()).append("/")
+                    .append(fund.getReturnSince()).append(" | 투자국가: ")
+                    .append(fund.getInvestmentRegion()).append(" | 위험도: ")
+                    .append(fund.getRiskLevel()).append("\n");
         }
-        promptBuilder.append("</table>\n");
 
         return promptBuilder.toString();
     }
