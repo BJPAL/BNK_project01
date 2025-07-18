@@ -11,20 +11,39 @@
           </li>
           <li class="line"></li>
           <!-- ─── 펀드 상품 관리 ─── -->
-          <li class="menu-group" th:if="${session.admin.role == 'planner'}">
+          <li
+            class="menu-group"
+            th:if="${session.admin.role == 'planner' or session.admin.role == 'super'}"
+          >
             <button type="button" class="group-btn">
               펀드 상품 관리
               <span class="arrow"></span>
             </button>
             <ul class="submenu">
-              <li><a th:href="@{/admin/fund/list}">펀드 조회</a></li>
-              <li><a th:href="@{/admin/fund/new}">펀드 등록</a></li>
-              <li><a th:href="@{/admin/fund/edit}">펀드 수정</a></li>
+              <li>
+                <a
+                  th:href="@{/admin/fund/list}"
+                  data-url="/admin/fund/list"
+                  class="group_a"
+                  >펀드 관리</a
+                >
+              </li>
+              <li>
+                <a
+                  th:href="@{/admin/fund/new}"
+                  data-url="/admin/fund/new"
+                  class="group_a"
+                  >펀드 등록</a
+                >
+              </li>
             </ul>
           </li>
 
           <!-- ─── 상품 통계 ─── -->
-          <li class="menu-group" th:if="${session.admin.role == 'super'}">
+          <li
+            class="menu-group"
+            th:if="${session.admin.role == 'super' or session.admin.role == 'approver'}"
+          >
             <button type="button" class="group-btn">
               상품 통계
               <span class="arrow"></span>
@@ -35,17 +54,26 @@
           </li>
 
           <!-- ─── 결재 업무(approver) ─── -->
-          <li class="menu-group" th:if="${session.admin.role == 'approver'}">
+          <li
+            class="menu-group"
+            th:if="${session.admin.role == 'approver' or session.admin.role == 'super'}"
+          >
             <button type="button" class="group-btn">결재 업무</button>
           </li>
 
           <!-- ─── 문서함(planner) ─── -->
-          <li class="menu-group" th:if="${session.admin.role == 'planner'}">
-            <button type="button" class="group-btn">문서함</button>
+          <li
+            class="menu-group"
+            th:if="${session.admin.role == 'planner' or session.admin.role == 'super'}"
+          >
+            <button type="button" class="group-btn">결재 문서함</button>
           </li>
 
           <!-- ─── 1:1문의 관리(cs) ─── -->
-          <li th:if="${session.admin.role == 'cs'}" class="menu-group">
+          <li
+            th:if="${session.admin.role == 'cs' or session.admin.role == 'super'}"
+            class="menu-group"
+          >
             <button
               type="button"
               class="group-btn"
@@ -57,7 +85,10 @@
           </li>
 
           <!-- ─── FAQ 관리(cs) ─── -->
-          <li th:if="${session.admin.role == 'cs'}" class="menu-group">
+          <li
+            th:if="${session.admin.role == 'cs' or session.admin.role == 'super'}"
+            class="menu-group"
+          >
             <button
               type="button"
               class="group-btn"
@@ -79,7 +110,32 @@
               관리자 설정
             </button>
           </li>
+
+          <!-- ─── 공지사항 관리(super only) ─── -->
+          <li th:if="${session.admin.role == 'super'}" class="menu-group">
+            <button
+              type="button"
+              class="group-btn"
+              onclick="notice()"
+              data-url=""
+            >
+              공지사항 관리
+            </button>
+          </li>
+
+          <!-- ─── 공지사항(super 빼고) ─── -->
+          <li th:if="${session.admin.role != 'super'}" class="menu-group">
+            <button
+              type="button"
+              class="group-btn"
+              onclick="notice()"
+              data-url="/admin/notice/list"
+            >
+              공지사항
+            </button>
+          </li>
         </ul>
+
         <!-- 아코디언 토글 스크립트 -->
         <script th:inline="javascript">
           document
@@ -87,6 +143,10 @@
             .forEach((btn) => {
               btn.addEventListener("click", () => {
                 const grp = btn.closest(".menu-group");
+                // 그룹 안에 소분류 active 가 있으면(=이미 그 페이지에 있으면) 아무 동작 안 함
+                if (grp.querySelector(".group_a.active")) {
+                  return;
+                }
                 grp.classList.toggle("open");
               });
             });
@@ -99,18 +159,41 @@
           function faqLink() {
             location.href = "/admin/faq/list";
           }
-
+          function notice() {
+            location.href = "/admin/notice/list";
+          }
           document.addEventListener("DOMContentLoaded", () => {
-            const path = window.location.pathname;
+            const path = window.location.pathname.replace(/\/$/, ""); // 끝 슬래시 제거
+
+            // 1) 일단 기존에 붙은 active 전부 초기화
             document
-              .querySelectorAll(".admin-aside .group-btn[data-url]")
-              .forEach((btn) => {
-                const target = btn.getAttribute("data-url");
-                if (path.startsWith(target)) {
-                  btn.classList.add("active");
-                  // 아코디언도 열어두기
-                  const grp = btn.closest(".menu-group");
-                  if (grp) grp.classList.add("open");
+              .querySelectorAll(
+                ".admin-aside .group-btn.active, .admin-aside .group_a.active"
+              )
+              .forEach((el) => el.classList.remove("active"));
+
+            // 2) data-url 가진 모든 요소 순회
+            document
+              .querySelectorAll(".admin-aside [data-url]")
+              .forEach((el) => {
+                const url = el.dataset.url.replace(/\/$/, "");
+                if (!path.startsWith(url)) return;
+
+                const menuGroup = el.closest(".menu-group");
+
+                if (el.tagName === "BUTTON") {
+                  // 대분류 버튼
+                  el.classList.add("active");
+                  if (menuGroup) menuGroup.classList.add("open");
+                } else if (el.tagName === "A") {
+                  // 소분류 링크
+                  el.classList.add("active");
+                  if (menuGroup) {
+                    menuGroup.classList.add("open");
+                    // 소분류일 땐 그룹 버튼의 active는 제거
+                    const btn = menuGroup.querySelector(".group-btn");
+                    if (btn) btn.classList.remove("active");
+                  }
                 }
               });
           });
