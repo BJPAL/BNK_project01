@@ -35,8 +35,7 @@ public class FundStatus extends BaseEntity {
     @Column(name = "title", length = 50, nullable = false)
     private String title;
 
-    @Lob
-    @Column(name = "content", nullable = false)
+    @Column(length = 3000)
     private String content;
 
     @Column(name = "view_count", nullable = false)
