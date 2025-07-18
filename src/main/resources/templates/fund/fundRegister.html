@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>펀드 등록</title>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <link rel="stylesheet" href="/css/reset.css">
+  <style>
+    .modal { display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); background: white; border: 1px solid #ccc; padding: 20px; z-index: 1000; }
+    .modal.active { display: block; }
+    .tab { display: none; }
+    .tab.active { display: block; }
+    .tab-buttons button { margin-right: 5px; }
+    
+  </style>
+</head>
+<body>
+<h2>펀드 문서 등록</h2>
+
+<!-- 펀드 검색 -->
+<form id="fundForm" method="post" enctype="multipart/form-data" th:action="@{/fund/register}">
+  <label>펀드 이름:
+    <input type="text" id="fundName" onclick="openModal()" readonly>
+    <button type="button" onclick="openModal()">펀드 검색</button>
+  </label><br>
+  <input type="hidden" name="fundId" id="fundId"><br>
+
+  <label>테마: 
+    <select id="themeSelect" name="fundTheme" required>
+      <option value="">테마 선택</option>
+      <option value="주식형">주식형</option>
+      <option value="채권형">채권형</option>
+      <option value="혼합형">혼합형</option>
+      <option value="대체투자형">대체투자형</option>
+      <option value="기타">기타</option>
+    </select>
+  </label><br><br>
+
+
+  <!-- 탭 버튼 -->
+  <div class="tab-buttons">
+    <button type="button" onclick="showTab('terms')">약관</button>
+    <button type="button" onclick="showTab('manual')">상품설명서</button>
+    <button type="button" onclick="showTab('prospectus')">투자설명서</button>
+  </div>
+
+  <!-- 탭 영역 -->
+  <div id="terms" class="tab active">
+    <h3>약관 등록</h3>
+    <input type="hidden" name="docType" value="약관">
+    <br>
+    <input type="hidden" name="fileFormat" value="PDF">
+    <label>파일 업로드: <input type="file" name="fileTerms" accept="application/pdf" required></label><br>
+  </div>
+
+  <div id="manual" class="tab">
+    <h3>상품설명서 등록</h3>
+    <input type="hidden" name="docType" value="상품설명서">
+    <br>
+    <input type="hidden" name="fileFormat" value="PDF">
+    <label>파일 업로드: <input type="file" name="fileManual" accept="application/pdf" required></label><br>
+  </div>
+
+  <div id="prospectus" class="tab">
+    <h3>투자설명서 등록</h3>
+    <input type="hidden" name="docType" value="투자설명서">
+    <br>
+    <input type="hidden" name="fileFormat" value="PDF">
+    <label>파일 업로드: <input type="file" name="fileProspectus" accept="application/pdf" required></label><br>
+  </div>
+
+  <br>
+  <button type="submit">등록</button>
+</form>
+
+<!-- 모달창 -->
+<div id="fundModal" class="modal">
+  <h3>펀드 검색</h3>
+  <input type="text" id="searchKeyword" placeholder="펀드명 입력">
+  <button onclick="searchFund()">검색</button>
+  <ul id="fundResult"></ul>
+  <button onclick="closeModal()">닫기</button>
+</div>
+
+<script>
+  function openModal() {
+    $('#fundModal').addClass('active');
+  }
+
+  function closeModal() {
+    $('#fundModal').removeClass('active');
+  }
+
+  function searchFund() {
+    const keyword = $('#searchKeyword').val();
+    $.get('/api/funds/search', { name: keyword }, function(data) {
+      let listHtml = '';
+      data.forEach(fund => {
+        listHtml += `<li onclick="selectFund('${fund.fundId}', '${fund.fundName}')">${fund.fundName}</li>`;
+      });
+      $('#fundResult').html(listHtml);
+    });
+  }
+
+  function selectFund(id, name) {
+    $('#fundId').val(id);
+    $('#fundName').val(name);
+    closeModal();
+  }
+
+  function showTab(tabId) {
+    $('.tab').removeClass('active');
+    $('#' + tabId).addClass('active');
+  }
+
+  // 등록 버튼 누를 때 form 수동 처리
+  document.getElementById('fundForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // 기본 제출 막기
+
+    const form = e.target;
+    const formData = new FormData();
+
+    // JSON 형식의 data 객체 생성
+    const data = {
+      fundId: form.fundId.value,
+      fundTheme: form.fundTheme.value,
+      fundPayout: "",        // 정책용 필드 (지금은 비워둠)
+      fundActive: false,     // 정책용 필드 (지금은 false로 대체)
+      fundRelease: new Date().toISOString().slice(0, 10), // 오늘 날짜 사용
+      docTitle: "",          // 서버에서 자동 생성
+      docType: "",           // 서버에서 반복적으로 처리
+      fileFormat: "PDF"      // 고정
+    };
+
+    formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
+    formData.append("fileTerms", form.fileTerms.files[0]);
+    formData.append("fileManual", form.fileManual.files[0]);
+    formData.append("fileProspectus", form.fileProspectus.files[0]);
+
+    fetch('/fund/register', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+      alert(result.message || '등록 성공');
+    })
+    .catch(err => {
+      alert('오류 발생: ' + err.message);
+    });
+  });
+</script>
+
+</body>
+</html>

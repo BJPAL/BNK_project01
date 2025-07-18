@@ -1,5 +1,8 @@
 package com.example.fund.fund.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,8 +10,7 @@ import com.example.fund.fund.entity.Fund;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.fund.fund.entity.Fund;
 
 public interface FundRepository extends JpaRepository<Fund, Long> {
     // 펀드 기본 정보 조회
@@ -16,6 +18,9 @@ public interface FundRepository extends JpaRepository<Fund, Long> {
 
     /** 위험 등급에 따른 펀드 목록 */
     Page<Fund> findByRiskLevelBetween(int start, int end, Pageable pageable);
+
+    /*이름으로 펀드 검색*/ 
+    List<Fund> findByFundNameContainingIgnoreCase(String name);
 
     /**
      * 필터링 조건을 적용한 펀드 목록 조회

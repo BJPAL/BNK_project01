@@ -5,14 +5,13 @@
       <header class="admin-header">
         <div class="logo">
           <a th:href="@{/admin/main}">
-            <img src="/images/BnkLogo.png" alt="로고" class="main_logo">
-            <h1><span class="sub">Fund Admin</span></h1>
+            <img src="/images/BnkLogo.png" alt="로고" class="main_logo" />
           </a>
         </div>
         <div class="user-info">
           <p th:text="${session.admin.name + ' 관리자님'}"></p>
           <ul class="menu">
-            <li> | </li>
+            <li>|</li>
             <li><a th:href="@{/admin/logout}">로그아웃</a></li>
           </ul>
         </div>

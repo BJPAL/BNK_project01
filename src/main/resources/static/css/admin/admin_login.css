@@ -20,6 +20,26 @@ body {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
 
 .login-container {
     background: #ffffff;
@@ -33,9 +53,10 @@ body {
 /* 페이지 타이틀 */
 .page-title {
     font-size: 1.6rem;
-    margin-bottom: 2.1rem;
+    margin-bottom: 1.6rem;
     font-weight: 700;
-    font-family: 'BNK';
+    font-family: 'Pretendard';
+    font-weight: 600;
     width: 100%;
 }
 
@@ -81,7 +102,7 @@ body {
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.2s ease-in-out;
-    font-family: 'BNK';
+    font-family: 'Pretendard';
     font-weight: 400;
 }
 .login-container input[type="submit"]:hover {

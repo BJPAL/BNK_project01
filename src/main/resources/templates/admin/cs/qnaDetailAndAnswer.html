@@ -14,52 +14,58 @@
       <div class="main-wrapper">
         <div th:replace="admin/admin_aside :: adminAside"></div>
         <main class="content qna-detail">
-          <h2 class="qna-title" th:text="${qna.title}">문의 제목</h2>
-
-          <div class="qna-meta">
-            <p>
-              <strong>작성자:</strong>
-              <span th:text="${qna.user.username}">userId</span>
-            </p>
-            <p>
-              <strong>작성일:</strong>
-              <span
-                th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd HH:mm')}"
-              >
-                2025-07-13
-              </span>
-            </p>
-          </div>
-
-          <div class="content-box">
-            <p>문의 내용:</p>
-            <div class="qna-body">
-              <div th:text="${qna.content}">문의 본문 내용</div>
-            </div>
-
-            <hr class="qna-separator" />
-
-            <form
-              class="qna-answer-form"
-              th:action="@{/admin/qna/answer}"
-              method="post"
+          <div class="qna-back">
+            <a th:href="@{/admin/qnaList}" class="btn-back">
+              << 목록으로 돌아가기</a
             >
-              <input type="hidden" name="id" th:value="${qna.qnaId}" />
-
-              <div class="form-group">
-                <label for="answer">답변 내용:</label>
-                <textarea
-                  name="answer"
-                  id="answer"
-                  rows="8"
-                  required
-                ></textarea>
+          </div>
+          <!-- 전체를 감싸는 컨테이너 -->
+          <div class="qna-container">
+            <!-- ── 문의 블록 ── -->
+            <section class="qna-block qna-question">
+              <h2 class="qna-title" th:text="${qna.title}">문의 제목</h2>
+              <div class="qna-meta">
+                <p>
+                  <strong>작성자:</strong>
+                  <span th:text="${qna.user.username}">userId</span>
+                </p>
+                <p>
+                  <strong>작성일:</strong>
+                  <span
+                    th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd HH:mm')}"
+                  >
+                    2025-07-13
+                  </span>
+                </p>
               </div>
-
-              <div class="form-actions">
-                <button type="submit">답변 등록</button>
+              <div class="qna-body" th:text="${qna.content}">
+                문의 본문 내용
               </div>
-            </form>
+            </section>
+
+            <!-- ── 답변 블록 ── -->
+            <section class="qna-block qna-answer">
+              <h3 class="qna-subtitle">답변 등록</h3>
+              <form
+                class="qna-answer-form"
+                th:action="@{/admin/qna/answer}"
+                method="post"
+              >
+                <input type="hidden" name="id" th:value="${qna.qnaId}" />
+
+                <div class="form-group">
+                  <textarea
+                    name="answer"
+                    id="answer"
+                    rows="8"
+                    required
+                  ></textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="submit">답변 등록</button>
+                </div>
+              </form>
+            </section>
           </div>
         </main>
       </div>

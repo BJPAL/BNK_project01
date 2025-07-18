@@ -1,4 +1,4 @@
-package com.example.fund.admin.faq;
+package com.example.fund.admin.faq.service;
 
 import com.example.fund.faq.entity.Faq;
 import com.example.fund.faq.repository.FaqRepository;

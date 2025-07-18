@@ -7,16 +7,41 @@ import com.example.fund.fund.repository.InvestProfileResultRepository;
 import com.example.fund.fund.service.FundService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
+import com.example.fund.fund.dto.ApiResponse;
+import com.example.fund.fund.dto.FundDetailResponse;
+import com.example.fund.fund.dto.FundListResponse;
+import com.example.fund.fund.dto.FundResponseDTO;
+import com.example.fund.fund.dto.InvestTypeResponse;
+import com.example.fund.fund.dto.PaginationInfo;
+import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.entity.InvestProfileResult;
+import com.example.fund.fund.repository.FundRepository;
+import com.example.fund.fund.repository.InvestProfileResultRepository;
+import com.example.fund.fund.service.FundService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -27,7 +52,7 @@ public class FundApiController {
 
     private final FundService fundService;
     private final InvestProfileResultRepository investProfileResultRepository;
-
+    private final FundRepository fundRepository;
     private static final int MIN_INVEST_TYPE = 1;
     private static final int MAX_INVEST_TYPE = 5;
 
@@ -228,5 +253,21 @@ public class FundApiController {
             default -> "알 수 없음";
         };
     }
+
+    /* 펀드 이름으로 검색  API */
+    @GetMapping("/search")
+    public ResponseEntity<List<Map<String, Object>>> searchFund(@RequestParam("name") String name) {
+        List<Fund> funds = fundRepository.findByFundNameContainingIgnoreCase(name);
+
+        List<Map<String, Object>> result = funds.stream().map(f -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("fundId", f.getFundId());
+            map.put("fundName", f.getFundName());
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+
 
 }

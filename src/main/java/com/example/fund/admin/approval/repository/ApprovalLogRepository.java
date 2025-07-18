@@ -1,5 +1,6 @@
-package com.example.fund.admin.approval;
+package com.example.fund.admin.approval.repository;
 
+import com.example.fund.admin.approval.entity.ApprovalLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

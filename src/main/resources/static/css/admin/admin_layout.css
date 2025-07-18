@@ -11,6 +11,35 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/font/Pretendard-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+
 
 /* ─────────── 기본 리셋 및 레이아웃 ─────────── */
 * {
@@ -22,7 +51,8 @@ html, body {
   height: 100%;
 }
 body {
-  font-family: 'BNK';
+  /*font-family: 'BNK';*/
+  font-family: 'Pretendard';
   font-weight: 400;
   color: #333;
 }
@@ -36,7 +66,7 @@ body {
 
 /* ─────────── 헤더 ─────────── */
 .admin-header {
-  height: 80px;           
+  height: 60px;           
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
   display: flex;
@@ -96,12 +126,18 @@ body {
 
 /* ─────────── 사이드바 ─────────── */
 .admin-aside {
-  width: 200px;                
+  width: 180px;                
   background-color: #117C88;
   color: #fff;
   overflow-y: auto;
   flex-shrink: 0;
   height: 100%;
+  text-align: center;
+}
+
+.semi-title{
+  font-family: 'Pretendard';
+  font-weight: 600;
 }
 .admin-aside nav ul {
   list-style: none;
@@ -113,15 +149,32 @@ body {
   border-bottom: 1px solid rgba(255,255,255,0.3);
 }
 .admin-aside nav li a {
-  display: block;
-  padding: 10px 24px;
-  font-size: 0.9rem;
-  color: #fff;
   text-decoration: none;
 }
 .admin-aside nav li a:hover,
 .admin-aside nav li a.active {
   background: rgba(0,0,0,0.1);
+}
+
+.admin-aside h1{
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  color: #fff;
+  font-size: 1.48rem;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.line{
+  text-align: center;
+  display: block;
+  width: 140px;
+  border-bottom: solid 1.5px #f4f4f4;
+  margin: 0 auto;
+  margin-bottom: 5px;
 }
 
 /* ─────────── 콘텐츠 영역 ─────────── */
@@ -138,13 +191,23 @@ body {
   width: 100%;
   background: none;
   border: none;
-  padding: 12px 24px;
+  padding: 10px 24px;
   color: #fff;
   font-size: 1rem;
   text-align: left;
   position: relative;
   cursor: pointer;
+  margin-top: 6px;
+  font-weight: 400;
 }
+
+.admin-aside .group-btn:hover{
+  background-color: #c1dee2d6;
+  color: #8f1919;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
 .admin-aside .group-btn .arrow {
   position: absolute;
   right: 24px;
@@ -193,4 +256,15 @@ body {
   display: flex;
   flex: 1;
   overflow: hidden;
+}
+
+/* 활성화 된 버튼 */
+.admin-aside .group-btn.active {
+  background-color: #8B0304;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 700;
+}
+.admin-aside .group-btn.active .arrow {
+  border-color: #fff; /* 화살표도 반전 */
 }

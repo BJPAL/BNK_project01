@@ -1,5 +1,8 @@
-package com.example.fund.admin.approval;
+package com.example.fund.admin.approval.service;
 
+import com.example.fund.admin.approval.entity.Approval;
+import com.example.fund.admin.approval.entity.ApprovalLog;
+import com.example.fund.admin.approval.repository.ApprovalLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
