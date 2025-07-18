@@ -43,5 +43,6 @@ public class FundStatus extends BaseEntity {
     private String content;
 
     @Column(name = "view_count", nullable = false)
-    private Integer viewCount = 0;
+    private Integer viewCount;
+    // private Integer viewCount = 0;
 }

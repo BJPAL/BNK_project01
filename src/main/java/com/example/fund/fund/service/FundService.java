@@ -1,9 +1,7 @@
 package com.example.fund.fund.service;
 
-import com.example.fund.fund.dto.*;
+import com.example.fund.fund.dto.FundResponseDTO;
 import com.example.fund.fund.entity.Fund;
-import com.example.fund.fund.entity.FundAsset;
-import com.example.fund.fund.entity.FundDailyPrice;
 import com.example.fund.fund.entity.FundReturn;
 import com.example.fund.fund.repository.FundAssetRepository;
 import com.example.fund.fund.repository.FundRepository;
@@ -14,9 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,7 +25,9 @@ public class FundService {
     private final FundReturnRepository fundReturnRepository;
     private final FundAssetRepository fundAssetRepository;
 
-    /** 투자 성향에 따른 펀드 목록 조회 - pagination */
+    /**
+     * 투자 성향에 따른 펀드 목록 조회 - pagination
+     */
     public Page<FundResponseDTO> findByInvestType(Integer investType, Pageable pageable) {
         // 투자 성향 → 위험 등급 범위 계산
         int startRiskLevel;
@@ -47,7 +47,7 @@ public class FundService {
 
         // ✅ fundPage → fundResponsePage 변환
         Page<FundResponseDTO> fundResponsePage = fundPage.map(fund -> {
-            FundReturn fundReturn = fundReturnRepository.findByFundId(fund.getFundId());
+            FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
 
             return FundResponseDTO.builder()
                     .fundId(fund.getFundId())
@@ -74,42 +74,154 @@ public class FundService {
 
 
 
-    // ========
+    /**
+     * 새로운 메서드 - 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
+     *
+     * @param investType 투자성향 (1~5)
+     * @param riskLevels 사용자가 선택한 위험등급 리스트 (선택사항)
+     * @param fundTypes 사용자가 선택한 펀드유형 리스트 (선택사항)
+     * @param regions 사용자가 선택한 투자지역 리스트 (선택사항)
+     * @param pageable 페이지네이션 정보
+     * @return 조건에 맞는 펀드 페이지
+     */
+    public Page<FundResponseDTO> findWithFilters(
+            Integer investType,
+            List<String> riskLevels,
+            List<String> fundTypes,
+            List<String> regions,
+            Pageable pageable) {
 
-    /** 모든 펀드 목록 조회 */
+        // 1. 투자 성향 → 위험 등급 범위 계산 (기본 필터)
+        int startRiskLevel;
+        int endRiskLevel = 6;
+
+        switch (investType) {
+            case 1 -> startRiskLevel = 6; // 안정형: 6등급만
+            case 2 -> startRiskLevel = 5; // 안정 추구형: 5~6등급
+            case 3 -> startRiskLevel = 4; // 위험 중립형: 4~6등급
+            case 4 -> startRiskLevel = 3; // 적극 투자형: 3~6등급
+            case 5 -> startRiskLevel = 1; // 공격 투자형: 1~6등급
+            default -> throw new IllegalArgumentException("올바르지 않은 투자 성향입니다.");
+        }
+
+        // 2. 문자열 리스트를 적절한 타입으로 변환
+        List<Integer> riskLevelInts = convertToIntegerList(riskLevels);
+        List<String> processedFundTypes = processEmptyList(fundTypes);
+        List<String> processedRegions = processEmptyList(regions);
+
+        log.info("필터링 조건 - investType: {}, riskLevels: {}, fundTypes: {}, regions: {}",
+                investType, riskLevelInts, processedFundTypes, processedRegions);
+
+        // 3. Repository에서 필터링된 데이터 조회
+        Page<Fund> fundPage = fundRepository.findWithFilters(
+                startRiskLevel,
+                endRiskLevel,
+                riskLevelInts,
+                processedFundTypes,
+                processedRegions,
+                pageable
+        );
+
+        // 4. Entity → DTO 변환
+        return convertToFundResponseDTO(fundPage);
+    }
+
+    /**
+     * Fund Entity Page를 FundResponseDTO Page로 변환하는 공통 메서드
+     */
+    private Page<FundResponseDTO> convertToFundResponseDTO(Page<Fund> fundPage) {
+        return fundPage.map(fund -> {
+            // 각 펀드의 수익률 정보 조회
+            FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
+
+            return FundResponseDTO.builder()
+                    .fundId(fund.getFundId())
+                    .fundName(fund.getFundName())
+                    .fundType(fund.getFundType())
+                    .investmentRegion(fund.getInvestmentRegion())
+                    .establishDate(fund.getEstablishDate())
+                    .launchDate(fund.getLaunchDate())
+                    .nav(fund.getNav())
+                    .aum(fund.getAum())
+                    .totalExpenseRatio(fund.getTotalExpenseRatio())
+                    .riskLevel(fund.getRiskLevel())
+                    .managementCompany(fund.getManagementCompany())
+                    .return1m(fundReturn != null ? fundReturn.getReturn1m() : null)
+                    .return3m(fundReturn != null ? fundReturn.getReturn3m() : null)
+                    .return6m(fundReturn != null ? fundReturn.getReturn6m() : null)
+                    .return12m(fundReturn != null ? fundReturn.getReturn12m() : null)
+                    .returnSince(fundReturn != null ? fundReturn.getReturnSince() : null)
+                    .build();
+        });
+    }
+
+    /**
+     * 문자열 리스트를 Integer 리스트로 변환
+     * null이거나 빈 리스트면 null 반환 (필터 적용 안함)
+     */
+    private List<Integer> convertToIntegerList(List<String> stringList) {
+        if (stringList == null || stringList.isEmpty()) {
+            return null;
+        }
+
+        return stringList.stream()
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 빈 리스트 처리 - null이거나 빈 리스트면 null 반환
+     */
+    private List<String> processEmptyList(List<String> list) {
+        return (list == null || list.isEmpty()) ? null : list;
+    }
+
+    // ========================================================
+
+    /**
+     * 모든 펀드 목록 조회
+     */
     public List<Fund> findAll() {
         return fundRepository.findAll();
     }
 
-    /** 특정 펀드 ID 조회 */
+    /**
+     * 특정 펀드 ID 조회
+     */
     public Optional<Fund> findById(Long id) {
         return fundRepository.findById(id);
     }
 
-    /** 펀드 등록 */
+    /**
+     * 펀드 등록
+     */
     public Fund save(Fund fund) {
         return fundRepository.save(fund);
     }
 
-    /** 펀드 정보 수정 */
+    /**
+     * 펀드 정보 수정
+     */
     public Fund update(Long id, Fund updatedFund) {
         return fundRepository.findById(id)
-            .map(fund -> {
-                fund.setFundName(updatedFund.getFundName());
-                fund.setFundType(updatedFund.getFundType());
-                fund.setInvestmentRegion(updatedFund.getInvestmentRegion());
-                fund.setEstablishDate(updatedFund.getEstablishDate());
-                fund.setLaunchDate(updatedFund.getLaunchDate());
-                fund.setNav(updatedFund.getNav());
-                fund.setAum(updatedFund.getAum());
-                fund.setTotalExpenseRatio(updatedFund.getTotalExpenseRatio());
-                fund.setRiskLevel(updatedFund.getRiskLevel());
-                fund.setManagementCompany(updatedFund.getManagementCompany());
-                return fundRepository.save(fund);
-            }).orElseThrow(() -> new RuntimeException("Fund not found"));
+                .map(fund -> {
+                    fund.setFundName(updatedFund.getFundName());
+                    fund.setFundType(updatedFund.getFundType());
+                    fund.setInvestmentRegion(updatedFund.getInvestmentRegion());
+                    fund.setEstablishDate(updatedFund.getEstablishDate());
+                    fund.setLaunchDate(updatedFund.getLaunchDate());
+                    fund.setNav(updatedFund.getNav());
+                    fund.setAum(updatedFund.getAum());
+                    fund.setTotalExpenseRatio(updatedFund.getTotalExpenseRatio());
+                    fund.setRiskLevel(updatedFund.getRiskLevel());
+                    fund.setManagementCompany(updatedFund.getManagementCompany());
+                    return fundRepository.save(fund);
+                }).orElseThrow(() -> new RuntimeException("Fund not found"));
     }
 
-    /** 특정 펀드 삭제  */
+    /**
+     * 특정 펀드 삭제
+     */
     public void delete(Long id) {
         fundRepository.deleteById(id);
     }
