@@ -21,13 +21,16 @@ public class FundStatusController {
 	FundStatusService statusService;
 	
 	@GetMapping("/fund_status")
-	public String fundStatusPage(@RequestParam(name="page", defaultValue="0") int page, Model model) {
-		Page<FundStatus> fundPage = statusService.getPagedStatusList(page, 10);
+	public String fundStatusPage(@RequestParam(name="page", defaultValue="0") int page,
+								 @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
+								 Model model) {
+		Page<FundStatus> fundPage = statusService.getPagedStatusListByKeyword(page, 10, keyword);
 		model.addAttribute("statusList", fundPage.getContent());
 		
-		model.addAttribute("totalCount", statusService.getTotalCount());
+		model.addAttribute("totalCount", fundPage.getTotalElements());
 		model.addAttribute("totalPages", fundPage.getTotalPages()); // 전체 페이지 수
 	    model.addAttribute("currentPage", page); // 현재 페이지 번호
+        model.addAttribute("keyword", keyword); // 검색어
 		return "fund_status";
 	}
 	
