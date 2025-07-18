@@ -124,7 +124,7 @@ public class ApprovalController {
         return "redirect:/admin/approval/my-list";
     }
 
-    @GetMapping("/my-list")
+    @GetMapping({"/my-list", "/list"})
     public String getMyApprovals(HttpSession session, Model model,
                                  @RequestParam(defaultValue = "0") int pendingPage,
                                  @RequestParam(defaultValue = "0") int waitingPage,
@@ -218,6 +218,9 @@ public class ApprovalController {
         model.addAttribute("publishedPage", approvalService.getApprovalsByStatus(adminname, "배포", publishedPage));
 
         model.addAttribute("writerName", adminname);
+
+        model.addAttribute("admin", viewer);
+
         return "admin/approval/writer-list";
     }
 

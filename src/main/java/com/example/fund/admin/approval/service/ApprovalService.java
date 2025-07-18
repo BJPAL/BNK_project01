@@ -1,9 +1,11 @@
 package com.example.fund.admin.approval.service;
 
 import com.example.fund.admin.approval.entity.Approval;
+import com.example.fund.admin.approval.entity.ApprovalLog;
 import com.example.fund.admin.approval.repository.ApprovalRepository;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.repository.AdminRepository_A;
+import com.example.fund.admin.repository.projection.StatusCount;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,7 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -95,22 +100,6 @@ public class ApprovalService {
         // TODO: fundService.register(approval) 등 실제 펀드 등록 로직 호출
     }
 
-//    /* createApproval 아래로 변경 ( css 추가로) */
-//    public void createApproval(String title, String content, Integer adminId) {
-//
-//        Admin writer = adminRepository.findById(adminId)
-//                .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
-//
-//        Approval approval = Approval.builder()
-//                .title(title)
-//                .content(content)
-//                .writer(writer)
-//                .status("결재대기")
-//                .build();
-//
-//        approvalRepository.save(approval);
-//    }
-
     /* ───── 5. 결재 요청 등록 (요청자) ───── */
     @Transactional
     public Long createApproval(String title, String content, Integer adminId) {   // ⬅️ 반환형 Long
@@ -175,5 +164,40 @@ public class ApprovalService {
         approvalRepository.save(approval);
 
         approvalLogService.saveLog(approval, adminname, "결재대기", "재기안");
+    }
+
+    /* 작성자별 상위 `limit`개 기안 반환 */
+    public List<Approval> findRecentByWriter(String writer, int limit) {
+        Page<Approval> page = getApprovalsByStatus(writer, "결재대기", 0);
+        return page.getContent().stream()
+                .limit(limit)
+                .toList();
+    }
+
+    /* 상태별 오래된(등록일 오름차순) 상위 `limit`개 기안 반환 */
+    public List<Approval> findOldestApprovals(String status, int limit) {
+        Pageable p = PageRequest.of(0, limit, Sort.by("regDate").ascending());
+        return approvalRepository
+                .findByStatus(status, p)
+                .getContent();
+    }
+
+    /* 평균 승인 처리 일수 계산 */
+    public long calculateAverageApprovalDays() {
+        return (long) approvalLogService.findAllByNewStatus("배포대기").stream()
+                .mapToLong(log ->
+                        Duration.between(
+                                log.getApproval().getRegDate(),
+                                log.getChangedAt()
+                        ).toDays()
+                )
+                .average()
+                .orElse(0.0);
+    }
+
+    /*상태별 건수를 Map<status, count> 형태로 반환*/
+    public Map<String, Long> getFlowSummary() {
+        return approvalRepository.countByStatus().stream()
+                .collect(Collectors.toMap(StatusCount::getStatus, StatusCount::getCnt));
     }
 }

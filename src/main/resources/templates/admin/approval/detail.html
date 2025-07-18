@@ -10,6 +10,7 @@
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
   />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
     :root {
@@ -29,15 +30,9 @@
       font-family: "Segoe UI", sans-serif;
       color: #333;
     }
-    .layout {
-      display: flex;
-      flex-direction: column;
-    }
-    .main-wrapper {
-      flex: 1;
-    }
+    .layout { display: flex; flex-direction: column; }
+    .main-wrapper { flex: 1; }
 
-    /* 컨테이너 */
     .detail-container {
       max-width: 1300px;
       margin: 40px auto;
@@ -47,39 +42,25 @@
       box-shadow: 0 8px 24px var(--shadow);
     }
 
-    /* ── 헤더 ── */
     .detail-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 24px;
     }
-    .detail-header h1 {
+    .detail-header h1.title1 {
       display: flex;
       align-items: center;
       gap: 8px;
       font-size: 28px;
       color: var(--primary);
     }
-    .detail-header h1 i {
-      font-size: 24px;
-    }
+    .detail-header h1.title i { font-size: 24px; }
 
-    /* ── 콘텐츠 영역 ── */
-    .detail-content {
-      display: flex;
-      gap: 24px;
-    }
-    .detail-left {
-      flex: 2;
-    }
-    .detail-right {
-      flex: 1.5;
-      max-height: 400px;
-      overflow-y: auto;
-    }
+    .detail-content { display: flex; gap: 24px; }
+    .detail-left { flex: 2; }
+    .detail-right { flex: 1.5; max-height: 400px; overflow-y: auto; }
 
-    /* ── 데이터 테이블 ── */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -96,11 +77,8 @@
       color: #fff;
       font-weight: 600;
     }
-    tr:last-child td {
-      border-bottom: none;
-    }
+    tr:last-child td { border-bottom: none; }
 
-    /* ── 상태 배지 ── */
     .badge {
       padding: 4px 10px;
       border-radius: 12px;
@@ -114,7 +92,6 @@
     .badge-반려     { background: #e74c3c; }
     .badge-배포     { background: #2ecc71; }
 
-    /* ── 액션 박스 ── */
     .action-box {
       display: flex;
       gap: 16px;
@@ -149,7 +126,6 @@
     .btn-reject  { background: #e74c3c; }
     .btn:hover   { filter: brightness(.9); }
 
-    /* ── 로그 테이블 캡션 중앙 정렬 ── */
     .logs-table caption.log-title {
       caption-side: top;
       text-align: center;
@@ -158,6 +134,21 @@
       color: var(--primary);
       padding-bottom: 12px;
     }
+
+    .btn-toggle-logs {
+      background: var(--primary);
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 600;
+      padding: 8px 18px;
+      border: none;
+      cursor: pointer;
+      transition: filter .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-toggle-logs:hover { filter: brightness(.9); }
   </style>
 </head>
 
@@ -169,14 +160,17 @@
 
     <main class="content">
       <div class="detail-container">
-
-        <!-- 헤더 -->
         <div class="detail-header">
-          <h1><i class="far fa-file-alt"></i> 결재 상세 보기</h1>
+          <h1 class="title1"><i class="far fa-file-alt"></i> 결재 상세 보기</h1>
+          <button
+                  id="toggleLogsBtn"
+                  class="btn-toggle-logs"
+                  th:if="${logs != null && #lists.size(logs) > 0}">
+            <i class="fas fa-history"></i> 상태 변경 이력 보기
+          </button>
         </div>
 
         <div class="detail-content">
-          <!-- 왼쪽: 상세 테이블 + 액션 -->
           <div class="detail-left">
             <table>
               <tr><th>제목</th><td th:text="${approval.title}"></td></tr>
@@ -191,40 +185,43 @@
               </tr>
               <tr><th>상태</th>
                 <td>
-                  <span class="badge"
-                        th:classappend="' badge-' + ${approval.status}"
-                        th:text="${approval.status}"></span>
+                    <span class="badge"
+                          th:classappend="' badge-' + ${approval.status}"
+                          th:text="${approval.status}"></span>
                 </td>
               </tr>
               <tr th:if="${approval.rejectReason != null}">
                 <th>반려 사유</th><td th:text="${approval.rejectReason}"></td>
               </tr>
-              <tr><th>작성일</th><td th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></td></tr>
+              <tr><th>작성일</th>
+                <td th:text="${#temporals.format(approval.regDate,'yyyy-MM-dd HH:mm')}"></td>
+              </tr>
             </table>
 
-            <!-- 승인/반려 액션 -->
-            <div class="action-box"
-                 th:if="${admin != null && (admin.role=='approver'||admin.role=='super')
-                          && approval.status=='결재대기'}">
-              <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}"
-                    method="post">
+            <div
+                    class="action-box"
+                    th:if="${admin != null && (admin.role=='approver'||admin.role=='super') && approval.status=='결재대기'}">
+              <form th:action="@{'/admin/approval/approve/' + ${approval.approvalId}}" method="post">
                 <textarea name="reason" rows="3" placeholder="승인 사유(선택)"></textarea>
-                <button type="submit" class="btn btn-approve">
+                <button type="submit"
+                        class="btn btn-approve btn-confirm-approve">
                   <i class="fas fa-check"></i> 승인 (배포대기)
                 </button>
               </form>
-              <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}"
-                    method="post">
+              <form th:action="@{'/admin/approval/reject/' + ${approval.approvalId}}" method="post">
                 <textarea name="reason" rows="3" placeholder="반려 사유" required></textarea>
-                <button type="submit" class="btn btn-reject">
+                <button type="submit"
+                        class="btn btn-reject btn-confirm-reject">
                   <i class="fas fa-times"></i> 반려
                 </button>
               </form>
             </div>
           </div>
 
-          <!-- 오른쪽: 상태 변경 이력 -->
-          <div class="detail-right" th:if="${logs != null && #lists.size(logs) > 0}">
+          <div
+                  class="detail-right"
+                  th:if="${logs != null && #lists.size(logs) > 0}"
+                  style="display:none;">
             <table class="logs-table">
               <caption class="log-title">결재 상태 변경 이력</caption>
               <thead>
@@ -242,15 +239,74 @@
           </div>
         </div>
 
-        <a th:href="@{/admin/approval/manage}"
-           style="display:inline-block;margin-top:20px;
-                  color:var(--primary);font-weight:600;text-decoration:none;">
-          ← 목록으로
-        </a>
-
+        <div style="margin-top:20px;">
+          <a th:if="${admin.role=='super' or admin.role=='approver'}"
+             th:href="@{/admin/approval/manage}"
+             style="color:var(--primary); font-weight:600; text-decoration:none;">
+            ← 관리 목록으로
+          </a>
+          <a th:if="${admin.role=='planner'}"
+             th:href="@{/admin/approval/my-list}"
+             style="color:var(--primary); font-weight:600; text-decoration:none;">
+            ← 내 요청 목록으로
+          </a>
+        </div>
       </div>
     </main>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 로그 토글
+    const toggleBtn = document.getElementById('toggleLogsBtn');
+    const logs = document.querySelector('.detail-right');
+    if (toggleBtn && logs) {
+      toggleBtn.addEventListener('click', function() {
+        if (logs.style.display === 'none' || logs.style.display === '') {
+          logs.style.display = 'block';
+          toggleBtn.innerHTML = '<i class="fas fa-history"></i> 상태 변경 이력 숨기기';
+        } else {
+          logs.style.display = 'none';
+          toggleBtn.innerHTML = '<i class="fas fa-history"></i> 상태 변경 이력 보기';
+        }
+      });
+    }
+
+    // 승인 확인 모달
+    document.querySelectorAll('.btn-confirm-approve').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = this.closest('form');
+        Swal.fire({
+          title: '승인하시겠습니까?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: '예',
+          cancelButtonText: '아니오'
+        }).then(result => {
+          if (result.isConfirmed) form.submit();
+        });
+      });
+    });
+
+    // 반려 확인 모달
+    document.querySelectorAll('.btn-confirm-reject').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = this.closest('form');
+        Swal.fire({
+          title: '반려하시겠습니까?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '예',
+          cancelButtonText: '아니오'
+        }).then(result => {
+          if (result.isConfirmed) form.submit();
+        });
+      });
+    });
+  });
+</script>
 </body>
 </html>

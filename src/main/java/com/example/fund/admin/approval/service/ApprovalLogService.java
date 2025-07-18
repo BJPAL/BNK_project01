@@ -26,4 +26,8 @@ public class ApprovalLogService {
     public List<ApprovalLog> getLogsByApprovalId(Integer approvalId) {
         return approvalLogRepository.findByApproval_ApprovalIdOrderByChangedAtDesc(approvalId);
     }
+
+    public List<ApprovalLog> findAllByNewStatus(String newStatus) {
+        return approvalLogRepository.findByStatusOrderByChangedAtDesc(newStatus);
+    }
 }

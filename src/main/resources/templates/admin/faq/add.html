@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>FAQ 등록/수정</title>
+    <title th:text="${faq != null} ? 'FAQ 수정' : 'FAQ 등록'">FAQ 등록/수정</title>
     <link rel="stylesheet" href="/css/admin/admin_layout.css" />
     <style>
         body {
@@ -107,7 +107,7 @@
         /* ── 공통 버튼 스타일 ── */
         .btn, .back-btn {
           display: inline-block;
-          margin-top: 30px;
+          margin-top: 0; /* form-actions 에서 간격 관리 */
           background-color: #337D89;
           color: white;
           border: none;
@@ -144,6 +144,19 @@
           from { opacity: 0; transform: translateY(-10px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        /* 토글 그룹 */
+        .toggle-group {
+          display: flex;
+          align-items: center;
+          margin-top: 18px;
+        }
+        /* 폼 액션 버튼 영역: 양 끝 정렬 */
+        .form-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 30px;
+        }
     </style>
 </head>
 <body>
@@ -153,37 +166,66 @@
         <div th:replace="admin/admin_aside :: adminAside"></div>
         <main class="content">
             <div class="container edit-container">
-                <h1 class="faq-title">FAQ 등록</h1>
 
+                <!-- 제목 -->
+                <h1 class="faq-title"
+                    th:text="${faq != null} ? 'FAQ 수정' : 'FAQ 등록'">
+                    FAQ 등록
+                </h1>
+
+                <!-- 성공/에러 메시지 -->
                 <div th:if="${successMessage}" th:text="${successMessage}" class="alert-success"></div>
-                <div th:if="${errorMessage}" th:text="${errorMessage}" class="message"></div>
+                <div th:if="${errorMessage}"   th:text="${errorMessage}"   class="message"></div>
 
-                <form th:action="@{/admin/faq/add}" method="post">
+                <!-- form 시작 -->
+                <form th:action="${faq != null}
+                            ? @{/admin/faq/update/{id}(id=${faq.id})}
+                            : @{/admin/faq/add}"
+                      method="post">
+
+                    <!-- 질문 -->
                     <label for="question">질문</label>
-                    <input type="text" name="question" id="question" required placeholder="질문을 입력하세요" />
+                    <input type="text" id="question" name="question"
+                           th:value="${faq != null} ? ${faq.question} : ''"
+                           required placeholder="질문을 입력하세요" />
 
+                    <!-- 답변 -->
                     <label for="answer">답변</label>
-                    <textarea name="answer" id="answer" required placeholder="답변을 입력하세요"></textarea>
+                    <textarea id="answer" name="answer" required
+                              placeholder="답변을 입력하세요"
+                              th:text="${faq != null} ? ${faq.answer} : ''">
+            </textarea>
 
-                    <label>
-                        <span style="font-weight: bold;">활성화 여부</span><br>
+                    <!-- 활성화 여부 토글 -->
+                    <div class="toggle-group">
+                        <span style="font-weight:bold; margin-right:8px;">활성화 여부</span>
                         <label class="toggle-switch">
-                            <input type="checkbox" name="active" checked />
+                            <input type="checkbox" name="active"
+                                   th:checked="${faq == null} ? true : ${faq.active}" />
                             <span class="slider"></span>
                         </label>
-                    </label>
+                    </div>
 
-                    <div style="display: flex; justify-content: space-between;">
-                        <!-- 목록 버튼에 back-btn, tooltip-btn, btn 클래스 부여 -->
-                        <a href="/admin/faq/list" class="back-btn btn tooltip-btn" data-tooltip="FAQ 목록으로 돌아갑니다">
-                            << 목록으로
+                    <!-- 액션 버튼 그룹 -->
+                    <div class="form-actions">
+                        <!-- 목록으로 -->
+                        <a th:href="@{/admin/faq/list}" class="back-btn">
+                            ← 목록으로
                         </a>
-                        <!-- 등록 버튼은 기존 그대로 btn, tooltip-btn -->
-                        <button type="submit" class="btn tooltip-btn" data-tooltip="FAQ를 등록합니다">
+                        <!-- 등록 or 수정 -->
+                        <button type="submit"
+                                class="btn tooltip-btn"
+                                th:attr="data-tooltip=${faq != null}
+                                    ? 'FAQ를 수정합니다'
+                                    : 'FAQ를 등록합니다'"
+                                th:text="${faq != null} ? '수정' : '등록'">
                             등록
                         </button>
                     </div>
+
                 </form>
+                <!-- form 끝 -->
+
             </div>
         </main>
     </div>

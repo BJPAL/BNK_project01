@@ -1,6 +1,7 @@
 package com.example.fund.admin.approval.repository;
 
 import com.example.fund.admin.approval.entity.Approval;
+import com.example.fund.admin.repository.projection.StatusCount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +29,7 @@ public interface ApprovalRepository extends JpaRepository<Approval, Long> {
 
     Page<Approval> findByWriterAdminnameAndStatus(String adminname, String status, Pageable pageable);
 
+    // 상태별 개수 집계 프로젝션
+    @Query("SELECT a.status AS status, COUNT(a) AS cnt FROM Approval a GROUP BY a.status")
+    List<StatusCount> countByStatus();
 }
