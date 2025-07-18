@@ -14,6 +14,6 @@ public class FundHoldingService {
     private final FundHoldingRepository fundHoldingRepository;
 
     public List<FundHolding> getHoldingsByUserId(int userId) {
-        return fundHoldingRepository.findByUser_UserIdOrderByJoinedAtDesc(userId);
+        return fundHoldingRepository.findByUser_UserIdOrderByJoinedAtDesc((long) userId);
     }
 }

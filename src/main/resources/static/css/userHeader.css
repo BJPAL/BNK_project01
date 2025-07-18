@@ -228,4 +228,73 @@ body {
     font-weight: 700;
   
 }
+.btn-bnk-outline {
+  display: inline-block;
+  padding: 8px 20px;
+  border: 1px solid #d0021b;
+  border-radius: 999px;
+  background-color: white;
+  color: #d0021b;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+}
 
+.btn-bnk-outline:hover {
+  background-color: #d0021b;
+  color: white;
+}
+
+.qna-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  margin-top: 1rem;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.qna-table th {
+  background-color: #0f2557;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  font-weight: 600;
+}
+
+.qna-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.qna-table tr:hover {
+  background-color: #f6f9fc;
+}
+
+.qna-table .link-title {
+  color: #0f2557;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.qna-table .link-title:hover {
+  text-decoration: underline;
+  color: #d0021b;
+}
+
+.qna-table .status {
+  font-weight: 600;
+  color: #117C88; /* 포인트 컬러 */
+}
+
+.qna-table .no-data {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-style: italic;
+}

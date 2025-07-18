@@ -1,23 +1,26 @@
-<!-- src/main/resources/templates/mypage/qna-detail.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>문의 상세</title>
-  <link rel="stylesheet" th:href="@{/css/bank.css}" />
+  <link th:href="@{/css/bnk-theme.css}" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-  <h2>1:1 문의 상세</h2>
-  <table class="table">
+<th:block th:replace="fragments/header :: header"></th:block>
+
+<section class="bnk-panel">
+  <h2 class="bnk-panel__title">1 : 1 문의 상세</h2>
+
+  <table class="bnk-table">
     <tr><th>제목</th><td th:text="${qna.title}"></td></tr>
-    <tr><th>작성일</th><td th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd HH:mm')}"></td></tr>
+    <tr><th>작성일</th><td th:text="${#temporals.format(qna.regDate,'yyyy-MM-dd HH:mm')}"></td></tr>
     <tr><th>내용</th><td th:text="${qna.content}"></td></tr>
     <tr><th>상태</th><td th:text="${qna.status}"></td></tr>
   </table>
-  <div class="btn-wrap" style="margin-top:1.5rem;">
-    <a th:href="@{/mypage/qna}" class="btn-gold">목록으로</a>
+
+  <div class="text-center mt-4">
+    <a th:href="@{/mypage/qna}" class="btn-bnk-gold">목록으로</a>
   </div>
-</div>
+</section>
 </body>
 </html>

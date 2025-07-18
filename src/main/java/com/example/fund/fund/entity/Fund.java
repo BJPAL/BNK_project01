@@ -66,4 +66,6 @@ public class Fund extends BaseEntity {
     @JoinColumn(name = "fund_policy_id")
     @OneToOne(mappedBy = "fund", fetch = FetchType.LAZY)
     private FundPolicy fundPolicy;
+
+
 }

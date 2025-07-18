@@ -1,48 +1,85 @@
-<!-- src/main/resources/templates/fragments/header.html -->
 <div th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/bank.css" rel="stylesheet">
+  <link th:href="@{/css/bnk-theme.css}" rel="stylesheet">
 
-  <nav class="navbar navbar-expand-lg bg-bank-dark navbar-dark shadow-sm">
+  <style>
+    .session-timer-box {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      transition: background 0.3s ease;
+    }
+
+    .session-timer-box.warning {
+      background-color: rgba(255, 80, 80, 0.3);
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+  </style>
+
+  <nav class="navbar navbar-expand-lg navbar-dark shadow-sm bnk-navbar">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" th:href="@{/}">BNK Fund</a>
+      <a class="navbar-brand fw-bold" th:href="@{/}">BNK Fund</a>
 
       <div class="ms-auto d-flex align-items-center">
         <!-- 비로그인 -->
         <div th:if="${session.user == null}">
           <a class="btn btn-outline-light me-2" th:href="@{/auth/login}">로그인</a>
-          <a class="btn btn-gold" th:href="@{/auth/join}">회원가입</a>
+          <a class="btn btn-bnk-gold" th:href="@{/auth/join}">회원가입</a>
         </div>
 
         <!-- 로그인 -->
-        <div th:if="${session.user != null}" class="text-end text-white">
+        <div th:if="${session.user != null}" class="text-white d-flex align-items-center">
           <span class="me-3 fw-semibold" th:text="|${session.user.name} 님|"></span>
 
-          <!-- 보유 펀드 목록 -->
-          <a class="btn btn-outline-light btn-sm me-2" th:href="@{/fund/my}">보유 펀드 목록</a>
-
-          <!-- 마이페이지(정보수정·문의 탭 포함) -->
+          <a class="btn btn-outline-light btn-sm me-2" th:href="@{/fund/my}">보유 펀드</a>
           <a class="btn btn-outline-light btn-sm me-2" th:href="@{/mypage}">마이페이지</a>
+          <a class="btn btn-outline-light btn-sm"    th:href="@{/auth/logout}">로그아웃</a>
 
-          <a class="btn btn-outline-light btn-sm" th:href="@{/auth/logout}">로그아웃</a>
-
-          <div class="small mt-1" th:if="${sessionRemaining}">
-            세션 만료까지 <span id="session-timer" th:text="${sessionRemaining}"></span>s
-          </div>
+          <!-- 세션 타이머 -->
+          <span class="session-timer-box ms-3" th:if="${sessionRemaining}">
+            ⏰ 로그아웃까지 <span id="session-timer"></span>
+          </span>
         </div>
       </div>
     </div>
   </nav>
 
-  <!-- 세션 만료 타이머 -->
   <script th:if="${sessionRemaining}">
     let sec = [[${sessionRemaining}]];
-    const timerEl = document.getElementById('session-timer');
+    const el = document.getElementById('session-timer');
+    const wrapper = el.closest('.session-timer-box');
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m.toString().padStart(2, '0')}분 ${s.toString().padStart(2, '0')}초`;
+    }
+
+    el.innerText = formatTime(sec);
+
     const tick = setInterval(() => {
       sec--;
-      if (sec === 5)  alert('세션이 곧 만료됩니다!');
-      if (sec <= 0)   { clearInterval(tick); window.location.href = '/auth/logout'; }
-      else            timerEl.innerText = sec;
+
+      if (sec === 5) alert('세션이 곧 만료됩니다!');
+      if (sec <= 0) {
+        clearInterval(tick);
+        location.href = '/auth/logout';
+      } else {
+        el.innerText = formatTime(sec);
+        if (sec <= 60) wrapper.classList.add('warning');
+      }
     }, 1000);
   </script>
 </div>

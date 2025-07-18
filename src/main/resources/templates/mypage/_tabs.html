@@ -1,24 +1,31 @@
-<!-- src/main/resources/templates/mypage/_tabs.html -->
-<div th:fragment="tabs" class="d-flex gap-2 mb-4" xmlns:th="http://www.thymeleaf.org">
+<!-- /templates/mypage/_tabs.html -->
+<div th:fragment="tabs" xmlns:th="http://www.w3.org/1999/xhtml">
+  <link rel="stylesheet" th:href="@{/css/bnk-tabs.css}" th:remove="tag"/>
 
-  <!-- 정보수정 -->
-  <a th:href="@{/mypage/edit}"
-     class="btn btn-outline-primary"
-     th:classappend="${requestURI == '/mypage/edit'} ? ' active'">
-    정보수정
-  </a>
+  <div class="bnk-tabs">
+    <a th:href="@{/mypage/edit}"
+       th:class="'bnk-tab-link' + (${requestURI} == '/mypage/edit' ? ' active' : '')">
+      정보수정
+    </a>
 
-  <!-- 1:1 문의하기 -->
-  <a th:href="@{/qna}"
-     class="btn btn-outline-primary"
-     th:classappend="${requestURI == '/qna'} ? ' active'">
-    1:1 문의하기
-  </a>
+    <a th:href="@{/qna}"
+       th:class="'bnk-tab-link' + (${requestURI} == '/qna' ? ' active' : '')">
+      1:1 문의하기
+    </a>
 
-  <!-- 문의내역 -->
-  <a th:href="@{/mypage/qna}"
-     class="btn btn-outline-primary"
-     th:classappend="${requestURI == '/mypage/qna'} ? ' active'">
-    문의내역
-  </a>
+    <a th:href="@{/mypage/qna}"
+       th:class="'bnk-tab-link' + (${requestURI} == '/mypage/qna' ? ' active' : '')">
+      문의내역
+    </a>
+
+    <a th:href="@{/fund/my}"
+       th:class="'bnk-tab-link' + (${requestURI} == '/fund/my' ? ' active' : '')">
+      보유 펀드 목록
+    </a>
+
+    <a th:href="@{/mypage/profile}"
+       th:class="'bnk-tab-link' + (${requestURI} == '/mypage/profile' ? ' active' : '')">
+      나의 투자성향
+    </a>
+  </div>
 </div>

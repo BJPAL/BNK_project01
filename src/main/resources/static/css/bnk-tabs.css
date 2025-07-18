@@ -1,0 +1,41 @@
+:root {
+  --bnk-red: #c60021;
+  --bnk-red-hover: #a8001b;
+  --bnk-gray: #555;
+  --bnk-light: #fafafa;
+}
+
+/* 탭 컨테이너 */
+.bnk-tabs {
+  display: flex;
+  gap: 16px;
+  padding: 14px 24px;
+  border-bottom: 2px solid var(--bnk-red);
+  background: #ffffff;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 기본 탭 */
+.bnk-tab-link {
+  padding: 8px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--bnk-gray);
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all .25s ease;
+}
+
+/* Hover */
+.bnk-tab-link:hover {
+  color: var(--bnk-red);
+  background: var(--bnk-light);
+  border-color: var(--bnk-red);
+}
+
+/* Active */
+.bnk-tab-link.active {
+  color: #fff;
+  background: var(--bnk-red);
+  border-color: var(--bnk-red);
+}

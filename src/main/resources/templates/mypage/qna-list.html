@@ -1,27 +1,126 @@
-<table class="table" xmlns:th="http://www.w3.org/1999/xhtml">
-  <thead>
-  <tr>
-    <th>번호</th>
-    <th>제목</th>
-    <th>내용</th>
-    <th>작성일</th>
-    <th>상태</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="q, iter : ${qnaList}">
-    <td th:text="${iter.count}"></td> <!-- 번호 자동 증가 -->
-    <td>
-      <a th:href="@{'/mypage/qna/' + ${q.qnaId}}" th:text="${q.title}" class="link-bank"></a>
-    </td>
-    <td th:text="${#strings.abbreviate(q.content, 30)}"></td> <!-- 미리보기 30자 -->
-    <td th:text="${#temporals.format(q.regDate, 'yyyy-MM-dd HH:mm')}"></td>
-    <td th:text="${q.status}"></td>
-  </tr>
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>나의 1:1 문의 내역</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bnk-red: #C60021;
+      --bnk-dark: #333333;
+      --bnk-light: #f5f5f5;
+      --white: #ffffff;
+    }
 
-  <!-- 문의 내역이 비어 있을 때 -->
-  <tr th:if="${#lists.isEmpty(qnaList)}">
-    <td colspan="5" class="text-center">문의 내역이 없습니다.</td>
-  </tr>
-  </tbody>
-</table>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bnk-light);
+      margin: 0;
+      padding: 2rem;
+      color: var(--bnk-dark);
+    }
+
+    .qna-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--white);
+      padding: 3rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      border-top: 5px solid var(--bnk-red);
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--bnk-red);
+      margin-bottom: 2rem;
+    }
+
+    table.qna-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      background-color: var(--white);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .qna-table th {
+      background-color: var(--bnk-red);
+      color: white;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .qna-table td {
+      padding: 14px;
+      font-size: 14px;
+      text-align: center;
+      border-bottom: 1px solid #eeeeee;
+    }
+
+    .qna-table tr:hover {
+      background-color: #fef2f2;
+    }
+
+    .qna-table a.link-title {
+      color: var(--bnk-red);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .qna-table a.link-title:hover {
+      text-decoration: underline;
+    }
+
+    .status {
+      font-weight: 600;
+      color: var(--bnk-red);
+    }
+
+    .no-data {
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      padding: 2.5rem 0;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="qna-container">
+  <h2>나의 1:1 문의 내역</h2>
+
+  <div th:if="${#lists.isEmpty(qnaList)}" class="no-data">
+    문의 내역이 없습니다.
+  </div>
+
+  <table th:if="${!#lists.isEmpty(qnaList)}" class="qna-table">
+    <thead>
+    <tr>
+      <th>번호</th>
+      <th>제목</th>
+      <th>내용</th>
+      <th>작성일</th>
+      <th>상태</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="q, iter : ${qnaList}">
+      <td th:text="${iter.count}"></td>
+      <td>
+        <a th:href="@{'/mypage/qna/' + ${q.qnaId}}" th:text="${q.title}" class="link-title"></a>
+      </td>
+      <td th:text="${#strings.abbreviate(q.content, 30)}"></td>
+      <td th:text="${#temporals.format(q.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+      <td th:text="${q.status}" class="status"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

@@ -1,110 +1,222 @@
-<div th:fragment="userHeader">
-  <header class="header">
-    <div class="logo">
-      <img src="/images/logo.png" alt="BNK 부산은행 로고" />
-    </div>
-  <div class="right-section">
-    <nav class="main-nav">
-      <button class="nav-btn">개인</button>
-      <button class="nav-btn">기업</button>
+<div th:fragment="userHeader" xmlns:th="http://www.w3.org/1999/xhtml">
+    <style>
+        :root {
+          --bnk-navy: #0f2557;
+          --bnk-gold: #d4af37;
+          --bnk-red: #c70101;
+          --bnk-light: #fdf5f5;
+          --rounded-lg: 2rem;
+        }
 
-      <div class="dropdown">
-          <button class="nav-btn">금융상품</button>
-          <div class="dropdown-content">
-              <a href="#">추천상품</a>
-              <a href="#">펀드</a>
-              <a href="#">카드</a>
-              <a href="#">예금</a>
-              <a href="#">대출</a>
-              <a href="#">보험/공제</a>
-              <a href="#">웰스타로보B</a>
-            </div>
-      </div>
-    </nav>
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          font-size: 0.95rem;
+          color: var(--bnk-navy);
+          font-weight: 500;
+        }
 
-    <div class="user-info">
-        <a href="/login">로그인</a>
-      <span>|</span> <a href="/logout">회원가입</a>
-      <button class="menu-icon" onclick="toggleMenu()"><img src="/images/menu_icon.png" alt="menu 아이콘"></button>
-    </div>
+        .user-info a {
+          color: var(--bnk-red);
+          text-decoration: none;
+          font-weight: 600;
+        }
 
-    <script>
-    function toggleMenu() {
-        const menu = document.getElementById("hiddenMenu");
-        menu.classList.toggle("show");
+        .user-info a:hover {
+          text-decoration: underline;
+        }
+
+        .session-timer-box {
+      background-color: #fff0f0;
+      color: var(--bnk-red);
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      line-height: 1;
+      vertical-align: middle;
+      border: 1px solid #ffd3d3;
     }
-    </script>
 
-    <div class="hidden-menu" id="hiddenMenu">
-        <div class="hidden-menu-title">
-            <h3>전체 메뉴보기</h3>
-            <button onclick="toggleMenu()"><img src="/images/close-icon.png" alt="메뉴 닫기"></button>
+.session-timer-box svg,
+.session-timer-box img,
+.session-timer-box .emoji {
+  font-size: 0.9rem;
+  vertical-align: middle;
+  margin-top: -1px;
+}
+
+
+        .session-timer-box.warning {
+          background-color: #ffe5e5;
+          animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+    </style>
+
+    <header class="header">
+        <div class="logo">
+            <img src="/images/logo.png" alt="BNK 부산은행 로고" />
         </div>
-        <div class="hidden-menu-wrap">
-            <div class="hidden-menu-tabBar">
-                <div class="hidden-menu-tab active">전체서비스</div>
-                <div class="hidden-menu-tab">개인뱅킹</div>
-                <div class="hidden-menu-tab">기업뱅킹</div>
-                <div class="hidden-menu-tab">금융상품</div>
+
+        <div class="right-section">
+            <nav class="main-nav">
+                <button class="nav-btn">개인</button>
+                <button class="nav-btn">기업</button>
+
+                <div class="dropdown">
+                    <button class="nav-btn">금융상품</button>
+                    <div class="dropdown-content">
+                        <a href="#">추천상품</a>
+                        <a href="#">펀드</a>
+                        <a href="#">카드</a>
+                        <a href="#">예금</a>
+                        <a href="#">대출</a>
+                        <a href="#">보험/공제</a>
+                        <a href="#">웰스타로보B</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="user-info">
+                <!-- 비로그인 상태 -->
+                <div th:if="${session.user == null}">
+                    <a th:href="@{/auth/login}">로그인</a>
+                    <span>|</span>
+                    <a th:href="@{/auth/join}">회원가입</a>
+                </div>
+
+                <!-- 로그인 상태 -->
+                <div th:if="${session.user != null}" class="d-flex align-items-center gap-2">
+                    <span class="fw-semibold" th:text="|${session.user.name} 님|"></span>
+                    <span>|</span>
+                    <a th:href="@{/auth/logout}">로그아웃</a>
+
+                    <!-- 세션 타이머 -->
+                    <span class="session-timer-box" th:if="${sessionRemaining}">
+            ⏰ <span id="session-timer"></span>
+          </span>
+                </div>
+
+                <button class="menu-icon" onclick="toggleMenu()">
+                    <img src="/images/menu_icon.png" alt="menu 아이콘">
+                </button>
             </div>
-            <div class="hidden-menu-subTab">
-                <span class="active">조회</span> | 
-                <span>이체</span> | 
-                <span>예금/신탁</span> | 
-                <span>퇴직연금</span> | 
-                <span>ISA</span> | 
-                <span>대출</span> | 
-                <span>웰스타로보B</span> | 
-                <span>펀드</span> | 
-                <span>카드</span> | 
-                <span>외환</span> | 
-                <span>보험</span> | 
-                <span>공과금납부</span> | 
-                <span>전자어음</span> | 
-                <span>뱅킹관리</span> | 
-                <span>공동인증센터</span> | 
-                <span>마이페이지</span> | 
-                <span>금융인증센터</span>
-            </div>
 
-            <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const mainTabSpans = document.querySelectorAll(".hidden-menu-tab");
+            <!-- 세션 타이머 스크립트 -->
+            <script th:if="${sessionRemaining}">
+                let sec = [[${sessionRemaining}]];
+                const el = document.getElementById('session-timer');
+                const box = el.closest('.session-timer-box');
 
-                mainTabSpans.forEach(tab => {
-                tab.addEventListener("click", function () {
-                    mainTabSpans.forEach(t => t.classList.remove("active"));
-                    this.classList.add("active");
-                });
-                });
+                function formatTime(s) {
+                  const m = String(Math.floor(s / 60)).padStart(2, '0');
+                  const s2 = String(s % 60).padStart(2, '0');
+                  return `${m}:${s2}`;
+                }
 
-                const subTabSpans = document.querySelectorAll(".hidden-menu-subTab span");
+                el.innerText = formatTime(sec);
 
-                subTabSpans.forEach(tab => {
-                tab.addEventListener("click", function () {
-                    subTabSpans.forEach(t => t.classList.remove("active"));
-                    this.classList.add("active");
-                });
-                });
-            });
+                const tick = setInterval(() => {
+                  sec--;
+                  if (sec === 5) alert('세션이 곧 만료됩니다!');
+                  if (sec <= 0) {
+                    clearInterval(tick);
+                    window.location.href = '/auth/logout';
+                  } else {
+                    el.innerText = formatTime(sec);
+                    if (sec <= 60) box.classList.add('warning');
+                  }
+                }, 1000);
             </script>
 
-            <hr>
-            <h4 class="hidden-menu-subTab-title">조회</h4>
-            <ul class="hidden-menu-subTab-list">
-                <li><a href="#">전체 계좌 조회</a></li>
-                <li><a href="#">거래 내역 조회</a></li>
-                <li><a href="#">이체 내역 조회</a></li>
-                <li><a href="#">특정일전체계좌잔액조회</a></li>
-                <li><a href="#">썸패스가맹점거래조회</a></li>
-                <li><a href="#">수표/어음</a></li>
-                <li><a href="#">세금우대/비과세한도조회</a></li>
-                <li><a href="#">해지계좌조회</a></li>
-                <li><a href="#">해지계좌거래내역조회</a></li>
-                <li><a href="#">기일도래명도세조회</a></li>
-                <li><a href="#">계좌통합관리서비스</a></li>
-            </ul>
+            <!-- Hidden 메뉴 -->
+            <div class="hidden-menu" id="hiddenMenu">
+                <div class="hidden-menu-title">
+                    <h3>전체 메뉴보기</h3>
+                    <button onclick="toggleMenu()"><img src="/images/close-icon.png" alt="메뉴 닫기"></button>
+                </div>
+
+                <div class="hidden-menu-wrap">
+                    <div class="hidden-menu-tabBar">
+                        <div class="hidden-menu-tab active">전체서비스</div>
+                        <div class="hidden-menu-tab">개인뱅킹</div>
+                        <div class="hidden-menu-tab">기업뱅킹</div>
+                        <div class="hidden-menu-tab">금융상품</div>
+                    </div>
+
+                    <div class="hidden-menu-subTab">
+                        <span class="active">조회</span> |
+                        <span>이체</span> |
+                        <span>예금/신탁</span> |
+                        <span>퇴직연금</span> |
+                        <span>ISA</span> |
+                        <span>대출</span> |
+                        <span>웰스타로보B</span> |
+                        <span>펀드</span>
+                        <span>카드</span> |
+                        <span>외환</span> |
+                        <span>보험</span> |
+                        <span>공과금납부</span> |
+                        <span>전자어음</span> |
+                        <span>뱅킹관리</span> |
+                        <span>공동인증센터</span> |
+                        <a th:href="@{/mypage}">마이페이지</a> |
+                        <span>금융인증센터</span>
+                    </div>
+
+                    <hr>
+                    <h4 class="hidden-menu-subTab-title">조회</h4>
+                    <ul class="hidden-menu-subTab-list">
+                        <li><a href="#">전체 계좌 조회</a></li>
+                        <li><a href="#">거래 내역 조회</a></li>
+                        <li><a href="#">이체 내역 조회</a></li>
+                        <li><a href="#">특정일전체계좌잔액조회</a></li>
+                        <li><a href="#">썸패스가맹점거래조회</a></li>
+                        <li><a href="#">수표/어음</a></li>
+                        <li><a href="#">세금우대/비과세한도조회</a></li>
+                        <li><a href="#">해지계좌조회</a></li>
+                        <li><a href="#">해지계좌거래내역조회</a></li>
+                        <li><a href="#">기일도래명도세조회</a></li>
+                        <li><a href="#">계좌통합관리서비스</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 메뉴 스크립트 -->
+            <script>
+                function toggleMenu() {
+                  const menu = document.getElementById("hiddenMenu");
+                  menu.classList.toggle("show");
+                }
+
+                document.addEventListener("DOMContentLoaded", function () {
+                  const mainTabs = document.querySelectorAll(".hidden-menu-tab");
+                  mainTabs.forEach(tab => {
+                    tab.addEventListener("click", function () {
+                      mainTabs.forEach(t => t.classList.remove("active"));
+                      this.classList.add("active");
+                    });
+                  });
+
+                  const subTabs = document.querySelectorAll(".hidden-menu-subTab span");
+                  subTabs.forEach(tab => {
+                    tab.addEventListener("click", function () {
+                      subTabs.forEach(t => t.classList.remove("active"));
+                      this.classList.add("active");
+                    });
+                  });
+                });
+            </script>
         </div>
-    </div>
-  </header>
+    </header>
 </div>

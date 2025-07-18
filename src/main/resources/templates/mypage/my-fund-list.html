@@ -24,7 +24,7 @@
     </thead>
     <tbody>
     <tr th:each="h : ${holdings}">
-        <td th:text="${h.fund.fundName}"></td>
+        <td th:text="${h.fund != null ? h.fund.fundName : '알 수 없음'}"></td>
         <td th:text="${h.quantity}"></td>
         <td th:text="${#numbers.formatInteger(h.avgPrice, 1, 'COMMA')} + '원'"></td>
         <td th:text="${#temporals.format(h.joinedAt, 'yyyy-MM-dd')}"></td>
