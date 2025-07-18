@@ -1,16 +1,23 @@
 package com.example.fund.fund.controller;
 
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +33,9 @@ import com.example.fund.fund.dto.FundResponseDTO;
 import com.example.fund.fund.dto.InvestTypeResponse;
 import com.example.fund.fund.dto.PaginationInfo;
 import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.entity.FundDocument;
 import com.example.fund.fund.entity.InvestProfileResult;
+import com.example.fund.fund.repository.FundDocumentRepository;
 import com.example.fund.fund.repository.FundRepository;
 import com.example.fund.fund.repository.InvestProfileResultRepository;
 import com.example.fund.fund.service.FundService;
@@ -44,9 +53,9 @@ public class FundApiController {
     private final FundService fundService;
     private final InvestProfileResultRepository investProfileResultRepository;
     private final FundRepository fundRepository;
+    private final FundDocumentRepository fundDocumentRepository;
     private static final int MIN_INVEST_TYPE = 1;
     private static final int MAX_INVEST_TYPE = 5;
-
     /**
      * 사용자 투자성향 조회 API
      */
@@ -194,10 +203,16 @@ public class FundApiController {
 
     /** 펀드 상세 데이터 조회 - REST API */
     @GetMapping("/{fundId}")
-    public ResponseEntity<FundDetailResponse> getFundDetail(@PathVariable Long fundId) {
+    public ResponseEntity<?> getFundDetail(@PathVariable("fundId") Long fundId,
+                                        @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy) {
         try {
-            FundDetailResponse response = fundService.getFundDetail(fundId);
-            return ResponseEntity.ok(response);
+            if (includePolicy) {
+                FundDetailResponse response = fundService.getFundDetailWithPolicy(fundId);
+                return ResponseEntity.ok(response);
+            } else {
+                FundDetailResponse response = fundService.getFundDetailBasic(fundId);
+                return ResponseEntity.ok(response);
+            }
         } catch (Exception e) {
             e.printStackTrace(); // 간단한 로그
             return ResponseEntity.notFound().build();
@@ -235,6 +250,43 @@ public class FundApiController {
 
         return ResponseEntity.ok(result);
     }
+
+    /* 공시파일 다운로드 */ 
+
+    @GetMapping("/files/document/{id}")
+    public ResponseEntity<org.springframework.core.io.Resource> downloadFundDocument(@PathVariable("id") Long id) {
+        FundDocument document = fundDocumentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("문서를 찾을 수 없습니다."));
+
+        Path path = Paths.get(document.getFilePath());
+        org.springframework.core.io.Resource resource;
+
+        try {
+            resource = new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("파일 경로가 잘못되었습니다.", e);
+        }
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new RuntimeException("파일을 읽을 수 없습니다.");
+        }
+
+        // 파일명 인코딩 (한글 파일 대응)
+        String encodedFileName;
+        try {
+            encodedFileName = java.net.URLEncoder.encode(document.getDocTitle() + ".pdf", "UTF-8")
+                    .replaceAll("\\+", "%20");
+        } catch (Exception e) {
+            encodedFileName = "document.pdf";
+        }
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + encodedFileName + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(resource);
+    }
+
 
 
 }

@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -99,28 +100,46 @@ public class FundService {
     /**
      * 펀드 상세 정보 조회 (간단 버전)
      */
-    public FundDetailResponse getFundDetail(Long fundId) {
-        // 1. 펀드 기본 정보 조회
+    public FundDetailResponse getFundDetailBasic(Long fundId) {
         Fund fund = fundRepository.findByFundId(fundId)
                 .orElseThrow(() -> new RuntimeException("펀드를 찾을 수 없습니다."));
 
-        // 2. 펀드 자산 구성 조회 (1:1 관계)
-        FundAsset asset = fundAssetRepository.findByFund_FundId(fundId)
-                .orElse(null);
+        FundAsset asset = fundAssetRepository.findByFund_FundId(fundId).orElse(null);
+        List<FundDocument> documents = fundDocumentRepository.findByFund_FundId(fundId);
 
-        // 3. 응답 DTO 생성
+        Long termsFileId = null;
+        Long manualFileId = null;
+        Long prospectusFileId = null;
+        String termsFileName = null;
+        String manualFileName = null;
+        String prospectusFileName = null;
+
+        for (FundDocument doc : documents) {
+            switch (doc.getDocType()) {
+                case "약관" -> {
+                    termsFileId = doc.getDocumentId();
+                    termsFileName = doc.getDocTitle();
+                }
+                case "상품설명서" -> {
+                    manualFileId = doc.getDocumentId();
+                    manualFileName = doc.getDocTitle();
+                }
+                case "투자설명서" -> {
+                    prospectusFileId = doc.getDocumentId();
+                    prospectusFileName = doc.getDocTitle();
+                }
+            }
+        }
+
         return FundDetailResponse.builder()
-                // Fund 정보
                 .fundId(fund.getFundId())
                 .fundName(fund.getFundName())
+                .fundTheme(null) // 정책 없음
                 .fundType(fund.getFundType())
-                .classType(fund.getClassType())
                 .investmentRegion(fund.getInvestmentRegion())
                 .establishDate(fund.getEstablishDate())
                 .managementCompany(fund.getManagementCompany())
-                .baseCurrency(fund.getBaseCurrency())
                 .riskLevel(fund.getRiskLevel())
-                .fundStatus(fund.getFundStatus())
                 .totalExpenseRatio(fund.getTotalExpenseRatio())
                 .domesticStock(asset != null ? asset.getDomesticStock() : BigDecimal.ZERO)
                 .overseasStock(asset != null ? asset.getOverseasStock() : BigDecimal.ZERO)
@@ -128,8 +147,78 @@ public class FundService {
                 .overseasBond(asset != null ? asset.getOverseasBond() : BigDecimal.ZERO)
                 .fundInvestment(asset != null ? asset.getFundInvestment() : BigDecimal.ZERO)
                 .liquidity(asset != null ? asset.getLiquidity() : BigDecimal.ZERO)
+                .termsFileId(termsFileId)
+                .manualFileId(manualFileId)
+                .prospectusFileId(prospectusFileId)
+                .termsFileName(termsFileName)
+                .manualFileName(manualFileName)
+                .prospectusFileName(prospectusFileName)
                 .build();
     }
+
+    /**
+     * 펀드 상세 정보 조회 (정책 포함)
+     */
+    public FundDetailResponse getFundDetailWithPolicy(Long fundId) {
+        Fund fund = fundRepository.findByFundId(fundId)
+                .orElseThrow(() -> new RuntimeException("펀드를 찾을 수 없습니다."));
+
+        FundPolicy policy = fundPolicyRepository.findByFund_FundId(fundId)
+                .orElseThrow(() -> new RuntimeException("펀드 정책을 찾을 수 없습니다."));
+
+        FundAsset asset = fundAssetRepository.findByFund_FundId(fundId).orElse(null);
+        List<FundDocument> documents = fundDocumentRepository.findByFund_FundId(fundId);
+
+        Long termsFileId = null;
+        Long manualFileId = null;
+        Long prospectusFileId = null;
+        String termsFileName = null;
+        String manualFileName = null;
+        String prospectusFileName = null;
+
+        for (FundDocument doc : documents) {
+            switch (doc.getDocType()) {
+                case "약관" -> {
+                    termsFileId = doc.getDocumentId();
+                    termsFileName = doc.getDocTitle();
+                }
+                case "상품설명서" -> {
+                    manualFileId = doc.getDocumentId();
+                    manualFileName = doc.getDocTitle();
+                }
+                case "투자설명서" -> {
+                    prospectusFileId = doc.getDocumentId();
+                    prospectusFileName = doc.getDocTitle();
+                }
+            }
+        }
+
+
+        return FundDetailResponse.builder()
+                .fundId(fund.getFundId())
+                .fundName(fund.getFundName())
+                .fundTheme(policy.getFundTheme())
+                .fundType(fund.getFundType())
+                .investmentRegion(fund.getInvestmentRegion())
+                .establishDate(fund.getEstablishDate())
+                .managementCompany(fund.getManagementCompany())
+                .riskLevel(fund.getRiskLevel())
+                .totalExpenseRatio(fund.getTotalExpenseRatio())
+                .domesticStock(asset != null ? asset.getDomesticStock() : BigDecimal.ZERO)
+                .overseasStock(asset != null ? asset.getOverseasStock() : BigDecimal.ZERO)
+                .domesticBond(asset != null ? asset.getDomesticBond() : BigDecimal.ZERO)
+                .overseasBond(asset != null ? asset.getOverseasBond() : BigDecimal.ZERO)
+                .fundInvestment(asset != null ? asset.getFundInvestment() : BigDecimal.ZERO)
+                .liquidity(asset != null ? asset.getLiquidity() : BigDecimal.ZERO)
+                .termsFileId(termsFileId)
+                .manualFileId(manualFileId)
+                .prospectusFileId(prospectusFileId)
+                .termsFileName(termsFileName)
+                .manualFileName(manualFileName)
+                .prospectusFileName(prospectusFileName)
+                .build();
+    }
+
 
     // ========
 
@@ -254,6 +343,7 @@ public class FundService {
     public List<Fund> getAllFunds() {
         return fundRepository.findAll(); 
     }
+
 
 
 

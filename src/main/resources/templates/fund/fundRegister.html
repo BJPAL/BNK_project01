@@ -6,14 +6,7 @@
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/admin/admin_layout.css"/>
-  <style>
-    .modal { display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); background: white; border: 1px solid #ccc; padding: 20px; z-index: 1000; }
-    .modal.active { display: block; }
-    .tab { display: none; }
-    .tab.active { display: block; }
-    .tab-buttons button { margin-right: 5px; }
-    
-  </style>
+  <link rel="stylesheet" href="/css/admin/fund_register.css"/>
 </head>
 <body>
 <div class="layout">
@@ -22,17 +15,26 @@
     <div th:replace="admin/admin_aside :: adminAside"></div>
     <main class="content">
       <div class="container edit-container">
-        <h2>펀드 문서 등록</h2>
-
+        <h2 class="fund-list-title">펀드 등록</h2>
         <!-- 펀드 검색 -->
         <form id="fundForm" method="post" enctype="multipart/form-data" th:action="@{/fund/register}">
-          <label>펀드 이름:
+          <label>펀드 이름 :
             <input type="text" id="fundName" onclick="openModal()" readonly>
             <button type="button" onclick="openModal()">펀드 검색</button>
-          </label><br>
+          </label>
           <input type="hidden" name="fundId" id="fundId"><br>
-
-          <label>테마: 
+          <div id="fundDetailBox" class="fund-detail-box" style="display:none;">
+            <h3>펀드 기본 정보</h3>
+            <table class="fund-detail-table">
+              <tr><th>펀드유형</th><td id="fundType"></td></tr>
+              <tr><th>운용지역</th><td id="investmentRegion"></td></tr>
+              <tr><th>설정일</th><td id="establishDate"></td></tr>
+              <tr><th>총보수율</th><td id="totalExpenseRatio"></td></tr>
+              <tr><th>위험등급</th><td id="riskLevel"></td></tr>
+              <tr><th>운용사</th><td id="managementCompany"></td></tr>
+            </table>
+          </div>
+          <label class="themeSelect">테마 : 
             <select id="themeSelect" name="fundTheme" required>
               <option value="">테마 선택</option>
               <option value="주식형">주식형</option>
@@ -46,22 +48,20 @@
 
           <!-- 탭 버튼 -->
           <div class="tab-buttons">
-            <button type="button" onclick="showTab('terms')">약관</button>
-            <button type="button" onclick="showTab('manual')">상품설명서</button>
-            <button type="button" onclick="showTab('prospectus')">투자설명서</button>
+            <button type="button" id="tab-terms" onclick="showTab('terms')">약관</button>
+            <button type="button" id="tab-manual" onclick="showTab('manual')">상품설명서</button>
+            <button type="button" id="tab-prospectus" onclick="showTab('prospectus')">투자설명서</button>
           </div>
 
           <!-- 탭 영역 -->
           <div id="terms" class="tab active">
-            <h3>약관 등록</h3>
             <input type="hidden" name="docType" value="약관">
             <br>
             <input type="hidden" name="fileFormat" value="PDF">
             <label>파일 업로드: <input type="file" name="fileTerms" accept="application/pdf" required></label><br>
           </div>
 
-          <div id="manual" class="tab">
-            <h3>상품설명서 등록</h3>
+          <div id="manual" class="tab"> 
             <input type="hidden" name="docType" value="상품설명서">
             <br>
             <input type="hidden" name="fileFormat" value="PDF">
@@ -69,24 +69,26 @@
           </div>
 
           <div id="prospectus" class="tab">
-            <h3>투자설명서 등록</h3>
             <input type="hidden" name="docType" value="투자설명서">
             <br>
             <input type="hidden" name="fileFormat" value="PDF">
             <label>파일 업로드: <input type="file" name="fileProspectus" accept="application/pdf" required></label><br>
           </div>
-
           <br>
-          <button type="submit">등록</button>
+          <div class="register-btn-div">
+            <button type="submit">펀드 등록</button>
+          </div>
         </form>
 
         <!-- 모달창 -->
         <div id="fundModal" class="modal">
-          <h3>펀드 검색</h3>
-          <input type="text" id="searchKeyword" placeholder="펀드명 입력">
-          <button onclick="searchFund()">검색</button>
+          <h3 class="modal-title">펀드 검색</h3>
+          <div class="modal-search-div">
+            <input type="text" id="searchKeyword" placeholder="입력값 없이 검색 시 전체목록 출력">
+            <button class="modal-search-btn" onclick="searchFund()">검색</button>
+          </div>
           <ul id="fundResult"></ul>
-          <button onclick="closeModal()">닫기</button>
+          <button class="modal-close-btn" onclick="closeModal()">닫기</button>
         </div>
 
         <script>
@@ -155,6 +157,43 @@
             .catch(err => {
               alert('오류 발생: ' + err.message);
             });
+          });
+
+          function selectFund(id, name) {
+            $('#fundId').val(id);
+            $('#fundName').val(name);
+            closeModal();
+
+            // fundId로 상세 정보 요청
+            $.get(`/api/funds/${id}`, function(data) {
+              $('#fundDetailBox').show();
+              $('#fundType').text(data.fundType || '-');
+              $('#investmentRegion').text(data.investmentRegion || '-');
+              $('#establishDate').text(data.establishDate || '-');
+              $('#totalExpenseRatio').text(data.totalExpenseRatio || '-');
+              $('#riskLevel').text(data.riskLevel || '-');
+              $('#managementCompany').text(data.managementCompany || '-');
+            }).fail(() => {
+              $('#fundDetailBox').hide();
+              alert('펀드 정보를 불러오지 못했습니다.');
+            });
+          }
+
+          // 파일 등록 시 탭 버튼 색상 변경
+          const fileToTabMap = {
+            fileTerms: 'tab-terms',
+            fileManual: 'tab-manual',
+            fileProspectus: 'tab-prospectus'
+          };
+
+          Object.entries(fileToTabMap).forEach(([fileInputName, tabId]) => {
+            const input = document.querySelector(`input[name="${fileInputName}"]`);
+            const tab = document.getElementById(tabId);
+            if (input && tab) {
+              input.addEventListener('change', function () {
+                tab.classList.toggle('file-attached', this.files.length > 0);
+              });
+            }
           });
         </script>
       </div>
