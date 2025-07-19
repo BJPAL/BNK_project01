@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.service.AdminService_A;
+import com.example.fund.fund.dto.FundDetailResponse;
 import com.example.fund.fund.entity.FundPolicy;
 import com.example.fund.fund.repository.FundPolicyRepository;
 import com.example.fund.fund.service.FundService;
@@ -208,5 +209,36 @@ public class MainAdminController {
         List<FundPolicy> policyList = fundPolicyRepository.findAllWithFund();
         model.addAttribute("policyList", policyList);
         return "fund/fundRegistList";
+    }
+
+    //상세보기 페이지로 이동
+    @GetMapping("/fund/view/{id}")
+    public String viewFundDetail(@PathVariable("id") Long id,
+                                @RequestParam(name = "includePolicy", defaultValue = "true") boolean includePolicy,
+                                Model model) {
+        FundDetailResponse fund = includePolicy
+                ? fundService.getFundDetailWithPolicy(id)
+                : fundService.getFundDetailBasic(id);
+
+        model.addAttribute("fund", fund);
+        return "fund/fundRegistDetail"; // 🔁 템플릿 경로에 맞게 파일명 확인
+    }
+
+    //수정하기 페이지로 이동
+    @GetMapping("/fund/edit/{id}")
+    public String editPage(@PathVariable("id") Long id,
+                        @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy,
+                        Model model) {
+        FundDetailResponse fund = includePolicy
+                ? fundService.getFundDetailWithPolicy(id)
+                : fundService.getFundDetailBasic(id);
+
+        model.addAttribute("fund", fund);
+        return "fund/fundRegistEdit";
+    }
+
+    @GetMapping("/construction")
+    public String construction(){
+        return "admin/constructionPage";
     }
 }

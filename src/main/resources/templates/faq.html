@@ -3,118 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>자주 묻는 질문</title>
-  <style>
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background-color: #fafafa;
-      padding: 40px;
-      text-align: center;
-    }
-
-    h1 {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-
-    .search-box {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #f1f3f5;
-      border-radius: 30px;
-      width: 400px;
-      margin: 0 auto 30px auto;
-      padding: 5px 15px;
-    }
-
-    .search-box input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      font-size: 14px;
-      padding: 8px;
-      outline: none;
-    }
-
-    .search-box button {
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .search-box button img {
-      width: 20px;
-      height: 20px;
-    }
-
-    #faq-list {
-      max-width: 600px;
-      margin: 0 auto;
-      text-align: left;
-      list-style: none;
-      padding: 0;
-    }
-
-    #faq-list li {
-      background: #fff;
-      border-bottom: 1px solid #ddd;
-      padding: 15px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    #faq-list li:hover {
-      background: #f8f9fa;
-    }
-
-    .question {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 500;
-      position: relative;
-      padding-right: 24px;
-    }
-
-    .question::after {
-      content: "";
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%) rotate(0deg);
-      width: 16px;
-      height: 16px;
-      background-image: url('images/toggle_icon.png'); /* 펼침/접힘 아이콘 */
-      background-size: contain;
-      background-repeat: no-repeat;
-      transition: transform 0.2s ease;
-    }
-
-    .question.open::after {
-      transform: translateY(-50%) rotate(180deg);
-    }
-
-    .answer {
-      display: none;
-      padding-top: 10px;
-      font-size: 14px;
-      color: #333;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/userHeader.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/faq.css">
 </head>
 <body>
+<h1>자주 묻는 질문</h1>
 
-  <h1>자주 묻는 질문</h1>
+<div class="search-wrapper">
+  <!-- 오리 이미지: 검색창 위에 걸쳐지게 -->
+  <img src="/images/faq4.png" class="duck-image" alt="오리 캐릭터">
+  <img src="/images/faq5.png" class="question-icon" alt="물음표 이모티콘">
 
+  <!-- 실제 검색창 -->
   <form class="search-box" onsubmit="event.preventDefault(); searchFaq();">
     <input type="text" id="keyword" placeholder="검색어를 입력해주세요">
     <button type="submit">
       <img src="images/search_icon.png" alt="검색">
     </button>
   </form>
+</div>
 
   <ul id="faq-list">
   </ul>
@@ -148,9 +56,16 @@
         data.content.forEach(faq => {
           const li = document.createElement('li');
           li.innerHTML = `
-            <div class="question">Q ${faq.question}</div>
-            <div class="answer" style="display:none;">A ${faq.answer}</div>
-          `;
+        	  <div class="question">
+        	    <img src="/images/Q5.png" alt="Q">
+        	    <span class="q-text">${faq.question}</span>
+        	    <span class="arrow"></span>
+        	  </div>
+        	  <div class="answer" style="display:none;">
+        	 	<img src="/images/A2.png" alt="A">
+        	 	<span class="a-text">${faq.answer}</span>
+        	  </div>
+        	`;
           ul.appendChild(li);
         });
 

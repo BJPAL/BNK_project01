@@ -1,25 +1,8 @@
 package com.example.fund.fund.service;
 
-import com.example.fund.fund.dto.FundRegisterRequest;
-import com.example.fund.fund.dto.FundResponseDTO;
-import com.example.fund.fund.entity.Fund;
-import com.example.fund.fund.entity.FundDocument;
-import com.example.fund.fund.entity.FundPolicy;
-import com.example.fund.fund.entity.FundReturn;
-import com.example.fund.fund.repository.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,6 +12,33 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.example.fund.fund.dto.FundDetailResponse;
+import com.example.fund.fund.dto.FundRegisterRequest;
+import com.example.fund.fund.dto.FundResponseDTO;
+import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.entity.FundAsset;
+import com.example.fund.fund.entity.FundDocument;
+import com.example.fund.fund.entity.FundPolicy;
+import com.example.fund.fund.entity.FundReturn;
+import com.example.fund.fund.repository.FundAssetRepository;
+import com.example.fund.fund.repository.FundDocumentRepository;
+import com.example.fund.fund.repository.FundPolicyRepository;
+import com.example.fund.fund.repository.FundRepository;
+import com.example.fund.fund.repository.FundReturnRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -97,76 +107,125 @@ public class FundService {
      * @param pageable   페이지네이션 정보
      * @return 조건에 맞는 펀드 페이지
      */
-    public Page<FundResponseDTO> findWithFilters(
-            Integer investType,
-            List<String> riskLevels,
-            List<String> fundTypes,
-            List<String> regions,
-            Pageable pageable) {
+    public FundDetailResponse getFundDetailBasic(Long fundId) {
+        Fund fund = fundRepository.findByFundId(fundId)
+                .orElseThrow(() -> new RuntimeException("펀드를 찾을 수 없습니다."));
 
-        // 1. 투자 성향 → 위험 등급 범위 계산 (기본 필터)
-        int startRiskLevel;
-        int endRiskLevel = 6;
+        FundAsset asset = fundAssetRepository.findByFund_FundId(fundId).orElse(null);
+        List<FundDocument> documents = fundDocumentRepository.findByFund_FundId(fundId);
 
-        switch (investType) {
-            case 1 -> startRiskLevel = 6; // 안정형: 6등급만
-            case 2 -> startRiskLevel = 5; // 안정 추구형: 5~6등급
-            case 3 -> startRiskLevel = 4; // 위험 중립형: 4~6등급
-            case 4 -> startRiskLevel = 3; // 적극 투자형: 3~6등급
-            case 5 -> startRiskLevel = 1; // 공격 투자형: 1~6등급
-            default -> throw new IllegalArgumentException("올바르지 않은 투자 성향입니다.");
+        Long termsFileId = null;
+        Long manualFileId = null;
+        Long prospectusFileId = null;
+        String termsFileName = null;
+        String manualFileName = null;
+        String prospectusFileName = null;
+
+        for (FundDocument doc : documents) {
+            switch (doc.getDocType()) {
+                case "약관" -> {
+                    termsFileId = doc.getDocumentId();
+                    termsFileName = doc.getDocTitle();
+                }
+                case "상품설명서" -> {
+                    manualFileId = doc.getDocumentId();
+                    manualFileName = doc.getDocTitle();
+                }
+                case "투자설명서" -> {
+                    prospectusFileId = doc.getDocumentId();
+                    prospectusFileName = doc.getDocTitle();
+                }
+            }
         }
 
-        // 2. 문자열 리스트를 적절한 타입으로 변환
-        List<Integer> riskLevelInts = convertToIntegerList(riskLevels);
-        List<String> processedFundTypes = processEmptyList(fundTypes);
-        List<String> processedRegions = processEmptyList(regions);
-
-        log.info("필터링 조건 - investType: {}, riskLevels: {}, fundTypes: {}, regions: {}",
-                investType, riskLevelInts, processedFundTypes, processedRegions);
-
-        // 3. Repository에서 필터링된 데이터 조회
-        Page<Fund> fundPage = fundRepository.findWithFilters(
-                startRiskLevel,
-                endRiskLevel,
-                riskLevelInts,
-                processedFundTypes,
-                processedRegions,
-                pageable
-        );
-
-        // 4. Entity → DTO 변환
-        return convertToFundResponseDTO(fundPage);
+        return FundDetailResponse.builder()
+                .fundId(fund.getFundId())
+                .fundName(fund.getFundName())
+                .fundTheme(null) // 정책 없음
+                .fundType(fund.getFundType())
+                .investmentRegion(fund.getInvestmentRegion())
+                .establishDate(fund.getEstablishDate())
+                .managementCompany(fund.getManagementCompany())
+                .riskLevel(fund.getRiskLevel())
+                .totalExpenseRatio(fund.getTotalExpenseRatio())
+                .domesticStock(asset != null ? asset.getDomesticStock() : BigDecimal.ZERO)
+                .overseasStock(asset != null ? asset.getOverseasStock() : BigDecimal.ZERO)
+                .domesticBond(asset != null ? asset.getDomesticBond() : BigDecimal.ZERO)
+                .overseasBond(asset != null ? asset.getOverseasBond() : BigDecimal.ZERO)
+                .fundInvestment(asset != null ? asset.getFundInvestment() : BigDecimal.ZERO)
+                .liquidity(asset != null ? asset.getLiquidity() : BigDecimal.ZERO)
+                .termsFileId(termsFileId)
+                .manualFileId(manualFileId)
+                .prospectusFileId(prospectusFileId)
+                .termsFileName(termsFileName)
+                .manualFileName(manualFileName)
+                .prospectusFileName(prospectusFileName)
+                .build();
     }
 
     /**
-     * Fund Entity Page를 FundResponseDTO Page로 변환하는 공통 메서드
+     * 펀드 상세 정보 조회 (정책 포함)
      */
-    private Page<FundResponseDTO> convertToFundResponseDTO(Page<Fund> fundPage) {
-        return fundPage.map(fund -> {
-            // 각 펀드의 수익률 정보 조회
-            FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
+    public FundDetailResponse getFundDetailWithPolicy(Long fundId) {
+        Fund fund = fundRepository.findByFundId(fundId)
+                .orElseThrow(() -> new RuntimeException("펀드를 찾을 수 없습니다."));
 
-            return FundResponseDTO.builder()
-                    .fundId(fund.getFundId())
-                    .fundName(fund.getFundName())
-                    .fundType(fund.getFundType())
-                    .investmentRegion(fund.getInvestmentRegion())
-                    .establishDate(fund.getEstablishDate())
-                    .launchDate(fund.getLaunchDate())
-                    .nav(fund.getNav())
-                    .aum(fund.getAum())
-                    .totalExpenseRatio(fund.getTotalExpenseRatio())
-                    .riskLevel(fund.getRiskLevel())
-                    .managementCompany(fund.getManagementCompany())
-                    .return1m(fundReturn != null ? fundReturn.getReturn1m() : null)
-                    .return3m(fundReturn != null ? fundReturn.getReturn3m() : null)
-                    .return6m(fundReturn != null ? fundReturn.getReturn6m() : null)
-                    .return12m(fundReturn != null ? fundReturn.getReturn12m() : null)
-                    .returnSince(fundReturn != null ? fundReturn.getReturnSince() : null)
-                    .build();
-        });
+        FundPolicy policy = fundPolicyRepository.findByFund_FundId(fundId)
+                .orElseThrow(() -> new RuntimeException("펀드 정책을 찾을 수 없습니다."));
+
+        FundAsset asset = fundAssetRepository.findByFund_FundId(fundId).orElse(null);
+        List<FundDocument> documents = fundDocumentRepository.findByFund_FundId(fundId);
+
+        Long termsFileId = null;
+        Long manualFileId = null;
+        Long prospectusFileId = null;
+        String termsFileName = null;
+        String manualFileName = null;
+        String prospectusFileName = null;
+
+        for (FundDocument doc : documents) {
+            switch (doc.getDocType()) {
+                case "약관" -> {
+                    termsFileId = doc.getDocumentId();
+                    termsFileName = doc.getDocTitle();
+                }
+                case "상품설명서" -> {
+                    manualFileId = doc.getDocumentId();
+                    manualFileName = doc.getDocTitle();
+                }
+                case "투자설명서" -> {
+                    prospectusFileId = doc.getDocumentId();
+                    prospectusFileName = doc.getDocTitle();
+                }
+            }
+        }
+
+
+        return FundDetailResponse.builder()
+                .fundId(fund.getFundId())
+                .fundName(fund.getFundName())
+                .fundTheme(policy.getFundTheme())
+                .fundType(fund.getFundType())
+                .investmentRegion(fund.getInvestmentRegion())
+                .establishDate(fund.getEstablishDate())
+                .managementCompany(fund.getManagementCompany())
+                .riskLevel(fund.getRiskLevel())
+                .totalExpenseRatio(fund.getTotalExpenseRatio())
+                .domesticStock(asset != null ? asset.getDomesticStock() : BigDecimal.ZERO)
+                .overseasStock(asset != null ? asset.getOverseasStock() : BigDecimal.ZERO)
+                .domesticBond(asset != null ? asset.getDomesticBond() : BigDecimal.ZERO)
+                .overseasBond(asset != null ? asset.getOverseasBond() : BigDecimal.ZERO)
+                .fundInvestment(asset != null ? asset.getFundInvestment() : BigDecimal.ZERO)
+                .liquidity(asset != null ? asset.getLiquidity() : BigDecimal.ZERO)
+                .termsFileId(termsFileId)
+                .manualFileId(manualFileId)
+                .prospectusFileId(prospectusFileId)
+                .termsFileName(termsFileName)
+                .manualFileName(manualFileName)
+                .prospectusFileName(prospectusFileName)
+                .build();
     }
+    
 
     /**
      * 문자열 리스트를 Integer 리스트로 변환
@@ -323,6 +382,15 @@ public class FundService {
     public List<Fund> getAllFunds() {
         return fundRepository.findAll();
     }
+
+
+	public Page<FundResponseDTO> findWithFilters(int investType, List<String> risk, List<String> type,
+			List<String> region, Pageable pageable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'findWithFilters'");
+	}
+
+
 
 
 }
