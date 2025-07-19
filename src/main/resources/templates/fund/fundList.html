@@ -90,16 +90,6 @@
                 <fieldset class="row">
                     <legend class="row-label">펀드유형</legend>
                     <div class="options">
-                        <label for="type_mmf">
-                            <input
-                                type="checkbox"
-                                id="type_mmf"
-                                name="type"
-                                value="MMF"
-                            />
-                            MMF
-                        </label>
-
                         <label for="type_bond">
                             <input
                                 type="checkbox"
@@ -155,9 +145,19 @@
                                 type="checkbox"
                                 id="type_fof"
                                 name="type"
-                                value="재간접"
+                                value="재간접투자형"
                             />
                             재간접
+                        </label>
+
+                        <label for="type_etc">
+                            <input
+                                type="checkbox"
+                                id="type_etc"
+                                name="type"
+                                value="수익증권_기타"
+                            />
+                            수익증권_기타
                         </label>
                     </div>
                 </fieldset>
@@ -166,24 +166,144 @@
                 <fieldset class="row">
                     <legend class="row-label">투자 지역</legend>
                     <div class="options">
-                        <label for="reg_kr">
+                        <label for="reg_korea">
                             <input
                                 type="checkbox"
-                                id="reg_kr"
+                                id="reg_korea"
                                 name="region"
                                 value="한국"
                             />
-                            국내
+                            한국
                         </label>
 
-                        <label for="reg_gl">
+                        <label for="reg_global">
                             <input
                                 type="checkbox"
-                                id="reg_gl"
+                                id="reg_global"
                                 name="region"
                                 value="글로벌"
                             />
                             글로벌
+                        </label>
+
+                        <label for="reg_usa">
+                            <input
+                                type="checkbox"
+                                id="reg_usa"
+                                name="region"
+                                value="미국"
+                            />
+                            미국
+                        </label>
+
+                        <label for="reg_vietnam">
+                            <input
+                                type="checkbox"
+                                id="reg_vietnam"
+                                name="region"
+                                value="베트남"
+                            />
+                            베트남
+                        </label>
+
+                        <label for="reg_euro">
+                            <input
+                                type="checkbox"
+                                id="reg_euro"
+                                name="region"
+                                value="유로권"
+                            />
+                            유로권
+                        </label>
+
+                        <label for="reg_brazil">
+                            <input
+                                type="checkbox"
+                                id="reg_brazil"
+                                name="region"
+                                value="브라질"
+                            />
+                            브라질
+                        </label>
+
+                        <label for="reg_german">
+                            <input
+                                type="checkbox"
+                                id="reg_german"
+                                name="region"
+                                value="독일"
+                            />
+                            독일
+                        </label>
+
+                        <label for="reg_china">
+                            <input
+                                type="checkbox"
+                                id="reg_china"
+                                name="region"
+                                value="중국"
+                            />
+                            중국
+                        </label>
+
+                        <label for="reg_western_europe">
+                            <input
+                                type="checkbox"
+                                id="reg_western_europe"
+                                name="region"
+                                value="서유럽"
+                            />
+                            서유럽
+                        </label>
+
+                        <label for="reg_india">
+                            <input
+                                type="checkbox"
+                                id="reg_india"
+                                name="region"
+                                value="인도"
+                            />
+                            인도
+                        </label>
+
+                        <label for="reg_brics">
+                            <input
+                                type="checkbox"
+                                id="reg_brics"
+                                name="region"
+                                value="브릭스"
+                            />
+                            브릭스
+                        </label>
+
+                        <label for="reg_north_america">
+                            <input
+                                type="checkbox"
+                                id="reg_north_america"
+                                name="region"
+                                value="북미"
+                            />
+                            북미
+                        </label>
+
+                        <label for="reg_japan">
+                            <input
+                                type="checkbox"
+                                id="reg_japan"
+                                name="region"
+                                value="일본"
+                            />
+                            일본
+                        </label>
+
+                        <label for="reg_south_east_asia">
+                            <input
+                                type="checkbox"
+                                id="reg_south_east_asia"
+                                name="region"
+                                value="동남아"
+                            />
+                            동남아
                         </label>
                     </div>
                 </fieldset>
@@ -223,7 +343,7 @@
             </div>
         </div>
 
-        <!-- 🔥 하단 고정 비교바 추가 -->
+        <!-- 하단 고정 비교바 추가 -->
         <div class="compare-bar" id="compareBar">
             <div class="compare-bar-content">
                 <div class="compare-info">
@@ -250,10 +370,31 @@
                 <!-- 모달 헤더 -->
                 <div class="modal-header">
                     <h2 class="modal-title">
-                        <span class="modal-icon">📊</span>
+                        <!-- <span class="modal-icon">📊</span> -->
                         펀드 비교 분석
                     </h2>
-                    <button
+                    <div
+                        class="modal-close-btn"
+                        id="modalCloseBtn"
+                        aria-label="모달 닫기"
+                        role="button"
+                        tabindex="0"
+                    >
+                        <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                        >
+                            <path
+                                d="M18 6L6 18M6 6L18 18"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </div>
+                    <!-- <button
                         class="modal-close-btn"
                         id="modalCloseBtn"
                         aria-label="모달 닫기"
@@ -271,7 +412,7 @@
                                 stroke-linecap="round"
                             />
                         </svg>
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- 모달 바디 -->
@@ -593,6 +734,13 @@
                     return `risk-${riskLevel}`;
                 };
 
+                // 투자지역 배지 생성 함수
+                const createRegionBadge = (region) => {
+                    return region && region.trim() !== ""
+                        ? `<span class="badge region">${region}</span>`
+                        : "";
+                };
+
                 // 위험등급 텍스트 결정
                 const getRiskText = (riskLevel) => {
                     const riskTexts = {
@@ -624,7 +772,7 @@
                     fund.managementCompany || ""
                 }</span>
                 <span class="badge type">${fund.fundType || ""}</span>
-                <span class="badge region">${fund.investmentRegion || ""}</span>
+                ${createRegionBadge(fund.investmentRegion)}
                 <span class="badge risk ${getRiskClass(fund.riskLevel)}">
                     ${getRiskText(fund.riskLevel)}
                 </span>
