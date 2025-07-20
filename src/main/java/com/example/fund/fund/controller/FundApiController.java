@@ -51,6 +51,7 @@ public class FundApiController {
     private final FundDocumentRepository fundDocumentRepository;
     private static final int MIN_INVEST_TYPE = 1;
     private static final int MAX_INVEST_TYPE = 5;
+
     /**
      * 사용자 투자성향 조회 API
      */
@@ -224,14 +225,14 @@ public class FundApiController {
         }
     }
 
-    // ===========================================================================================
-
     /**
      * 펀드 상세 데이터 조회 - REST API
      */
     @GetMapping("/{fundId}")
-    public ResponseEntity<?> getFundDetail(@PathVariable("fundId") Long fundId,
-                                        @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy) {
+    public ResponseEntity<?> getFundDetail(
+            @PathVariable("fundId") Long fundId,
+            @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy
+    ) {
         try {
             if (includePolicy) {
                 FundDetailResponse response = fundService.getFundDetailWithPolicy(fundId);
@@ -246,9 +247,6 @@ public class FundApiController {
         }
     }
 
-
-    // =======================
-
     /**
      * 투자성향 이름 반환
      */
@@ -262,6 +260,8 @@ public class FundApiController {
             default -> "알 수 없음";
         };
     }
+
+    // ====================================================================================================
 
     /* 펀드 이름으로 검색  API */
     @GetMapping("/search")
