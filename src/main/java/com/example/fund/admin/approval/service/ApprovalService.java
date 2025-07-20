@@ -46,7 +46,7 @@ public class ApprovalService {
     }
 
     /* ───── 2. 승인 ───── */
-    public void approve(Long approvalId, String role, String reason) {
+    public void approve(Integer approvalId, String role, String reason) {
 
         if (!APPROVER_ROLES.contains(role))
             throw new SecurityException("승인 권한이 없습니다.");
@@ -64,7 +64,7 @@ public class ApprovalService {
     }
 
     /* ───── 3. 반려 ───── */
-    public void reject(Long id, String reason, String role) {
+    public void reject(Integer id, String reason, String role) {
 
         if (!APPROVER_ROLES.contains(role))
             throw new SecurityException("반려 권한이 없습니다.");
@@ -82,7 +82,7 @@ public class ApprovalService {
     }
 
     /* ───── 4. 배포 (요청자 본인) ───── */
-    public void publish(Long id, String adminname) {
+    public void publish(Integer id, String adminname) {
 
         Approval approval = approvalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("결재 없음"));
@@ -102,7 +102,7 @@ public class ApprovalService {
 
     /* ───── 5. 결재 요청 등록 (요청자) ───── */
     @Transactional
-    public Long createApproval(String title, String content, Integer adminId) {   // ⬅️ 반환형 Long
+    public Integer createApproval(String title, String content, Integer adminId) {
 
         Admin writer = adminRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
@@ -135,7 +135,7 @@ public class ApprovalService {
     }
 
     /* ───── 7. 상세/재기안 등 기타 ───── */
-    public Approval findById(Long id) {
+    public Approval findById(Integer id) {
         return approvalRepository.findById(id).orElse(null);
     }
 
@@ -145,7 +145,7 @@ public class ApprovalService {
                 .getContent();
     }
 
-    public void updateApproval(Long id, String title, String content,
+    public void updateApproval(Integer id, String title, String content,
                                String adminname) {
 
         Approval approval = approvalRepository.findById(id)
@@ -183,8 +183,8 @@ public class ApprovalService {
     }
 
     /* 평균 승인 처리 일수 계산 */
-    public long calculateAverageApprovalDays() {
-        return (long) approvalLogService.findAllByNewStatus("배포대기").stream()
+    public Integer calculateAverageApprovalDays() {
+        return (int) approvalLogService.findAllByNewStatus("배포대기").stream()
                 .mapToLong(log ->
                         Duration.between(
                                 log.getApproval().getRegDate(),
@@ -196,8 +196,36 @@ public class ApprovalService {
     }
 
     /*상태별 건수를 Map<status, count> 형태로 반환*/
-    public Map<String, Long> getFlowSummary() {
-        return approvalRepository.countByStatus().stream()
-                .collect(Collectors.toMap(StatusCount::getStatus, StatusCount::getCnt));
+    public Map<String, Integer> getStatusSummaryByWriter(String writerName) {
+        return approvalRepository.countByStatusAndWriter(writerName).stream()
+                .collect(Collectors.toMap(
+                        StatusCount::getStatus,
+                        s -> s.getCnt().intValue()  // Long → Integer로 변환
+                ));
+    }
+
+    public List<Approval> findRecentRejectedByWriter(String adminname, int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "regDate"));
+        return approvalRepository.findByWriterAdminnameAndStatus(adminname, "반려", pageable).getContent();
+    }
+    // 특정 작성자 기준 평균 처리일
+    public double calculateAvgDaysByWriter(String adminname) {
+        return approvalLogService.findAllByNewStatusAndWriter("배포", adminname).stream()
+                .mapToLong(log ->
+                        Duration.between(
+                                log.getApproval().getRegDate(),
+                                log.getChangedAt()
+                        ).toDays()
+                )
+                .average()
+                .orElse(0.0);
+    }
+
+    public Map<String, Integer> getFlowSummary() {
+        List<StatusCount> counts = approvalRepository.countByStatus(); // 상태별 전체 개수
+        return counts.stream().collect(Collectors.toMap(
+                StatusCount::getStatus,
+                s -> s.getCnt().intValue()
+        ));
     }
 }

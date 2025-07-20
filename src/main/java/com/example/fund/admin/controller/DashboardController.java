@@ -1,10 +1,12 @@
 package com.example.fund.admin.controller;
 
+import com.example.fund.admin.approval.entity.Approval;
 import com.example.fund.admin.approval.service.ApprovalService;
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.faq.service.FaqAdminService;
 import com.example.fund.admin.notice.dto.AdminNoticeDTO;
 import com.example.fund.admin.notice.service.AdminNoticeService;
+import com.example.fund.admin.service.AdminDashboardService;
 import com.example.fund.fund.service.FundService;
 import com.example.fund.qna.service.QnaService;
 import jakarta.servlet.http.HttpSession;
@@ -27,7 +29,7 @@ public class DashboardController {
     private final ApprovalService      approvalService;  // getApprovalsByStatus() 사용
     private final AdminNoticeService noticeService;    // 최근 공지 조회용
     private final FaqAdminService faqAdminService;
-    private final AdminNoticeService adminNoticeService;
+    private final AdminDashboardService dashSvc;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -45,14 +47,14 @@ public class DashboardController {
 
         // CS + super: 미답변 문의
         if ("cs".equals(role) || "super".equals(role)) {
-            long unCnt = qnaService.countUnanwseQna();
+            Integer unCnt = qnaService.countUnanwseQna();
             model.addAttribute("unansweredCount", unCnt);
             model.addAttribute("recentUnanswered", qnaService.findRecentUnanswered(5));
         }
 
         // Planner + super: 내 결재 대기
         if ("planner".equals(role) || "super".equals(role)) {
-            long myPending = approvalService
+            Integer myPending = (int) approvalService
                     .getApprovalsByStatus(admin.getAdminname(), "결재대기", 0)
                     .getTotalElements();
             model.addAttribute("myPendingCount", myPending);
@@ -62,7 +64,7 @@ public class DashboardController {
 
         // Approver + super: 승인 대기
         if ("approver".equals(role) || "super".equals(role)) {
-            long waiting = approvalService
+            Integer waiting = (int) approvalService
                     .getApprovalsByStatus("결재대기", 0)
                     .getTotalElements();
             model.addAttribute("waitingApproveCount", waiting);
@@ -74,17 +76,58 @@ public class DashboardController {
 
         // Super 전용: 결재 흐름 요약, FAQ 건수
         if ("super".equals(role)) {
-            Map<String, Long> flowSummary = approvalService.getFlowSummary();
+            Map<String, Integer> flowSummary = approvalService.getFlowSummary();
             model.addAttribute("flowSummary", flowSummary);
 
-            long faqCount = faqAdminService.countAllFaqs();
+            Integer faqCount = (int) faqAdminService.countAllFaqs();
             model.addAttribute("faqCount", faqCount);
+            dashSvc.populateSuperMetrics(model);
         }
 
         // 관리자(super) + CS 권한: FAQ 카테고리별 집계
         if ("super".equals(role) || "cs".equals(role)) {
-            Map<String, Long> faqCategoryCounts = faqAdminService.getFaqCountsByCategory();
+            Map<String, Integer> faqCategoryCounts = faqAdminService.getFaqCountsByCategory();
             model.addAttribute("faqCategoryCounts", faqCategoryCounts);
+        }
+
+        // Planner 또는 Super용: 결재 상태별 요약, 반려 내역, 평균 소요시간
+        if ("planner".equals(role) || "super".equals(role)) {
+            Map<String, Integer> myStatusSummary = approvalService.getStatusSummaryByWriter(admin.getAdminname());
+            model.addAttribute("myStatusSummary", myStatusSummary);
+
+            List<Approval> recentRejected = approvalService.findRecentRejectedByWriter(admin.getAdminname(), 5);
+            model.addAttribute("recentRejected", recentRejected);
+
+            double myAvgDuration = approvalService.calculateAvgDaysByWriter(admin.getAdminname());
+            model.addAttribute("myAvgDuration", myAvgDuration);
+        }
+
+        // null 방지를 위한 기본값 채우기
+        // 1) CS 전용 속성
+        if (!("cs".equals(role) || "super".equals(role))) {
+            model.addAttribute("unansweredCount", 0);
+            model.addAttribute("recentUnanswered", List.of());
+            model.addAttribute("longPendingCount", 0);
+            model.addAttribute("oldestUnanswered", null);
+            model.addAttribute("oldestDuration", 0);
+        }
+        // 2) FAQ 카테고리 (super·cs 외에는 빈 Map)
+        if (!("super".equals(role) || "cs".equals(role))) {
+            model.addAttribute("faqCategoryCounts", Collections.emptyMap());
+        }
+        // 3) Planner 전용 속성
+        if (!("planner".equals(role) || "super".equals(role))) {
+            model.addAttribute("myStatusSummary", Collections.emptyMap());
+            model.addAttribute("recentRejected", List.of());
+            model.addAttribute("myAvgDuration", 0.0);
+            model.addAttribute("recentMyRequests", List.of());
+            model.addAttribute("myPendingCount", 0);
+        }
+        // 4) Approver 전용 속성
+        if (!("approver".equals(role) || "super".equals(role))) {
+            model.addAttribute("waitingApproveCount", 0);
+            model.addAttribute("oldestApprovals", List.of());
+            model.addAttribute("avgApprovalDays", 0.0);
         }
 
         return "admin/main";

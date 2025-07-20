@@ -57,7 +57,7 @@ public class ApprovalController {
 
     // 승인 사유란 기입 + 간단한 예외 처리
     @PostMapping("/approve/{id}")
-    public String approve(@PathVariable Long id,
+    public String approve(@PathVariable Integer id,
                           @RequestParam(required=false) String reason,
                           HttpSession session,
                           RedirectAttributes redirect) {
@@ -86,7 +86,7 @@ public class ApprovalController {
     }
 
     @PostMapping("/reject/{id}")
-    public String reject(@PathVariable("id") Long id,
+    public String reject(@PathVariable("id") Integer id,
                          @RequestParam("reason") String reason,
                          HttpSession session,
                          RedirectAttributes rttr) {
@@ -104,7 +104,7 @@ public class ApprovalController {
     }
 
     @PostMapping("/publish/{id}")
-    public String publish(@PathVariable("id") Long id,
+    public String publish(@PathVariable("id") Integer id,
                           HttpSession session,
                           RedirectAttributes redirectAttributes) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
@@ -175,7 +175,7 @@ public class ApprovalController {
             throw new SecurityException("결재 요청 권한이 없습니다.");
         }
 
-        Long id = approvalService.createApproval(title, content, admin.getAdmin_id());
+        Integer id = approvalService.createApproval(title, content, admin.getAdmin_id());
         redirect.addFlashAttribute("successMessage", "결재 요청이 완료되었습니다!");
         redirect.addFlashAttribute("highlightId", id);
 
@@ -183,7 +183,7 @@ public class ApprovalController {
     }
 
     @GetMapping("/detail/{id}")
-    public String viewDetail(@PathVariable("id") Long id, HttpSession session, Model model) {
+    public String viewDetail(@PathVariable("id") Integer id, HttpSession session, Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
@@ -225,7 +225,7 @@ public class ApprovalController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable("id") Long id, HttpSession session, Model model) {
+    public String editForm(@PathVariable("id") Integer id, HttpSession session, Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
@@ -245,7 +245,7 @@ public class ApprovalController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateApproval(@PathVariable("id") Long id,
+    public String updateApproval(@PathVariable("id") Integer id,
                                  @RequestParam("title") String title,
                                  @RequestParam("content") String content,
                                  HttpSession session) {

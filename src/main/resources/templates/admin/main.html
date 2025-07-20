@@ -7,62 +7,90 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
         :root {
-          --primary:#0B3C5D;
-          --bg:#f5f7fa;
-          --card:#fff;
-          --border:#e1e5ea;
-          --shadow:rgba(11,60,93,.08);
+          --primary: #0B3C5D;
+          --bg: #f5f7fa;
+          --card: #fff;
+          --border: #e1e5ea;
+          --shadow: rgba(11,60,93,.08);
+          --font-title: 'Segoe UI Semibold', sans-serif;
         }
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body { font-family:'Segoe UI',sans-serif; background:var(--bg); color:#333; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #333; }
+        .content { padding: 0 40px; }
 
-        /* ── 상단 바 ── */
+        /* 상단 바 */
         .topbar {
-          display:flex; justify-content:space-between; align-items:center;
-          background:var(--primary); color:#fff; padding:14px 40px;
+          display: flex; justify-content: space-between; align-items: center;
+          background: var(--primary); color: #fff; padding: 14px 40px;
         }
-        .notifications { display:flex; align-items:center; gap:6px; }
-        .notifications i { font-size:18px; }
-        .notif-label { font-size:14px; font-weight:600; }
-        .notif-list { display:none; }
+        .notifications { display: flex; align-items: center; gap: 6px; }
+        .notif-list { display: none !important; }
         .notif-cycle {
-          max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-          font-size:14px; transform:translateY(20px); opacity:0;
-          transition:transform .5s, opacity .5s;
+          max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          font-size: 14px; transform: translateY(20px); opacity: 0;
+          transition: transform .5s, opacity .5s;
         }
-        .topbar-right {
-          font-size:15px; font-weight:600; display:flex; align-items:center; gap:16px;
-        }
-        .notice-list-link { color:#fff; text-decoration:underline; }
-        .notice-list-link:hover { opacity:0.8; }
+        .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 15px; font-weight: 600; }
+        .notice-list-link { color: #fff; text-decoration: underline; }
+        .notice-list-link:hover { opacity: .8; }
 
-        /* ── 카드 그리드 ── */
+        /* Super 전용 2-컬럼 */
+        .super-dashboard-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 32px;
+          width: 100%;
+          margin: 40px 0;
+        }
+        .super-chart-card {
+          display: flex; flex-direction: column;
+          background: var(--card); border: 1px solid var(--border);
+          border-radius: 16px; box-shadow: 0 6px 18px var(--shadow);
+          height: calc(100vh - 200px); padding: 28px;
+        }
+        .super-chart-card h3 {
+          font-family: var(--font-title); font-size: 20px; color: var(--primary);
+          margin-bottom: 16px;
+        }
+        .super-chart-card canvas {
+          flex: 1; width: 100% !important; height: 100% !important;
+        }
+        .super-metrics {
+          display: flex; flex-direction: column;
+          height: calc(100vh - 200px); gap: 32px;
+        }
+        .super-metrics .card {
+          flex: 1; background: var(--card); border: 1px solid var(--border);
+          border-radius: 16px; box-shadow: 0 6px 18px var(--shadow);
+          padding: 28px 30px; font-family: var(--font-title);
+        }
+
+        /* 공통 dashboard 그리드 */
         .dashboard {
-          max-width:1240px; margin:40px auto; padding:0 30px;
-          display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:32px;
+          max-width: 1240px; margin: 40px auto; padding: 0 30px;
+          display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 32px;
         }
         .card {
-          background:var(--card); border:1px solid var(--border);
-          border-radius:16px; box-shadow:0 6px 18px var(--shadow);
-          padding:28px 30px; display:flex; flex-direction:column; gap:12px;
-          transition:.25s;
+          background: var(--card); border: 1px solid var(--border);
+          border-radius: 16px; box-shadow: 0 6px 18px var(--shadow);
+          padding: 28px 30px; display: flex; flex-direction: column; gap: 12px;
+          transition: .25s;
         }
         .card:hover {
-          transform:translateY(-4px);
-          box-shadow:0 10px 22px var(--shadow);
+          transform: translateY(-4px); box-shadow: 0 10px 22px var(--shadow);
         }
         .card h3 {
-          font-size:18px; color:var(--primary);
-          display:flex; align-items:center; gap:8px; margin-bottom:10px;
+          font-size: 18px; color: var(--primary);
+          display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+          font-family: var(--font-title);
         }
-        .metric { font-size:34px; font-weight:800; color:var(--primary); }
-        .card ul { list-style:none; padding:0; margin:0; }
-        .card ul li { font-size:14px; margin-bottom:4px; }
-        .report-link {
-          display:inline-block; margin-top:8px; color:var(--primary); text-decoration:underline;
-        }
+        .metric { font-size: 34px; font-weight: 800; color: var(--primary); }
+        .card ul { list-style: none; padding: 0; margin: 0; }
+        .card ul li { font-size: 14px; margin-bottom: 4px; }
+        .report-link { display: inline-block; margin-top: 8px; color: var(--primary); text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -70,9 +98,9 @@
     <div th:replace="admin/admin_header :: adminHeader"></div>
     <div class="main-wrapper">
         <div th:replace="admin/admin_aside :: adminAside"></div>
-        <main class="content">
 
-            <!-- 상단 바: 공지 슬라이드 + 공지 목록 링크 -->
+        <main class="content">
+            <!-- 상단 바 -->
             <div class="topbar">
                 <div class="notifications">
                     <i class="fas fa-bell"></i>
@@ -88,32 +116,59 @@
                 </div>
             </div>
 
-            <!-- 대시보드 카드 -->
-            <section class="dashboard">
-                <!-- Super: 도넛 차트로 결재 흐름 요약 -->
-                <div class="card" th:if="${role=='super'}">
+            <!-- Super 관리자 전용 레이아웃 -->
+            <div th:if="${role=='super'}" class="super-dashboard-grid">
+                <div class="super-chart-card">
                     <h3><i class="fas fa-stream"></i> 결재 흐름 요약</h3>
-                    <canvas id="flowChart" height="200"></canvas>
+                    <canvas id="flowChart"></canvas>
                 </div>
-                <!-- Super: 결재 승인 관리 -->
-                <div class="card" th:if="${role=='super'}">
-                    <h3><i class="fas fa-check-double"></i> 결재 승인 관리</h3>
-                    <a th:href="@{/admin/approval/manage}" class="report-link">관리 페이지로 이동</a>
+                <div class="super-metrics">
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> FAQ 카테고리 분포 (상위 3)</h3>
+                        <ul>
+                            <li th:each="e,st : ${faqCategoryCounts.entrySet()}" th:if="${st.index < 3}">
+                                <span th:text="${e.key}">카테고리</span>: <strong th:text="${e.value}">0</strong>건
+                            </li>
+                        </ul>
+                        <a th:href="@{/admin/faq/list}" class="report-link">FAQ 관리</a>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-question-circle"></i> 1:1 문의 미답변 현황</h3>
+                        <ul>
+                            <li>전체 미답변: <strong th:text="${unansweredCount}">0</strong>건</li>
+                            <li>24시간 이상 대기: <strong th:text="${longPendingCount}">0</strong>건</li>
+                            <li th:if="${oldestUnanswered != null}">
+                                최장 대기 문의:
+                                <a th:href="@{/admin/qna/{id}(id=${oldestUnanswered.qnaId})}"
+                                   th:text="${oldestUnanswered.title}">제목</a> (<span th:text="${oldestDuration}">0시간</span>)
+                            </li>
+                            <li th:unless="${oldestUnanswered != null}">최장 대기 문의가 없습니다.</li>
+                        </ul>
+                        <a th:href="@{/admin/qnaList}" class="report-link">문의 관리</a>
+                    </div>
                 </div>
-                <!-- Super: 1:1 문의 관리 -->
-                <div class="card" th:if="${role=='super'}">
-                    <h3><i class="fas fa-comment-dots"></i> 1:1 문의 관리</h3>
-                    <span class="metric" th:text="${unansweredCount}">0</span>
-                    <a th:href="@{/admin/qnaList}" class="report-link">문의 관리 페이지로 이동</a>
-                </div>
-                <!-- Super: FAQ 관리 -->
-                <div class="card" th:if="${role=='super'}">
-                    <h3><i class="fas fa-question"></i> FAQ 관리</h3>
-                    <span class="metric" th:text="${faqCount}">0</span>
-                    <a th:href="@{/admin/faq/list}" class="report-link">FAQ 관리 페이지로 이동</a>
-                </div>
+            </div>
 
-                <!-- Planner: 내 결재 대기 -->
+            <!-- Planner / Approver / CS 공통 뷰 -->
+            <section th:unless="${role=='super'}" class="dashboard">
+                <!-- Planner -->
+                <div class="card" th:if="${role=='planner'}">
+                    <h3><i class="fas fa-chart-pie"></i> 상태별 결재 요청 분포</h3>
+                    <canvas id="plannerStatusChart" height="200"></canvas>
+                </div>
+                <div class="card" th:if="${role=='planner'}">
+                    <h3><i class="fas fa-times-circle"></i> 최근 반려된 요청</h3>
+                    <ul>
+                        <li th:each="r : ${recentRejected}">
+                            <strong th:text="${r.title}">제목</strong>
+                            <span style="color:#999;" th:text="' - ' + ${r.rejectReason}">사유</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card" th:if="${role=='planner'}">
+                    <h3><i class="fas fa-hourglass-half"></i> 평균 결재 소요 시간</h3>
+                    <span class="metric" th:text="${#numbers.formatDecimal(myAvgDuration,1,1)}+'일'">0.0일</span>
+                </div>
                 <div class="card" th:if="${role=='planner'}">
                     <h3><i class="fas fa-file-signature"></i> 내 결재 대기</h3>
                     <span class="metric" th:text="${myPendingCount}">0</span>
@@ -126,11 +181,11 @@
                     <a th:href="@{/admin/approval/list}" class="report-link">내 결재 요청 목록</a>
                 </div>
 
-                <!-- Approver: 승인 대기 -->
+                <!-- Approver -->
                 <div class="card" th:if="${role=='approver'}">
                     <h3><i class="fas fa-check-double"></i> 승인 대기</h3>
                     <span class="metric" th:text="${waitingApproveCount}">0</span>
-                    <p>평균 처리일 : <strong th:text="${avgApprovalDays + '일'}">0일</strong></p>
+                    <p>평균 처리일 : <strong th:text="${avgApprovalDays+'일'}">0일</strong></p>
                     <ul>
                         <li th:each="r : ${oldestApprovals}">
                             <a th:href="@{/admin/approval/detail/{id}(id=${r.approvalId})}"
@@ -140,12 +195,7 @@
                     <a th:href="@{/admin/approval/manage}" class="report-link">승인 관리</a>
                 </div>
 
-                <!-- FAQ 카테고리별 분포 (CS, super) -->
-                <div class="card" th:if="${faqCategoryCounts}">
-                    <h3><i class="fas fa-chart-bar"></i> FAQ 카테고리별 분포</h3>
-                    <canvas id="faqCatChart" height="200"></canvas>
-                </div>
-                <!-- CS: 미답변 문의 -->
+                <!-- CS -->
                 <div class="card" th:if="${role=='cs'}">
                     <h3><i class="fas fa-question-circle"></i> 미답변 문의</h3>
                     <span class="metric" th:text="${unansweredCount}">0</span>
@@ -158,87 +208,100 @@
                     <a th:href="@{/admin/qnaList}" class="report-link">문의 관리</a>
                 </div>
             </section>
+
         </main>
     </div>
 </div>
 
 <script th:inline="javascript">
-    /*<![CDATA[*/
+    // 공지 슬라이드 & 실시간 시계
+    const notif = document.querySelector('.notifications'),
+          titles = Array.from(notif.querySelectorAll('.notif-list li')).map(li=>li.textContent);
+    let idx = 0;
+    function slideIn() {
+      const c = notif.querySelector('.notif-cycle');
+      c.style.transform = 'translateY(20px)'; c.style.opacity = 0;
+      c.textContent = titles[idx];
+      requestAnimationFrame(()=>{ c.style.transform='translateY(0)'; c.style.opacity=1; });
+      idx = (idx+1)%titles.length;
+    }
+    if(titles.length){ slideIn(); setInterval(slideIn,4000); }
+    const timeEl = document.getElementById('currentTime');
+    function updateTime(){
+      const n = new Date();
+      timeEl.textContent = n.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    }
+    updateTime(); setInterval(updateTime,1000);
 
-      // 1) FAQ 카테고리별 막대 차트
-      const faqCounts       = /*[[${faqCategoryCounts}]]*/ {};
-      const faqLabelsArr    = Object.keys(faqCounts);
-      const faqDataArr      = Object.values(faqCounts);
-      const faqCanvas       = document.getElementById('faqCatChart');
-      if (faqCanvas) {
-        const faqCtx = faqCanvas.getContext('2d');
-        new Chart(faqCtx, {
-          type: 'bar',
-          data: {
-            labels: faqLabelsArr,
-            datasets: [{
-              label: 'FAQ 건수',
-              data: faqDataArr
-            }]
-          },
-          options: {
-            scales: { y: { beginAtZero: true } },
-            plugins: { legend: { display: false } }
+    // Shadow 플러그인 + datalabels
+    Chart.register({
+      id:'shadow',
+      beforeDatasetDraw(chart,args,opts){
+        const ctx=chart.ctx; ctx.save();
+        ctx.shadowColor=opts.color||'rgba(0,0,0,0.2)';
+        ctx.shadowBlur=opts.blur||20;
+        ctx.shadowOffsetY=opts.offsetY||10;
+      },
+      afterDatasetDraw(chart){ chart.ctx.restore(); }
+    });
+    Chart.register(ChartDataLabels);
+
+    // Super: 3D 도넛
+    const flowCounts = /*[[${flowSummary}]]*/ {}, fc = document.getElementById('flowChart');
+    if(fc) new Chart(fc.getContext('2d'),{
+      type:'doughnut',
+      data:{
+        labels:Object.keys(flowCounts),
+        datasets:[{ data:Object.values(flowCounts),
+          backgroundColor:['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f'],
+          borderColor:'#fff', borderWidth:4 }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false, cutout:'50%',
+        plugins:{
+          shadow:{color:'rgba(0,0,0,0.15)',blur:25,offsetY:8},
+          legend:{position:'bottom',labels:{font:{family:'Segoe UI',weight:'600'}}},
+          tooltip:{callbacks:{label:ctx=>{
+            const v=ctx.parsed, t=ctx.chart._metasets[ctx.datasetIndex].total;
+            return `${ctx.label}: ${v}건 (${(v/t*100).toFixed(1)}%)`;
+          }}},
+          datalabels:{
+            color:'#fff', font:{weight:'600',size:14},
+            formatter:(v,ctx)=>ctx.chart.data.labels[ctx.dataIndex],
+            anchor:'center', align:'center'
           }
-        });
+        }
       }
+    });
 
-      // 2) 결재 흐름 도넛 차트
-      const flowCounts      = /*[[${flowSummary}]]*/ {};
-      const flowLabelsArr   = Object.keys(flowCounts);
-      const flowDataArr     = Object.values(flowCounts);
-      const flowCanvas      = document.getElementById('flowChart');
-      if (flowCanvas) {
-        const flowCtx = flowCanvas.getContext('2d');
-        new Chart(flowCtx, {
-          type: 'doughnut',
-          data: {
-            labels: flowLabelsArr,
-            datasets: [{
-              data: flowDataArr,
-              backgroundColor: ['#F2C14E','#0B3C5D','#4A5A6A','#A0AEC0']
-            }]
-          },
-          options: {
-            plugins: { legend: { position: 'bottom' } }
-          }
-        });
+    // CS: FAQ 막대
+    const faqCounts = /*[[${faqCategoryCounts}]]*/ {}, fq = document.getElementById('faqCatChart');
+    if(fq) new Chart(fq.getContext('2d'),{
+      type:'bar',
+      data:{
+        labels:Object.keys(faqCounts),
+        datasets:[{ label:'FAQ 건수', data:Object.values(faqCounts), backgroundColor:'#337D89' }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false, layout:{padding:{bottom:30}},
+        scales:{y:{beginAtZero:true}},
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}건`}}}
       }
+    });
 
-      // 3) 공지 슬라이드 & 실시간 시계 (기존 코드)
-
-      const notif = document.querySelector('.notifications');
-      const titles = Array.from(notif.querySelectorAll('.notif-list li'))
-                          .map(li => li.textContent);
-      const cycle = notif.querySelector('.notif-cycle');
-      let idx = 0;
-      function slideIn() {
-        cycle.style.transform = 'translateY(20px)';
-        cycle.style.opacity   = 0;
-        cycle.textContent     = titles[idx];
-        requestAnimationFrame(() => {
-          cycle.style.transform = 'translateY(0)';
-          cycle.style.opacity   = 1;
-        });
-        idx = (idx + 1) % titles.length;
+    // Planner: 상태별 분포
+    const plannerStatus = /*[[${myStatusSummary}]]*/ {}, pc = document.getElementById('plannerStatusChart');
+    if(pc) new Chart(pc.getContext('2d'),{
+      type:'doughnut',
+      data:{
+        labels:Object.keys(plannerStatus),
+        datasets:[{ data:Object.values(plannerStatus) }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false, cutout:'60%',
+        plugins:{legend:{position:'bottom'}}
       }
-      if (titles.length) { slideIn(); setInterval(slideIn, 4000); }
-
-      const timeEl = document.getElementById('currentTime');
-      function updateTime() {
-        const now = new Date();
-        timeEl.textContent = now.toLocaleTimeString('ko-KR', {
-          hour:'2-digit', minute:'2-digit', second:'2-digit'
-        });
-      }
-      updateTime(); setInterval(updateTime, 1000);
-
-    /*]]>*/
+    });
 </script>
 </body>
 </html>

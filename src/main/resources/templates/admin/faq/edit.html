@@ -176,7 +176,7 @@
 
         <!-- form -->
         <form th:action="${faq != null}
-                            ? @{/admin/faq/update/{id}(id=${faq.faqId})}
+                            ? @{/admin/faq/edit/{id}(id=${faq.faqId})}
                             : @{/admin/faq/add}"
               method="post">
 

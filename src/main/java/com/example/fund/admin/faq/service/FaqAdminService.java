@@ -65,13 +65,13 @@ public class FaqAdminService {
         return faqRepository.count();
     }
 
-    /* 관리자 전용: FAQ 카테고리별 건수 집계 */
-    public Map<String, Long> getFaqCountsByCategory() {
+    /* 관리자 전용: FAQ 카테고리별 건수 집계 */
+    public Map<String, Integer> getFaqCountsByCategory() {
         return mapRepository.countByCategory()
                 .stream()
                 .collect(Collectors.toMap(
                         FaqCategoryCount::getCategory,
-                        FaqCategoryCount::getCnt
+                        c -> c.getCnt().intValue()  // Long → Integer 변환
                 ));
     }
 

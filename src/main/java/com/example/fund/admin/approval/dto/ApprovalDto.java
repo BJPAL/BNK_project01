@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ApprovalDto {
-    private Long approvalId;
+    private Integer approvalId;
     private String title;
     private String content;
     private String writerId;
