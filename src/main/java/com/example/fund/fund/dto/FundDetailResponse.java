@@ -30,6 +30,13 @@ public class FundDetailResponse {
     private Integer riskLevel;
     private String fundStatus;
     private BigDecimal totalExpenseRatio;
+    private String fundTheme;
+    private Long termsFileId;
+    private Long manualFileId;
+    private Long prospectusFileId;
+    private String termsFileName;
+    private String manualFileName;
+    private String prospectusFileName;
 
     private BigDecimal domesticStock;
     private BigDecimal overseasStock;

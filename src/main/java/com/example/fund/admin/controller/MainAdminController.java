@@ -2,13 +2,10 @@ package com.example.fund.admin.controller;
 
 import java.util.List;
 
-import com.example.fund.qna.service.QnaService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,9 +22,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.fund.admin.dto.AdminDTO;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.service.AdminService_A;
+import com.example.fund.fund.dto.FundDetailResponse;
+import com.example.fund.fund.entity.FundPolicy;
+import com.example.fund.fund.repository.FundPolicyRepository;
+import com.example.fund.fund.service.FundService;
+import com.example.fund.qna.service.QnaService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/admin")
@@ -35,7 +38,6 @@ import jakarta.servlet.http.HttpSession;
 public class MainAdminController {
 
     private final AdminService_A adminService_a;
-    private final QnaService qnaService;
 
     /* 1) /admin/ → 세션 O : 대시보드로 / 세션 X : 로그인 */
     @GetMapping({ "/", "" })
@@ -43,7 +45,17 @@ public class MainAdminController {
         return (session.getAttribute("admin") != null)
                 ? "redirect:/admin/dashboard"
                 : "admin/login";
+
     }
+
+    @Autowired
+    QnaService qnaService;
+
+    @Autowired
+    FundService fundService;
+
+    @Autowired
+    FundPolicyRepository fundPolicyRepository;
 
     /* 2) /admin/main → 과거 주소로 들어와도 대시보드로 보냄 */
     @GetMapping("/main")
@@ -145,5 +157,50 @@ public class MainAdminController {
     @GetMapping("/qnaList")
     public String qnaList() {
         return "admin/cs/qnaSetting";
+    }
+    
+    //펀드 등록 폼으로 이동
+    @GetMapping("/fund/new")
+    public String newFundForm() {
+
+        return "fund/fundRegister";
+    }
+
+    @GetMapping("/fund/list")
+    public String fundListPage(Model model) {
+        List<FundPolicy> policyList = fundPolicyRepository.findAllWithFund();
+        model.addAttribute("policyList", policyList);
+        return "fund/fundRegistList";
+    }
+
+    //상세보기 페이지로 이동
+    @GetMapping("/fund/view/{id}")
+    public String viewFundDetail(@PathVariable("id") Long id,
+                                @RequestParam(name = "includePolicy", defaultValue = "true") boolean includePolicy,
+                                Model model) {
+        FundDetailResponse fund = includePolicy
+                ? fundService.getFundDetailWithPolicy(id)
+                : fundService.getFundDetailBasic(id);
+
+        model.addAttribute("fund", fund);
+        return "fund/fundRegistDetail"; // 🔁 템플릿 경로에 맞게 파일명 확인
+    }
+
+    //수정하기 페이지로 이동
+    @GetMapping("/fund/edit/{id}")
+    public String editPage(@PathVariable("id") Long id,
+                        @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy,
+                        Model model) {
+        FundDetailResponse fund = includePolicy
+                ? fundService.getFundDetailWithPolicy(id)
+                : fundService.getFundDetailBasic(id);
+
+        model.addAttribute("fund", fund);
+        return "fund/fundRegistEdit";
+    }
+
+    @GetMapping("/construction")
+    public String construction(){
+        return "admin/constructionPage";
     }
 }

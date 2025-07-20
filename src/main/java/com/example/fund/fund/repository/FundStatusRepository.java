@@ -15,4 +15,6 @@ public interface FundStatusRepository extends JpaRepository<FundStatus, Integer>
 
     // 다음글
     FundStatus findTopByStatusIdGreaterThanOrderByStatusIdAsc(Integer id);
+    
+    Page<FundStatus> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrCategoryContainingIgnoreCase(String title, String content, String category, Pageable pageable);
 }

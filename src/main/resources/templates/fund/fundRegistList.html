@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>펀드 조회</title>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/admin/admin_layout.css"/>
+  <link rel="stylesheet" href="/css/admin/fund_register.css"/>
+</head>
+<body>
+<div class="layout">
+  <div th:replace="admin/admin_header :: adminHeader"></div>
+  <div class="main-wrapper">
+    <div th:replace="admin/admin_aside :: adminAside"></div>
+    <main class="content">
+      <div>
+        <h2 class="fund-list-title">펀드 조회</h2>
+      </div>
+      <div class="container edit-container">
+        <div class="regist-title">
+          <button class="new-fund-btn" onclick="location.href='/admin/fund/new'">+ 펀드 등록</button>
+        </div>
+
+        <table class="fund-table">
+          <thead>
+            <tr>
+              <th>펀드ID</th>
+              <th>펀드명</th>
+              <th>테마</th>
+              <th>운용중</th>
+              <th>상세</th>
+            </tr>
+          </thead>
+            <tbody>
+              <tr th:each="policy, stat : ${policyList}">
+                <td th:text="${policy.fund != null ? policy.fund.fundId : '미등록'}"></td>
+                <td th:text="${policy.fund != null ? policy.fund.fundName : '미등록'}"></td>
+                <td th:text="${policy.fundTheme}"></td>
+                <td th:text="${policy.fundActive ? 'Y' : 'N'}"></td>
+                <td>
+                  <a th:if="${policy.fund != null}"
+                    th:href="@{'/admin/fund/view/' + ${policy.fund.fundId}}">상세</a>
+                </td>
+              </tr>
+
+              <!-- 빈 줄 채우기 (10줄 유지) -->
+              <tr th:each="i : ${#numbers.sequence(policyList.size() + 1, 10)}">
+                <td colspan="5" style="height:45px;"></td>
+              </tr>
+            </tbody>
+        </table>
+
+
+        <!-- 수정용 모달창 템플릿 -->
+        <div id="editModal" style="display:none;">
+          <!-- 여기에 선택된 펀드 정보 입력 폼 생성 -->
+        </div>
+
+        <script>
+          function editFund(fundId) {
+            // 수정용 모달 로딩 및 표시 (AJAX로 데이터 불러오기 또는 모달로 페이지 이동)
+            alert("펀드 수정 페이지 연결 예정. ID: " + fundId);
+          }
+        </script>
+      </div>
+    </main>
+  </div><!--main-wrapper end-->
+</div><!--layout end-->
+
+</body>
+</html>

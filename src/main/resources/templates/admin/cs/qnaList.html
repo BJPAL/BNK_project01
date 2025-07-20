@@ -6,11 +6,13 @@
 
     <table class="table" th:if="${qnaList != null and !qnaList.isEmpty()}">
       <thead>
-        <th>No.</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>등록일</th>
-        <th>관리</th>
+        <tr>
+          <th>No.</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>등록일</th>
+          <th>관리</th>
+        </tr>
       </thead>
       <tbody>
         <tr th:each="qna, stat : ${qnaList}">
@@ -46,11 +48,13 @@
     </div>
     <table class="table" th:if="${qnaList != null and !qnaList.isEmpty()}">
       <thead>
-        <th>No.</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>등록일</th>
-        <th>동작</th>
+        <tr>
+          <th>No.</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>등록일</th>
+          <th>동작</th>
+        </tr>
       </thead>
       <tbody>
         <tr th:each="qna, stat : ${qnaList}">
