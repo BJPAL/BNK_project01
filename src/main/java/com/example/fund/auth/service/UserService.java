@@ -5,6 +5,7 @@ import com.example.fund.auth.dto.JoinRequest;
 import com.example.fund.auth.dto.UserUpdateRequest;
 import com.example.fund.fund.entity.InvestProfileResult;
 import com.example.fund.fund.repository.InvestProfileResultRepository;
+import com.example.fund.qna.repository.QnaRepository;
 import com.example.fund.user.entity.User;
 import com.example.fund.user.repository.UserRepository;
 
@@ -24,6 +25,7 @@ public class UserService {
     private final InvestProfileResultRepository investProfileResultRepository;
     private final UserRepository repo;
     private final CompareAiService compareAiService;
+    private final QnaRepository qnaRepository;
 
     /* ---------- 회원가입 ---------- */
     @Transactional
@@ -133,6 +135,11 @@ public class UserService {
                 break;
         }
 
+        return result;
+    }
+
+    public long countUserQna(long id) {
+        long result = qnaRepository.countByUser_UserId(id);
         return result;
     }
 }
