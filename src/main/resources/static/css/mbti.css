@@ -28,6 +28,7 @@ body {
   border-radius: 30px;
   padding: 60px;
   width: 700px;
+
   text-align: center;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
@@ -37,6 +38,7 @@ body {
   font-size: 28px;
   margin-bottom: 30px;
 }
+
 
 .bold {
   font-weight: 700;
@@ -172,4 +174,23 @@ body {
 .result-img {
   margin-top: 30px;
   width: 300px;
+}
+
+.icon {
+  width: 200px;
+  height: auto;
+  max-height: 250px;
+  object-fit: contain;
+}
+
+#question-text {
+  color: white;
+}
+.black {
+  color: black;
+}
+
+.miri {
+	width: 700px;
+	height: 300px;
 }

@@ -10,4 +10,9 @@ public class FundMBTIController {
 	public String fundMbti() {
 		return "fundMbti";
 	}
+	
+	@GetMapping("/test")
+	public String test() {
+		return "test";
+	}
 }
