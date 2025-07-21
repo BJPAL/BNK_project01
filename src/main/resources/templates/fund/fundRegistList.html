@@ -22,7 +22,7 @@
           <button class="new-fund-btn" onclick="location.href='/admin/fund/new'">+ 펀드 등록</button>
         </div>
 
-        <table class="fund-table">
+        <table class="fund-table" >
           <thead>
             <tr>
               <th>펀드ID</th>
@@ -33,7 +33,9 @@
             </tr>
           </thead>
             <tbody>
-              <tr th:each="policy, stat : ${policyList}">
+              <tr th:each="policy : ${policyPage.content}"
+                  th:onclick="${policy.fund != null} ? 'goToFundDetail(' + ${policy.fund.fundId} + ')' : null"
+                  style="cursor: pointer;">
                 <td th:text="${policy.fund != null ? policy.fund.fundId : '미등록'}"></td>
                 <td th:text="${policy.fund != null ? policy.fund.fundName : '미등록'}"></td>
                 <td th:text="${policy.fundTheme}"></td>
@@ -45,12 +47,20 @@
               </tr>
 
               <!-- 빈 줄 채우기 (10줄 유지) -->
-              <tr th:each="i : ${#numbers.sequence(policyList.size() + 1, 10)}">
+              <tr th:each="i : ${#numbers.sequence(policyPage.numberOfElements + 1, 10)}">
                 <td colspan="5" style="height:45px;"></td>
               </tr>
             </tbody>
         </table>
 
+        <!-- 페이징 -->
+        <div class="pagination" th:if="${policyPage.totalPages > 1}">
+          <span th:each="i : ${#numbers.sequence(0, policyPage.totalPages - 1)}">
+            <a th:href="@{/fund/list(page=${i})}"
+              th:text="${i + 1}"
+              th:classappend="${i == policyPage.number} ? 'active' : ''">1</a>
+          </span>
+        </div>
 
         <!-- 수정용 모달창 템플릿 -->
         <div id="editModal" style="display:none;">
@@ -68,5 +78,15 @@
   </div><!--main-wrapper end-->
 </div><!--layout end-->
 
+
+<script>
+  function goToFundDetail(fundId) {
+    if (fundId && fundId !== 0) {
+      window.location.href = `/admin/fund/view/${fundId}`;
+    } else {
+      alert('미등록 펀드는 상세보기 할 수 없습니다.');
+    }
+  }
+</script>
 </body>
 </html>

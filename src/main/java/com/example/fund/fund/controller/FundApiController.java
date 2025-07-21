@@ -278,6 +278,12 @@ public class FundApiController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/search/available")
+    public ResponseEntity<List<Fund>> getFundsWithoutPolicy() {
+        List<Fund> result = fundRepository.findFundsNotInFundPolicy();
+        return ResponseEntity.ok(result);
+    }
+
     /* 공시파일 다운로드 */ 
 
     @GetMapping("/files/document/{id}")

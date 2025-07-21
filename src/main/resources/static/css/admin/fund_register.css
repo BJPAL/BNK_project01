@@ -336,7 +336,7 @@ button:hover {
   margin-top: 20px;
 }
 
-.register-btn-div > button, .detail-actions > button {
+.register-btn-div > button, .detail-actions button {
     width: 120px;
     height: 40px;
     font-size: 1rem;
@@ -406,7 +406,7 @@ h2.fund-list-title {
 .detail-actions {
   margin-top: 24px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -416,6 +416,11 @@ h2.fund-list-title {
   border-radius: 4px;
   font-weight: bold;
   cursor: pointer;
+}
+
+#detail-approval-btn {
+  background-color: #117C88;
+  color: white;
 }
 
 .detail-actions button:first-child {
@@ -435,4 +440,94 @@ h2.fund-list-title {
 .detail-table a:hover, .edit-file a:hover {
   text-decoration: underline;
   color: #008294;
+}
+
+
+
+#confirmModal.finish-modal {
+  position: fixed;
+  z-index: 10000;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px); /* 🔹 블러 효과 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+}
+
+.finish-modal-content {
+  background: linear-gradient(145deg, #ffffff, #f1f1f1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 40px 30px;
+  border-radius: 16px;
+  text-align: center;
+  width: 420px;
+  animation: fadeInUp 0.4s ease;
+}
+
+.finish-modal-content h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.finish-modal-content p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+.finish-modal-buttons {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+}
+
+.finish-modal-buttons button {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#finish-modal-success {
+  color: #008294;
+  font-weight: bold;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.finish-modal-buttons button#goToList {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.finish-modal-buttons button#goToList:hover {
+  background-color: #ccc;
+}
+
+
+/* 페이징 */
+.pagination{
+text-align:center;
+margin : 10px 0;
+}
+
+.pagination a{
+margin:0 6px;
+padding:6px 12px;
+border:1px solid #337D89;
+border-radius:6px;
+              color:#337D89;
+              font-weight:bold;
+              text-decoration:none;
+              }
+.pagination a.active,.pagination a:hover{
+background:#337D89;
+color:#fff
 }
