@@ -244,12 +244,13 @@ body {
 
 /* [3] 이미지 크기 제한 */
 .option-card img {
-  width: 200px;         /* ✅ 줄였음 */
+  width: 700px;         /* ✅ 줄였음 */
   height: auto;
   border-radius: 20px;
+  margin-top: 10px;
   margin-bottom: 10px;
   object-fit: contain;
-   max-width: 120px;
+   max-width: 150px;
 }
 
 
@@ -286,7 +287,8 @@ body {
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   text-align: center;
-
+  align-items: center;
+justify-content: center;
 }
 
 .option-card:hover {
