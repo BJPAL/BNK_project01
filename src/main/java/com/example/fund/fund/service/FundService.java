@@ -45,13 +45,6 @@ public class FundService {
 
     /**
      * 새로운 메서드 - 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
-     *
-     * @param investType 투자성향 (1~5)
-     * @param riskLevels 사용자가 선택한 위험등급 리스트 (선택사항)
-     * @param fundTypes  사용자가 선택한 펀드유형 리스트 (선택사항)
-     * @param regions    사용자가 선택한 투자지역 리스트 (선택사항)
-     * @param pageable   페이지네이션 정보
-     * @return 조건에 맞는 펀드 페이지
      */
     public FundDetailResponse getFundDetailBasic(Long fundId) {
         Fund fund = fundRepository.findByFundId(fundId)

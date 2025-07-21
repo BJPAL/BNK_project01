@@ -23,7 +23,6 @@ public class ApiResponse<T> {
                 .data(data)
                 .build();
     }
-
     public static <T> ApiResponse<T> success(T data, String message) {
         return ApiResponse.<T>builder()
                 .success(true)
@@ -31,7 +30,6 @@ public class ApiResponse<T> {
                 .message(message)
                 .build();
     }
-
     public static <T> ApiResponse<T> success(T data, PaginationInfo pagination) {
         return ApiResponse.<T>builder()
                 .success(true)
@@ -39,7 +37,6 @@ public class ApiResponse<T> {
                 .pagination(pagination)
                 .build();
     }
-
     public static <T> ApiResponse<T> success(T data, String message, PaginationInfo pagination) {
         return ApiResponse.<T>builder()
                 .success(true)
@@ -56,7 +53,6 @@ public class ApiResponse<T> {
                 .message(message)
                 .build();
     }
-
     public static <T> ApiResponse<T> failure(String message, String errorCode) {
         return ApiResponse.<T>builder()
                 .success(false)

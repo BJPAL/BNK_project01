@@ -224,7 +224,7 @@ public class FundApiController {
     @GetMapping("/detail/{fundId}")
     public ResponseEntity<ApiResponse<?>> getFund(
             @PathVariable("fundId") Long fundId,
-            @RequestParam int investType
+            @RequestParam(required = false) Integer investType  // 현재 사용 안함
     ) {
         try {
             // 투자성향 확인
@@ -257,28 +257,6 @@ public class FundApiController {
             log.error("펀드 상세 정보 API 오류 - fundId: {}", fundId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.failure("서버 오류가 발생했습니다.", "INTERNAL_ERROR"));
-        }
-    }
-
-    /**
-     * 펀드 상세 데이터 조회 - REST API - ?
-     */
-    @GetMapping("/{fundId}")
-    public ResponseEntity<?> getFundDetail(
-            @PathVariable("fundId") Long fundId,
-            @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy
-    ) {
-        try {
-            if (includePolicy) {
-                FundDetailResponse response = fundService.getFundDetailWithPolicy(fundId);
-                return ResponseEntity.ok(response);
-            } else {
-                FundDetailResponse response = fundService.getFundDetailBasic(fundId);
-                return ResponseEntity.ok(response);
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); // 간단한 로그
-            return ResponseEntity.notFound().build();
         }
     }
 
@@ -319,8 +297,7 @@ public class FundApiController {
         return ResponseEntity.ok(result);
     }
 
-    /* 공시파일 다운로드 */ 
-
+    /* 공시파일 다운로드 */
     @GetMapping("/files/document/{id}")
     public ResponseEntity<org.springframework.core.io.Resource> downloadFundDocument(@PathVariable("id") Long id) {
         FundDocument document = fundDocumentRepository.findById(id)
@@ -355,6 +332,26 @@ public class FundApiController {
                 .body(resource);
     }
 
-
+    /**
+     * 펀드 상세 데이터 조회 - REST API - ?
+     */
+    @GetMapping("/{fundId}")
+    public ResponseEntity<?> getFundDetail(
+            @PathVariable("fundId") Long fundId,
+            @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy
+    ) {
+        try {
+            if (includePolicy) {
+                FundDetailResponse response = fundService.getFundDetailWithPolicy(fundId);
+                return ResponseEntity.ok(response);
+            } else {
+                FundDetailResponse response = fundService.getFundDetailBasic(fundId);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // 간단한 로그
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
