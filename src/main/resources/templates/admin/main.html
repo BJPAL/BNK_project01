@@ -25,8 +25,13 @@
 
         /* 상단 바 */
         .topbar {
-          display: flex; justify-content: space-between; align-items: center;
-          background: var(--primary); color: #fff; padding: 14px 40px;
+          margin-top: 24px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: var(--primary);
+          color: #fff;
+          padding: 14px 40px;
         }
         .notifications { display: flex; align-items: center; gap: 6px;
         }
@@ -115,10 +120,17 @@
 
         /* 작은 요약 텍스트 */
         .chart-summary {
-          font-size: .9rem;
-          color: #555;
+          font-size: 0.95rem;
+          color: #333;
           text-align: center;
-          margin-top: 8px;
+          margin: 0 auto;
+          margin-top: 12px;
+          font-weight: 500;
+          background: #f0f4f8;
+          padding: 10px 14px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+          max-width: 90%;
         }
 
         /* 추가 정보 리스트 */
@@ -146,10 +158,16 @@
           text-align: center;
         }
         .faq-chart-card .chart-wrapper {
-          margin: auto auto 16px !important;
-           max-width: none;
-           height: 250px;
-           text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 200px;
+          width: 100%;
+          margin-bottom: 16px;
+        }
+        .faq-chart-card .chart-wrapper canvas {
+          display: block;
+          margin: 0 auto;
         }
 
         /* 최근 반려된 요청의 사유 */
@@ -197,7 +215,7 @@
             <!-- Super 관리자 -->
             <div th:if="${role=='super'}" class="super-dashboard-grid">
                 <div class="card super-chart-card">
-                    <h3><i class="fas fa-stream"></i> 결재 흐름 요약</h3>
+                    <h3><i class="fas fa-stream"></i>총 결재 건수 요약</h3>
                     <div class="chart-wrapper">
                         <canvas id="flowChart"></canvas>
                     </div>
@@ -217,7 +235,7 @@
                         <a th:href="@{/admin/qnaList}" class="report-link">문의 관리</a>
                     </div>
                     <div class="card faq-chart-card">
-                        <h3><i class="fas fa-chart-bar"></i> FAQ 카테고리 분포 (상위3)</h3>
+                        <h3><i class="fas fa-chart-bar"></i> FAQ 카테고리 분포 (TOP 3)</h3>
                         <div class="chart-wrapper">
                             <canvas id="faqCatChart"></canvas>
                         </div>
@@ -230,7 +248,7 @@
             <!-- Planner 관리자 -->
             <div th:if="${role=='planner'}" class="planner-dashboard-grid">
                 <div class="card super-chart-card">
-                    <h3><i class="fas fa-chart-pie"></i> 결재 요청 분포</h3>
+                    <h3><i class="fas fa-chart-pie"></i>내 결재 요청 분포</h3>
                     <div class="chart-wrapper">
                         <canvas id="plannerStatusChart"></canvas>
                     </div>
@@ -241,6 +259,11 @@
                 </div>
                 <div class="super-metrics">
                     <div class="card">
+                        <h3><i class="fas fa-hourglass-half"></i> 평균 결재 소요 시간</h3>
+                        <span class="metric"
+                              th:text="${#numbers.formatDecimal(myAvgDuration,1,1)} + '일'">0.0일</span>
+                    </div>
+                    <div class="card">
                         <h3><i class="fas fa-times-circle"></i> 최근 반려된 요청</h3>
                         <ul class="info-list">
                             <li th:each="r : ${recentRejected}">
@@ -249,13 +272,9 @@
                                 </li>
                         </ul>
                     </div>
+
                     <div class="card">
-                        <h3><i class="fas fa-hourglass-half"></i> 평균 결재 소요 시간</h3>
-                        <span class="metric"
-                              th:text="${#numbers.formatDecimal(myAvgDuration,1,1)} + '일'">0.0일</span>
-                    </div>
-                    <div class="card">
-                        <h3><i class="fas fa-file-signature"></i> 내 결재 대기</h3>
+                        <h3><i class="fas fa-file-signature"></i>내가 요청한 결재 대기</h3>
                         <span class="metric" th:text="${myPendingCount}">0</span>
                         <ul class="info-list">
                             <li th:each="v : ${recentMyRequests}">
@@ -271,7 +290,7 @@
             <!-- Approver 관리자 -->
             <div th:if="${role=='approver'}" class="super-dashboard-grid">
                 <div class="card super-chart-card">
-                    <h3><i class="fas fa-chart-pie"></i> 승인 상태 분포</h3>
+                    <h3><i class="fas fa-chart-pie"></i>내 승인 상태 분포</h3>
                     <div class="chart-wrapper">
                         <canvas id="approverStatusChart"></canvas>
                     </div>
@@ -399,12 +418,31 @@
     createBar('faqCatChart', /*[[${faqCategoryCounts}]]*/ {});
 
     (function(){
-      const total  = /*[[${unansweredCount}]]*/ 0,
-            over24 = /*[[${longPendingCount}]]*/ 0,
+      const total  = Number(/*[[${unansweredCount}]]*/ 0) || 0,
+            over24 = Number(/*[[${longPendingCount}]]*/ 0) || 0,
             within24 = total - over24;
+
+      // 차트
       createDonut('qnaStatusChart', { '24시간 이내': within24, '24시간 초과': over24 }, '60%', '#333');
+
+      // 설명 문구
       const e = document.getElementById('qnaSummary');
-      if (e) e.textContent = `전체 ${total}건 중 ${over24}건이 24시간 초과`;
+      if (e) {
+        e.textContent = `전체 ${total}건 중 ${over24}건이 24시간 초과`;
+      }
+    })();
+
+    (function(){
+      const faqData = /*[[${faqCategoryCounts}]]*/ {};
+      const total = Object.values(faqData).reduce((sum, val) => sum + val, 0);
+      const summary = Object.entries(faqData)
+        .map(([cat, count]) => `${cat} ${count}건`)
+        .join(', ');
+
+      const faqSummary = document.getElementById('faqSummary');
+      if (faqSummary) {
+        faqSummary.textContent = `총 ${total}건: ${summary}`;
+      }
     })();
 
     createDonut('approverStatusChart', /*[[${approverStatusSummary}]]*/ {}, '50%');
