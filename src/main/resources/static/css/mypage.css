@@ -1,0 +1,92 @@
+/* 본문 전체 여백 */
+.main-content {
+max-width: 1000px;
+margin: 60px auto;
+padding: 0 20px;
+box-sizing: border-box;
+}
+
+/* 카드 3개 그리드 */
+.card-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+gap: 24px;
+}
+
+/* 카드 공통 */
+.mypage-card {
+background: #ffffff;
+border-radius: 8px;
+box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+padding: 32px 20px;
+text-align: center;
+display: flex;
+flex-direction: column;
+align-items: center;
+transition: transform 0.2s, box-shadow 0.2s;
+}
+.mypage-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* 아이콘 영역 */
+.card-icon {
+font-size: 40px;
+margin-bottom: 16px;
+}
+
+/* 카드 제목 */
+.mypage-card h3 {
+font-size: 1.25rem;
+margin-bottom: 12px;
+color: #1a202c;
+}
+
+/* 카드 설명 */
+.mypage-card p {
+font-size: 0.95rem;
+color: #555;
+margin-bottom: 20px;
+line-height: 1.5;
+}
+
+/* 버튼 */
+.mypage-card .btn {
+padding: 10px 24px;
+border-radius: 4px;
+font-weight: 500;
+}
+.mypage-card .btn-primary {
+background-color: #D7191F;
+color: #fff;
+border: none;
+}
+.mypage-card .btn-primary:hover {
+background-color: #D7191F;
+}
+
+.mypage-banner {
+  margin-top: 40px;
+  width: 100%;
+  height: 150px;               
+  border-radius: 8px;
+  overflow: hidden;
+
+  /* 배경 이미지 설정 변경 */
+  background-size: contain;     /* ← 이미지를 온전히 보여주되, 컨테이너에 맞게 축소 */
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+
+/* 반응형: 모바일 */
+@media (max-width: 600px) {
+.main-content {
+margin: 40px auto;
+}
+.mypage-card {
+padding: 24px 16px;
+}
+}

@@ -1,9 +1,55 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
-<head><meta charset="UTF-8"><title>마이페이지</title></head>
-<body>
-<th:block th:replace="fragments/header :: header"></th:block>
-<th:block th:replace="mypage/_tabs :: tabs"></th:block>
-<!-- 내용 없음 -->
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>마이페이지</title>
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/userHeader.css" />
+    <link rel="stylesheet" href="/css/mypage.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+  </head>
+  <body>
+    <!-- 헤더 -->
+    <th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+
+    <!-- 본문 컨테이너 -->
+    <div class="main-content">
+      <!-- 카드 그리드 -->
+      <div class="card-grid">
+        <!-- 카드 1: 정보 수정 -->
+        <div class="mypage-card">
+          <div class="card-icon">👤</div>
+          <h3>내 정보 수정</h3>
+          <p>개인 정보를 확인 및 수정할 수 있습니다.</p>
+          <a th:href="@{/mypage/edit}" class="btn btn-primary">수정하러 가기</a>
+        </div>
+
+        <!-- 카드 2: 문의 내역 -->
+        <div class="mypage-card">
+          <div class="card-icon">📝</div>
+          <h3>문의 내역</h3>
+          <p>지금까지 작성한 1:1 문의를 확인합니다.</p>
+          <a th:href="@{/mypage/qna}" class="btn btn-primary">내역 보기</a>
+        </div>
+
+        <!-- 카드 3: 투자 성향 -->
+        <div class="mypage-card">
+          <div class="card-icon">📊</div>
+          <h3>투자 성향</h3>
+          <p>현재 성향: <strong th:text="${investType}">안정형</strong></p>
+          <a th:href="@{/profile/test}" class="btn btn-primary"
+            >검사하러 가기</a
+          >
+        </div>
+      </div>
+    </div>
+    <!-- 배경 배너 영역 -->
+    <div
+      class="mypage-banner"
+      th:style="|background-image: url('@{/images/terms2.png}')|"
+    ></div>
+
+    <!-- 푸터 -->
+    <th:block th:replace="fragments/footer :: siteFooter"></th:block>
+  </body>
 </html>

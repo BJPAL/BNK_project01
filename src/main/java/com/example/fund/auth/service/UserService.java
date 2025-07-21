@@ -1,12 +1,18 @@
 package com.example.fund.auth.service;
 
+import com.example.fund.ai.service.CompareAiService;
 import com.example.fund.auth.dto.JoinRequest;
 import com.example.fund.auth.dto.UserUpdateRequest;
+import com.example.fund.fund.entity.InvestProfileResult;
+import com.example.fund.fund.repository.InvestProfileResultRepository;
 import com.example.fund.user.entity.User;
 import com.example.fund.user.repository.UserRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final InvestProfileResultRepository investProfileResultRepository;
     private final UserRepository repo;
+    private final CompareAiService compareAiService;
 
     /* ---------- 회원가입 ---------- */
     @Transactional
@@ -82,5 +90,49 @@ public class UserService {
         user.setPhone(dto.getPhone());
 
         return user; // 컨트롤러에서 세션 갱신용으로 반환
+    }
+
+    public String user_invertType(Integer userId) {
+        InvestProfileResult invest = investProfileResultRepository
+                .findByUser_UserId(userId)
+                .orElse(null);
+
+        String result = "";
+        if (invest == null) {
+            result = "투자성향 분석결과가 없어요";
+        } else {
+            result = invertConvert(invest.getType().getTypeId());
+        }
+
+        return result;
+    }
+
+    // 받아온 투자성향결과 Inteager -> String 변환 함수
+    private String invertConvert(Long invert) {
+        String result = "";
+        switch (invert.intValue()) {
+            case 1:
+                result = "안정형";
+                break;
+
+            case 2:
+                result = "안정 추구형";
+                break;
+
+            case 3:
+                result = "위험 중립형";
+                break;
+            case 4:
+                result = "적극 투자형";
+                break;
+            case 5:
+                result = "공격 투자형";
+                break;
+
+            default:
+                break;
+        }
+
+        return result;
     }
 }

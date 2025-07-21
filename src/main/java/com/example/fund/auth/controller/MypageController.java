@@ -1,14 +1,17 @@
 // src/main/java/com/example/fund/auth/controller/MypageController.java
 package com.example.fund.auth.controller;
 
+import com.example.fund.ai.service.CompareAiService;
 import com.example.fund.auth.dto.UserUpdateRequest;
 import com.example.fund.auth.service.UserService;
+import com.example.fund.fund.repository.InvestProfileResultRepository;
 import com.example.fund.qna.service.QnaService;
 import com.example.fund.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,24 +23,28 @@ import org.springframework.web.bind.annotation.*;
 public class MypageController {
 
     private final UserService service;
-    private final QnaService  qnaService;
+    private final QnaService qnaService;
     private static final String SESSION_KEY = "user";
 
     /* ────────────────── 1. 마이페이지 홈 : 탭만 표시 ────────────────── */
     @GetMapping
-    public String home(HttpServletRequest request, Model m) {
-        m.addAttribute("requestURI", request.getRequestURI()); // 탭 활성화용
-        return "mypage/index";                                 // 내용 없는 화면
+    public String home(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        String investType = service.user_invertType(user.getUserId());
+        model.addAttribute("investType", investType);
+
+        return "mypage/index"; // 내용 없는 화면
     }
 
     /* ────────────────── 2. 정보수정 폼 ────────────────── */
     @GetMapping("/edit")
     public String editForm(HttpServletRequest request,
-                           HttpSession session,
-                           Model m) {
+            HttpSession session,
+            Model m) {
 
         User user = (User) session.getAttribute(SESSION_KEY);
-        if (user == null) return "redirect:/auth/login";
+        if (user == null)
+            return "redirect:/auth/login";
 
         m.addAttribute("updateRequest",
                 UserUpdateRequest.builder()
@@ -53,13 +60,14 @@ public class MypageController {
     /* ────────────────── 3. 정보수정 처리 ────────────────── */
     @PostMapping("/edit")
     public String update(@Valid @ModelAttribute("updateRequest") UserUpdateRequest dto,
-                         BindingResult br,
-                         HttpServletRequest request,
-                         HttpSession session,
-                         Model m) {
+            BindingResult br,
+            HttpServletRequest request,
+            HttpSession session,
+            Model m) {
 
         User user = (User) session.getAttribute(SESSION_KEY);
-        if (user == null) return "redirect:/auth/login";
+        if (user == null)
+            return "redirect:/auth/login";
 
         if (dto.isChangingPassword() && !dto.newPwMatches()) {
             br.rejectValue("confirmNewPassword", "nomatch", "새 비밀번호가 서로 다릅니다.");
@@ -77,21 +85,21 @@ public class MypageController {
             m.addAttribute("updateError", e.getMessage());
         }
 
-        m.addAttribute("requestURI", request.getRequestURI());
         return "mypage/form";
     }
 
     /* ────────────────── 4. 내 1:1 문의 목록 ────────────────── */
     @GetMapping("/qna")
     public String myQnaList(HttpServletRequest request,
-                            HttpSession session,
-                            Model m) {
+            HttpSession session,
+            Model m) {
 
         User user = (User) session.getAttribute(SESSION_KEY);
-        if (user == null) return "redirect:/auth/login";
+        if (user == null)
+            return "redirect:/auth/login";
 
         m.addAttribute("qnaList", qnaService.getQnaListByUser(user.getUserId()));
-        m.addAttribute("requestURI", request.getRequestURI());
         return "mypage/qna-list";
     }
+
 }
