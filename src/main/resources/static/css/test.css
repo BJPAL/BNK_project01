@@ -18,7 +18,7 @@ body {
 }
 
 .slot-machine {
-  width: 400px;
+  width: 450px;
   margin: 40px auto;
   background: #f3b8e4;
   border: 4px solid #301e8c;
@@ -86,6 +86,18 @@ body {
   cursor: pointer;
   display: block;
   margin: 0 auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+.start-btn:hover {
+  animation: shake 0.4s ease-in-out;
 }
 
 .lever {
@@ -237,6 +249,7 @@ body {
   border-radius: 20px;
   margin-bottom: 10px;
   object-fit: contain;
+   max-width: 120px;
 }
 
 
@@ -258,6 +271,10 @@ body {
 }
 
 .option-card {
+	display: flex;                  /* ✨ flex 활성화 */
+  flex-direction: column;         /* 세로 정렬 */
+  align-items: center;            /* 중앙 정렬 */
+  justify-content: space-between; /* 위 아래 요소 분리 정렬 (또는 flex-start) */
   flex: 1;
   max-width: 320px;
   background: #fdfcff;
@@ -269,6 +286,7 @@ body {
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   text-align: center;
+
 }
 
 .option-card:hover {
