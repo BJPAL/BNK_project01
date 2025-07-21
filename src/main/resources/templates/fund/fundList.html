@@ -740,7 +740,11 @@
                 <section class="fund-item-section fund-meta">
                     <div class="fund-name-container">
                         <h3 class="fund-name">
-                            ${fund.fundName || ""}
+                            <a href="/fund/${
+                                fund.fundId
+                            }" class="fund-name-link">
+                                ${fund.fundName || ""}
+                            </a>
                         </h3>
                     </div>
                     <ul class="fund-detail">

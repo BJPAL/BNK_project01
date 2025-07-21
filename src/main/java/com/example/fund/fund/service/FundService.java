@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import com.example.fund.fund.dto.FundDetailResponseDto;
+import com.example.fund.fund.entity.*;
+import com.example.fund.fund.repository.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.data.domain.Page;
@@ -26,16 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.fund.fund.dto.FundDetailResponse;
 import com.example.fund.fund.dto.FundRegisterRequest;
 import com.example.fund.fund.dto.FundResponseDTO;
-import com.example.fund.fund.entity.Fund;
-import com.example.fund.fund.entity.FundAsset;
-import com.example.fund.fund.entity.FundDocument;
-import com.example.fund.fund.entity.FundPolicy;
-import com.example.fund.fund.entity.FundReturn;
-import com.example.fund.fund.repository.FundAssetRepository;
-import com.example.fund.fund.repository.FundDocumentRepository;
-import com.example.fund.fund.repository.FundPolicyRepository;
-import com.example.fund.fund.repository.FundRepository;
-import com.example.fund.fund.repository.FundReturnRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +41,7 @@ public class FundService {
     private final FundRepository fundRepository;
     private final FundReturnRepository fundReturnRepository;
     private final FundAssetRepository fundAssetRepository;
+    private final FundPortfolioRepository fundPortfolioRepository;
 
     /**
      * 새로운 메서드 - 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
@@ -177,15 +171,14 @@ public class FundService {
                 .prospectusFileName(prospectusFileName)
                 .build();
     }
-    
-
-
-    // ========================================================
 
     /**
      * 모든 펀드 목록 조회
      */
     public List<Fund> findAll() {
+        return fundRepository.findAll();
+    }
+    public List<Fund> getAllFunds() {
         return fundRepository.findAll();
     }
 
@@ -233,14 +226,15 @@ public class FundService {
     /*PDF 저장 & JPG 변환*/
     private final FundPolicyRepository fundPolicyRepository;
     private final FundDocumentRepository fundDocumentRepository;
-
     private final String UPLOAD_DIR = "C:\\bnk_project\\data\\uploads\\fund_document\\";
 
     @Transactional
-    public void registerFundWithAllDocuments(FundRegisterRequest request,
-                                             MultipartFile fileTerms,
-                                             MultipartFile fileManual,
-                                             MultipartFile fileProspectus) throws IOException {
+    public void registerFundWithAllDocuments(
+            FundRegisterRequest request,
+            MultipartFile fileTerms,
+            MultipartFile fileManual,
+            MultipartFile fileProspectus
+    ) throws IOException {
         Fund fund = fundRepository.findByFundId(request.getFundId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 펀드 ID"));
 
@@ -277,7 +271,6 @@ public class FundService {
         fundDocumentRepository.save(doc);
     }
 
-
     private String savePdfAndConvertToJpg(MultipartFile file, String fileType, String filename) throws IOException {
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".pdf")) {
@@ -311,12 +304,9 @@ public class FundService {
         return pdfPath.toString(); // DB에는 PDF 경로 저장
     }
 
-    public List<Fund> getAllFunds() {
-        return fundRepository.findAll();
-    }
 
+    // ============================================================================================================
 
-    // =======================================================================================
 
     /**
      * 새로운 메서드 - 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
@@ -477,6 +467,86 @@ public class FundService {
             List<String> list
     ) {
         return (list == null || list.isEmpty()) ? null : list;
+    }
+
+    /**
+     * 펀드 ID로 펀드 존재 여부 확인
+     */
+    public boolean existsFund(Long fundId) {
+        log.debug("펀드 존재 여부 확인 - fundId: {}", fundId);
+        return fundRepository.existsByFundId(fundId);
+    }
+
+    /**
+     * 펀드 ID로 위험등급 조회
+     */
+    public Optional<Integer> getFundRiskLevel(Long fundId) {
+        log.debug("펀드 위험등급 조회 - fundId: {}", fundId);
+        return fundRepository.findRiskLevelByFundId(fundId);
+    }
+
+    /**
+     * 펀드 상세 정보 조회 (투자성향 검증 포함)
+     */
+    // Integer investType
+    public FundDetailResponseDto getFundDetail(Long fundId) {
+
+        // 1. 펀드 기본 정보 조회
+        Optional<Fund> fundOpt = fundRepository.findByFundId(fundId);
+        if (!fundOpt.isPresent()) {
+            log.warn("존재하지 않는 펀드 - fundId: {}", fundId);
+            return FundDetailResponseDto.builder()
+                    .accessAllowed(false)
+                    .accessMessage("존재하지 않는 펀드입니다.")
+                    .build();
+        }
+
+        Fund fund = fundOpt.get();
+
+        // 2. 전체 정보 조회
+        FundDetailResponseDto.FundDetailResponseDtoBuilder builder = FundDetailResponseDto.builder()
+                .fundId(fund.getFundId())
+                .fundName(fund.getFundName())
+                .fundType(fund.getFundType())
+                .investmentRegion(fund.getInvestmentRegion())
+                .establishDate(fund.getEstablishDate())
+                .launchDate(fund.getLaunchDate())
+                .nav(fund.getNav())
+                .aum(fund.getAum())
+                .totalExpenseRatio(fund.getTotalExpenseRatio())
+                .riskLevel(fund.getRiskLevel())
+                .managementCompany(fund.getManagementCompany())
+                .accessAllowed(true);
+
+        // 3. 수익률 정보 조회
+        Optional<FundReturn> fundReturnOpt = fundReturnRepository.findOptionalByFund_FundId(fundId);
+        if (fundReturnOpt.isPresent()) {
+            FundReturn fundReturn = fundReturnOpt.get();
+            builder.return1m(fundReturn.getReturn1m())
+                    .return3m(fundReturn.getReturn3m())
+                    .return6m(fundReturn.getReturn6m())
+                    .return12m(fundReturn.getReturn12m())
+                    .returnSince(fundReturn.getReturnSince());
+        } else {
+            log.warn("수익률 정보 없음 - fundId: {}", fundId);
+        }
+
+        // 4. 포트폴리오 정보 조회
+        Optional<FundPortfolio> portfolioOpt = fundPortfolioRepository.findByFundId(fundId);
+        if (portfolioOpt.isPresent()) {
+            FundPortfolio portfolio = portfolioOpt.get();
+            builder.domesticStock(portfolio.getDomesticStock())
+                    .overseasStock(portfolio.getOverseasStock())
+                    .domesticBond(portfolio.getDomesticBond())
+                    .overseasBond(portfolio.getOverseasBond())
+                    .fundInvestment(portfolio.getFundInvestment())
+                    .liquidity(portfolio.getLiquidity());
+        } else {
+            log.warn("포트폴리오 정보 없음 - fundId: {}", fundId);
+        }
+
+        log.info("펀드 상세 정보 조회 완료 - fundId: {}", fundId);
+        return builder.build();
     }
 
 }

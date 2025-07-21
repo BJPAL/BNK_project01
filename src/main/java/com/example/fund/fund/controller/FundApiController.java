@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.fund.fund.dto.*;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -21,12 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.fund.fund.dto.ApiResponse;
-import com.example.fund.fund.dto.FundDetailResponse;
-import com.example.fund.fund.dto.FundListResponse;
-import com.example.fund.fund.dto.FundResponseDTO;
-import com.example.fund.fund.dto.InvestTypeResponse;
-import com.example.fund.fund.dto.PaginationInfo;
 import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.entity.FundDocument;
 import com.example.fund.fund.entity.InvestProfileResult;
@@ -225,8 +220,48 @@ public class FundApiController {
         }
     }
 
+    /** 펀드 상세 정보 제공 - REST API */
+    @GetMapping("/detail/{fundId}")
+    public ResponseEntity<ApiResponse<?>> getFund(
+            @PathVariable("fundId") Long fundId,
+            @RequestParam int investType
+    ) {
+        try {
+            // 투자성향 확인
+            // Integer userId = user.getUserId();
+            // Optional<InvestProfileResult> investResult = investProfileResultRepository.findByUser_UserId(userId);
+            // if (!investResult.isPresent()) {
+            //     log.warn("투자 성향 미설정 사용자의 펀드 상세 API 호출 - userId: {}, fundId: {}", userId, fundId);
+            //     return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED)
+            //             .body(ApiResponseDto.failure("투자 성향 검사가 필요합니다.", "INVEST_PROFILE_REQUIRED"));
+            // }
+
+            // Integer investType = investResult.get().getType().getTypeId().intValue();
+            // og.debug("사용자 투자성향 확인 - userId: {}, investType: {}", userId, investType);
+
+            // 3. 펀드 상세 정보 조회
+            FundDetailResponseDto fundDetail = fundService.getFundDetail(fundId);
+
+            // 4. 펀드 존재 여부 확인
+            if (fundDetail == null) {
+                log.warn("존재하지 않는 펀드 조회 - fundId: {}", fundId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.failure("존재하지 않는 펀드입니다.", "FUND_NOT_FOUND"));
+            }
+
+            // 5. 정상 응답
+            log.info("펀드 상세 정보 API 성공 - fundId: {}", fundId);
+            return ResponseEntity.ok(ApiResponse.success(fundDetail, "펀드 상세 정보 조회 성공"));
+
+        } catch (Exception e) {
+            log.error("펀드 상세 정보 API 오류 - fundId: {}", fundId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.failure("서버 오류가 발생했습니다.", "INTERNAL_ERROR"));
+        }
+    }
+
     /**
-     * 펀드 상세 데이터 조회 - REST API
+     * 펀드 상세 데이터 조회 - REST API - ?
      */
     @GetMapping("/{fundId}")
     public ResponseEntity<?> getFundDetail(

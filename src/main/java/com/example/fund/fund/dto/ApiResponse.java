@@ -13,7 +13,7 @@ public class ApiResponse<T> {
     private boolean success;
     private T data;
     private String message;
-    private String code;
+    private String errorCode;
     private PaginationInfo pagination;
 
     // 성공 응답 생성 메서드들
@@ -57,11 +57,11 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    public static <T> ApiResponse<T> failure(String message, String code) {
+    public static <T> ApiResponse<T> failure(String message, String errorCode) {
         return ApiResponse.<T>builder()
                 .success(false)
                 .message(message)
-                .code(code)
+                .errorCode(errorCode)
                 .build();
     }
 }

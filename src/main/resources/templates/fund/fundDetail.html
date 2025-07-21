@@ -3,428 +3,355 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/css/fund/fund_detail.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
         <title>펀드 상세 정보</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f8f9fa;
-                color: #333;
-                line-height: 1.6;
-            }
-
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-
-            .header {
-                background: white;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                margin-bottom: 20px;
-            }
-
-            .fund-title {
-                font-size: 24px;
-                font-weight: bold;
-                margin-bottom: 10px;
-                color: #333;
-            }
-
-            .fund-info {
-                display: flex;
-                gap: 20px;
-                flex-wrap: wrap;
-            }
-
-            .info-item {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .info-label {
-                font-size: 12px;
-                color: #666;
-                margin-bottom: 4px;
-            }
-
-            .info-value {
-                font-size: 14px;
-                font-weight: 500;
-            }
-
-            .grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-                margin-bottom: 20px;
-            }
-
-            .card {
-                background: white;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .card-title {
-                font-size: 18px;
-                font-weight: bold;
-                margin-bottom: 15px;
-                color: #333;
-                border-bottom: 2px solid #e9ecef;
-                padding-bottom: 8px;
-            }
-
-            .price-section {
-                text-align: center;
-            }
-
-            .current-price {
-                font-size: 32px;
-                font-weight: bold;
-                color: #333;
-                margin-bottom: 10px;
-            }
-
-            .price-change {
-                font-size: 16px;
-                font-weight: 500;
-            }
-
-            .price-change.positive {
-                color: #dc3545;
-            }
-
-            .price-change.negative {
-                color: #007bff;
-            }
-
-            .price-details {
-                margin-top: 20px;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-            }
-
-            .asset-composition {
-                margin-top: 10px;
-            }
-
-            .asset-item {
-                display: flex;
-                justify-content: space-between;
-                padding: 8px 0;
-                border-bottom: 1px solid #e9ecef;
-            }
-
-            .asset-item:last-child {
-                border-bottom: none;
-            }
-
-            .asset-bar {
-                width: 100%;
-                height: 20px;
-                background-color: #e9ecef;
-                border-radius: 10px;
-                overflow: hidden;
-                margin-top: 5px;
-            }
-
-            .asset-fill {
-                height: 100%;
-                background-color: #6c757d;
-                transition: width 0.3s ease;
-            }
-
-            .detail-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
-                margin-top: 15px;
-            }
-
-            .detail-item {
-                display: flex;
-                justify-content: space-between;
-                padding: 10px;
-                background-color: #f8f9fa;
-                border-radius: 4px;
-            }
-
-            .loading {
-                text-align: center;
-                padding: 40px;
-                color: #666;
-            }
-
-            .error {
-                text-align: center;
-                padding: 40px;
-                color: #dc3545;
-                background-color: #f8d7da;
-                border-radius: 8px;
-                margin: 20px 0;
-            }
-
-            @media (max-width: 768px) {
-                .grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .fund-info {
-                    flex-direction: column;
-                    gap: 10px;
-                }
-
-                .price-details {
-                    grid-template-columns: 1fr;
-                }
-            }
-        </style>
     </head>
     <body>
         <div class="container">
-            <div id="loading" class="loading">펀드 정보를 불러오는 중...</div>
-
-            <div id="error" class="error" style="display: none">
-                펀드 정보를 불러올 수 없습니다.
+            <!-- 페이지 제목 영역 -->
+            <div class="page-title-container">
+                <h1 class="page-title">펀드 상세</h1>
             </div>
 
-            <div id="content" style="display: none">
-                <!-- 펀드 기본 정보 헤더 -->
-                <div class="header">
-                    <div class="fund-title" id="fundName">-</div>
-                    <div class="fund-info">
-                        <div class="info-item">
-                            <span class="info-label">운용사</span>
-                            <span class="info-value" id="managementCompany"
-                                >-</span
-                            >
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">펀드유형</span>
-                            <span class="info-value" id="fundType">-</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">투자지역</span>
-                            <span class="info-value" id="investmentRegion"
-                                >-</span
-                            >
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">위험등급</span>
-                            <span class="info-value" id="riskLevel">-</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">펀드상태</span>
-                            <span class="info-value" id="fundStatus">-</span>
-                        </div>
-                    </div>
+            <!-- 에러 표시 -->
+            <!-- 
+                <div id="error" class="error hidden">
+                    <p id="error-message">오류가 발생했습니다.</p>
+                </div>
+            -->
+
+            <!-- ── 로딩 오버레이 ── -->
+            <!-- 
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>펀드 정보를 불러오는 중...</p>
+                </div>
+            -->
+
+            <!-- 펀드 상세 컨테이너 -->
+            <div id="fund-detail-container" class="fund-detail-container">
+                <!-- 펀드명 -->
+                <div class="fund-item-container">
+                    <h2 class="item-title">펀드명</h2>
+                    <span id="fund-name" class="fund-name">
+                        KB뱅크이기즐겁다운용전문투자신탁(주식)
+                    </span>
                 </div>
 
-                <!-- 가격 정보 & 자산 구성 -->
-                <div class="grid">
-                    <!-- 현재 가격 정보 -->
-                    <div class="card">
-                        <div class="card-title">현재 가격 정보</div>
-                        <div class="price-section">
-                            <div class="current-price" id="basePrice">-</div>
-                            <div class="price-change" id="priceChange">-</div>
-                            <div class="price-details">
-                                <div class="info-item">
-                                    <span class="info-label">기준일</span>
-                                    <span class="info-value" id="baseDate"
-                                        >-</span
-                                    >
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">순자산(억원)</span>
-                                    <span class="info-value" id="aum">-</span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">펀드규모</span>
-                                    <span class="info-value" id="fundScale"
-                                        >-</span
-                                    >
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">기준통화</span>
-                                    <span class="info-value" id="baseCurrency"
-                                        >-</span
-                                    >
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 자산 구성 -->
-                    <div class="card">
-                        <div class="card-title">자산 구성</div>
-                        <div class="asset-composition" id="assetComposition">
-                            <!-- 자산 구성이 여기에 동적으로 추가됩니다 -->
-                        </div>
-                    </div>
+                <!-- 펀드 상세 정보 -->
+                <div class="fund-item-container">
+                    <h2 class="item-title">펀드 상세 정보</h2>
+                    <table class="fund-info-table">
+                        <tr>
+                            <th>펀드 유형</th>
+                            <td>주식형</td>
+                            <th>운용회사</th>
+                            <td>KB자산운용</td>
+                        </tr>
+                        <tr>
+                            <th>투자 지역</th>
+                            <td>한국</td>
+                            <th>위험 등급</th>
+                            <td>
+                                <span class="risk-level risk-2"
+                                    >2등급 (높은 위험)</span
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>설정일</th>
+                            <td>2009. 11. 9.</td>
+                            <th>출범일</th>
+                            <td>2021. 11. 16.</td>
+                        </tr>
+                        <tr>
+                            <th>기준가</th>
+                            <td>965원</td>
+                            <th>순자산</th>
+                            <td>16억원</td>
+                        </tr>
+                        <tr>
+                            <th>총 보수율</th>
+                            <td>1.13%</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
                 </div>
 
-                <!-- 상세 정보 -->
-                <div class="card">
-                    <div class="card-title">상세 정보</div>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span>설정일</span>
-                            <span id="establishDate">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span>총 보수율</span>
-                            <span id="totalExpenseRatio">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span>클래스 유형</span>
-                            <span id="classType">-</span>
-                        </div>
-                    </div>
+                <!-- 펀드 수익률 -->
+                <div class="fund-item-container">
+                    <h2 class="item-title">펀드 수익률 정보</h2>
+                    <canvas id="fundChart"></canvas>
+                    <div class="fund-return-container"></div>
                 </div>
+
+                <!-- 펀드 포트폴리오 -->
+                <div class="fund-item-container">
+                    <h2 class="item-title">펀드 포트폴리오</h2>
+                    <table class="portfolio-table" id="portfolioTable">
+                        <thead>
+                            <tr>
+                                <th>구분</th>
+                                <th>국내주식</th>
+                                <th>해외주식</th>
+                                <th>국내채권</th>
+                                <th>해외채권</th>
+                                <th>펀드투자</th>
+                                <th>유동성</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolioTableBody">
+                            <tr>
+                                <td style="text-align: left; font-weight: 500">
+                                    국내주식형펀드A
+                                </td>
+                                <td>99.50%</td>
+                                <td>0.00%</td>
+                                <td>0.00%</td>
+                                <td>0.00%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="percentage low">0.48%</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left; font-weight: 500">
+                                    해외주식형펀드B
+                                </td>
+                                <td class="percentage low">2.10%</td>
+                                <td class="percentage high">91.01%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="percentage low">5.78%</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left; font-weight: 500">
+                                    국내채권형펀드C
+                                </td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="percentage high">97.19%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="percentage low">3.57%</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left; font-weight: 500">
+                                    해외채권형펀드D
+                                </td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="percentage high">85.00%</td>
+                                <td class="zero-value">0.00%</td>
+                                <td class="percentage low">13.70%</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left; font-weight: 500">
+                                    혼합형펀드E
+                                </td>
+                                <td class="percentage medium">45.20%</td>
+                                <td class="percentage medium">25.30%</td>
+                                <td class="percentage low">15.50%</td>
+                                <td class="percentage low">8.20%</td>
+                                <td class="percentage low">3.50%</td>
+                                <td class="percentage low">2.30%</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left; font-weight: 500">
+                                    균형형펀드F
+                                </td>
+                                <td class="percentage medium">35.80%</td>
+                                <td class="percentage low">15.40%</td>
+                                <td class="percentage medium">30.20%</td>
+                                <td class="percentage low">12.60%</td>
+                                <td class="percentage low">4.20%</td>
+                                <td class="percentage low">1.80%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="fund-portfolio-container"></div>
+                </div>
+            </div>
+
+            <!-- 버튼 영역 -->
+            <div class="button-container">
+                <button class="page-btn btn-secondary">목록으로</button>
+                <button class="page-btn btn-primary">가입하기</button>
             </div>
         </div>
-
-        <script>
-            // 현재 URL에서 fundId 추출 (예: /fund-detail.html?fundId=1)
-            const urlParams = new URLSearchParams(window.location.search);
-            const fundId = urlParams.get("fundId") || 1; // 기본값 1
-
-            // API 기본 URL (환경에 맞게 수정)
-            const API_BASE_URL = "http://localhost:8090/api";
-
-            // 펀드 상세 정보 로드
-            async function loadFundDetail() {
-                try {
-                    console.log(`API 요청: ${API_BASE_URL}/funds/${fundId}`);
-                    const response = await fetch(
-                        `${API_BASE_URL}/funds/${fundId}`
-                    );
-
-                    console.log("응답 상태:", response.status);
-                    console.log("응답 헤더:", response.headers);
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.log("에러 응답:", errorText);
-                        throw new Error(
-                            `펀드 정보를 찾을 수 없습니다. (${response.status})`
-                        );
-                    }
-
-                    const data = await response.json();
-                    console.log("받은 데이터:", data);
-                    displayFundDetail(data);
-                } catch (error) {
-                    console.error("Error loading fund detail:", error);
-                    showError(error.message);
-                }
-            }
-
-            // 펀드 상세 정보 화면에 표시
-            function displayFundDetail(fund) {
-                // 기본 정보
-                document.getElementById("fundName").textContent =
-                    fund.fundName || "-";
-                document.getElementById("managementCompany").textContent =
-                    fund.managementCompany || "-";
-                document.getElementById("fundType").textContent =
-                    fund.fundType || "-";
-                document.getElementById("investmentRegion").textContent =
-                    fund.investmentRegion || "-";
-                document.getElementById("riskLevel").textContent =
-                    fund.riskLevel ? `${fund.riskLevel}등급` : "-";
-                document.getElementById("fundStatus").textContent =
-                    fund.fundStatus || "-";
-
-                // 가격 정보 (일단 하드코딩으로 대체)
-                document.getElementById("basePrice").textContent = "1,461원";
-                document.getElementById("priceChange").textContent =
-                    "+0.58원 (+0.04%)";
-                document.getElementById("priceChange").className =
-                    "price-change positive";
-                document.getElementById("baseDate").textContent = "2024-07-16";
-                document.getElementById("aum").textContent = "767억원";
-                document.getElementById("fundScale").textContent = "525";
-                document.getElementById("baseCurrency").textContent =
-                    fund.baseCurrency || "-";
-
-                // 상세 정보
-                document.getElementById("establishDate").textContent =
-                    fund.establishDate || "-";
-                document.getElementById("totalExpenseRatio").textContent =
-                    fund.totalExpenseRatio ? `${fund.totalExpenseRatio}%` : "-";
-                document.getElementById("classType").textContent =
-                    fund.classType || "-";
-
-                // 자산 구성 (간단 버전)
-                displayAssetComposition(fund);
-
-                // 로딩 숨기고 컨텐츠 표시
-                document.getElementById("loading").style.display = "none";
-                document.getElementById("content").style.display = "block";
-            }
-
-            // 자산 구성 표시 (간단 버전)
-            function displayAssetComposition(fund) {
-                const container = document.getElementById("assetComposition");
-
-                const assets = [
-                    { name: "국내 주식", value: fund.domesticStock },
-                    { name: "해외 주식", value: fund.overseasStock },
-                    { name: "국내 채권", value: fund.domesticBond },
-                    { name: "해외 채권", value: fund.overseasBond },
-                    { name: "펀드 투자", value: fund.fundInvestment },
-                    { name: "유동성", value: fund.liquidity },
-                ];
-
-                // 0이 아닌 자산만 표시
-                const nonZeroAssets = assets.filter(
-                    (asset) => asset.value && asset.value > 0
-                );
-
-                if (nonZeroAssets.length === 0) {
-                    container.innerHTML =
-                        '<div class="asset-item"><span>자산 구성 정보가 없습니다.</span></div>';
-                    return;
-                }
-
-                container.innerHTML = nonZeroAssets
-                    .map(
-                        (asset) => `
-            <div class="asset-item">
-                <span>${asset.name}</span>
-                <span>${asset.value}%</span>
-            </div>
-            <div class="asset-bar">
-                <div class="asset-fill" style="width: ${asset.value}%"></div>
-            </div>
-        `
-                    )
-                    .join("");
-            }
-
-            // 에러 표시
-            function showError(message = "펀드 정보를 불러올 수 없습니다.") {
-                document.getElementById("loading").style.display = "none";
-                const errorElement = document.getElementById("error");
-                errorElement.textContent = message;
-                errorElement.style.display = "block";
-            }
-
-            // 페이지 로드 시 펀드 정보 불러오기
-            document.addEventListener("DOMContentLoaded", loadFundDetail);
-        </script>
     </body>
+
+    <script>
+        // 단일 펀드 수익률 데이터 (음수 포함 예시)
+        const fundData = {
+            name: "삼성증권투자신탁",
+            return_1m: -2.15, // 음수 예시
+            return_3m: 15.42,
+            return_6m: -5.23, // 음수 예시
+            return_12m: 8.75,
+        };
+
+        let chart;
+
+        // 수익률에 따른 색상 결정 (양수=파란색, 음수=빨간색)
+        function getColor(value) {
+            if (value >= 0) {
+                return "rgba(54, 162, 235, 0.8)"; // 양수 - 파란색
+            } else {
+                return "rgba(255, 99, 132, 0.8)"; // 음수 - 빨간색
+            }
+        }
+
+        // 테두리 색상 (배경색보다 진하게)
+        function getBorderColor(value) {
+            if (value >= 0) {
+                return "rgba(54, 162, 235, 1)"; // 양수 - 진한 파란색
+            } else {
+                return "rgba(255, 99, 132, 1)"; // 음수 - 진한 빨간색
+            }
+        }
+
+        // 차트 초기화
+        function initChart() {
+            const ctx = document.getElementById("fundChart").getContext("2d");
+
+            const returns = [
+                fundData.return_1m,
+                fundData.return_3m,
+                fundData.return_6m,
+                fundData.return_12m,
+            ];
+
+            chart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: ["1개월", "3개월", "6개월", "12개월"],
+                    datasets: [
+                        {
+                            label: "수익률 (%)",
+                            data: returns,
+                            backgroundColor: returns.map(getColor),
+                            borderColor: returns.map(getBorderColor),
+                            barPercentage: 0.5, // 막대 너비 비율 (0-1)
+                            borderSkipped: "bottom",
+                            // borderWidth: 2,
+                            // borderRadius: 4,
+                            // borderSkipped: false,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "기간별 수익률 (%)",
+                            font: {
+                                size: 16,
+                                weight: "bold",
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20,
+                            },
+                        },
+                        legend: {
+                            display: false, // 단일 데이터셋이므로 범례 숨김
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const value = context.parsed.y;
+                                    return `수익률: ${
+                                        value >= 0 ? "+" : ""
+                                    }${value.toFixed(2)}%`;
+                                },
+                                afterLabel: function (context) {
+                                    const value = context.parsed.y;
+                                    if (value > 0) return "🔵 수익";
+                                    if (value < 0) return "🔴 손실";
+                                    return "➖ 변동 없음";
+                                },
+                            },
+                        },
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: "수익률 (%)",
+                                font: {
+                                    size: 14,
+                                    weight: "bold",
+                                },
+                            },
+                            grid: {
+                                color: "rgba(0,0,0,0.1)",
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return value + "%";
+                                },
+                            },
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: "투자 기간",
+                                font: {
+                                    size: 14,
+                                    weight: "bold",
+                                },
+                            },
+                            grid: {
+                                display: false,
+                            },
+                        },
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: "easeInOutQuart",
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: "index",
+                    },
+                },
+            });
+        }
+
+        // 실제 데이터로 차트 업데이트하는 함수
+        function updateChart(newFundData) {
+            const returns = [
+                newFundData.return_1m || newFundData.return1m,
+                newFundData.return_3m || newFundData.return3m,
+                newFundData.return_6m || newFundData.return6m,
+                newFundData.return_12m || newFundData.return12m,
+            ];
+
+            // 펀드 정보 업데이트
+            document.getElementById("fundInfo").textContent = `펀드명: ${
+                newFundData.name || newFundData.fundName || "펀드"
+            }`;
+
+            // 차트 데이터 업데이트
+            chart.data.datasets[0].data = returns;
+            chart.data.datasets[0].backgroundColor = returns.map(getColor);
+            chart.data.datasets[0].borderColor = returns.map(getBorderColor);
+
+            chart.update("active");
+        }
+
+        // 페이지 로드 시 차트 초기화
+        window.onload = function () {
+            initChart();
+        };
+
+        // 외부에서 사용할 수 있는 전역 함수
+        window.updateFundChart = updateChart;
+    </script>
 </html>
