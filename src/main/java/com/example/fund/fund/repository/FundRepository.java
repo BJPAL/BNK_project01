@@ -63,4 +63,8 @@ public interface FundRepository extends JpaRepository<Fund, Long> {
             @Param("regions") List<String> regions,
             Pageable pageable
     );
+
+
+    @Query("SELECT f FROM Fund f WHERE f.fundId NOT IN (SELECT fp.fund.fundId FROM FundPolicy fp)")
+    List<Fund> findFundsNotInFundPolicy();
 }
