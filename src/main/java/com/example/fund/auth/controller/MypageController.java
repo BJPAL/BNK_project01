@@ -94,4 +94,6 @@ public class MypageController {
         m.addAttribute("requestURI", request.getRequestURI());
         return "mypage/qna-list";
     }
+
+
 }

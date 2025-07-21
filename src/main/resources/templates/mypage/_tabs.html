@@ -21,4 +21,9 @@
      th:classappend="${requestURI == '/mypage/qna'} ? ' active'">
     문의내역
   </a>
+  <a th:href="@{/profile}"
+     class="btn btn-outline-primary"
+     th:classappend="${requestURI == '/investProfile'} ? ' active'">
+    투자 성향
+  </a>
 </div>
