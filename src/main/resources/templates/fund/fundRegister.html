@@ -91,114 +91,28 @@
           <button class="modal-close-btn" onclick="closeModal()">닫기</button>
         </div>
 
-        <script>
-          function openModal() {
-            $('#fundModal').addClass('active');
-          }
-
-          function closeModal() {
-            $('#fundModal').removeClass('active');
-          }
-
-          function searchFund() {
-            const keyword = $('#searchKeyword').val();
-            $.get('/api/funds/search', { name: keyword }, function(data) {
-              let listHtml = '';
-              data.forEach(fund => {
-                listHtml += `<li onclick="selectFund('${fund.fundId}', '${fund.fundName}')">${fund.fundName}</li>`;
-              });
-              $('#fundResult').html(listHtml);
-            });
-          }
-
-          function selectFund(id, name) {
-            $('#fundId').val(id);
-            $('#fundName').val(name);
-            closeModal();
-          }
-
-          function showTab(tabId) {
-            $('.tab').removeClass('active');
-            $('#' + tabId).addClass('active');
-          }
-
-          // 등록 버튼 누를 때 form 수동 처리
-          document.getElementById('fundForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // 기본 제출 막기
-
-            const form = e.target;
-            const formData = new FormData();
-
-            // JSON 형식의 data 객체 생성
-            const data = {
-              fundId: form.fundId.value,
-              fundTheme: form.fundTheme.value,
-              fundPayout: "",        // 정책용 필드 (지금은 비워둠)
-              fundActive: false,     // 정책용 필드 (지금은 false로 대체)
-              fundRelease: new Date().toISOString().slice(0, 10), // 오늘 날짜 사용
-              docTitle: "",          // 서버에서 자동 생성
-              docType: "",           // 서버에서 반복적으로 처리
-              fileFormat: "PDF"      // 고정
-            };
-
-            formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
-            formData.append("fileTerms", form.fileTerms.files[0]);
-            formData.append("fileManual", form.fileManual.files[0]);
-            formData.append("fileProspectus", form.fileProspectus.files[0]);
-
-            fetch('/fund/register', {
-              method: 'POST',
-              body: formData
-            })
-            .then(response => response.json())
-            .then(result => {
-              alert(result.message || '등록 성공');
-            })
-            .catch(err => {
-              alert('오류 발생: ' + err.message);
-            });
-          });
-
-          function selectFund(id, name) {
-            $('#fundId').val(id);
-            $('#fundName').val(name);
-            closeModal();
-
-            // fundId로 상세 정보 요청
-            $.get(`/api/funds/${id}`, function(data) {
-              $('#fundDetailBox').show();
-              $('#fundType').text(data.fundType || '-');
-              $('#investmentRegion').text(data.investmentRegion || '-');
-              $('#establishDate').text(data.establishDate || '-');
-              $('#totalExpenseRatio').text(data.totalExpenseRatio || '-');
-              $('#riskLevel').text(data.riskLevel || '-');
-              $('#managementCompany').text(data.managementCompany || '-');
-            }).fail(() => {
-              $('#fundDetailBox').hide();
-              alert('펀드 정보를 불러오지 못했습니다.');
-            });
-          }
-
-          // 파일 등록 시 탭 버튼 색상 변경
-          const fileToTabMap = {
-            fileTerms: 'tab-terms',
-            fileManual: 'tab-manual',
-            fileProspectus: 'tab-prospectus'
-          };
-
-          Object.entries(fileToTabMap).forEach(([fileInputName, tabId]) => {
-            const input = document.querySelector(`input[name="${fileInputName}"]`);
-            const tab = document.getElementById(tabId);
-            if (input && tab) {
-              input.addEventListener('change', function () {
-                tab.classList.toggle('file-attached', this.files.length > 0);
-              });
-            }
-          });
-        </script>
       </div>
     </main>
   </div><!--main-wrapper end-->
 </div><!--layout end-->
+
+<!-- 로딩 이미지 -->
+<div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(255,255,255,0.7); z-index: 9999; justify-content: center; align-items: center;">
+  <img src="/images/loading.gif" alt="loading...">
+</div>
+
+<!-- 등록 완료 모달 -->
+<div id="confirmModal" class="finish-modal" style="display: none;">
+  <div class="finish-modal-content">
+    <h3 id="finish-modal-success">펀드 등록 완료</h3>
+    <p>펀드 등록이 성공적으로 완료되었습니다.<br>이어서 등록판 펀드 결재를 진행하시겠습니까?</p>
+    <div class="finish-modal-buttons">
+      <button id="goToList" onclick="closeConfirmModal()">펀드 목록</button>
+      <button id="goToPayment">결재 진행</button>
+    </div>
+  </div>
+</div>
+<script src="/script/admin/fund_register.js"></script>
 </body>
 </html>
