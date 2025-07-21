@@ -111,7 +111,10 @@ public class FundApiController {
         }
     }
 
+    
+  
     /**
+
      * 투자 성향에 따른 펀드 목록 - REST API
      */
     /*
@@ -135,7 +138,7 @@ public class FundApiController {
     public ResponseEntity<ApiResponse<FundListResponse>> getFundList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam int investType,
+            @RequestParam Integer investType,
             @RequestParam(required = false) List<String> risk,      // 위험등급 필터
             @RequestParam(required = false) List<String> type,      // 펀드유형 필터
             @RequestParam(required = false) List<String> region     // 투자지역 필터
