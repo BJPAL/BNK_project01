@@ -40,12 +40,16 @@
 
         <!-- ─── 결재 업무(approver) ─── -->
         <li class="menu-group" th:if="${session.admin.role == 'approver' or session.admin.role == 'super'}">
-          <button type="button" class="group-btn">결재 업무</button>
+          <button type="button" class="group-btn" onclick="approverLink()" data-url="admin/approval/manage">
+            결재 업무
+          </button>
         </li>
 
         <!-- ─── 문서함(planner) ─── -->
-        <li class="menu-group" th:if="${session.admin.role == 'planner' or session.admin.role == 'super'}">
-          <button type="button" class="group-btn">결재 문서함</button>
+        <li class="menu-group" th:if="${session.admin.role == 'planner'}">
+          <button type="button" class="group-btn" onclick="plannerLink()" data-url="admin/approval/list">
+            결재 문서함
+          </button>
         </li>
 
         <!-- ─── 1:1문의 관리(cs) ─── -->
@@ -71,14 +75,14 @@
 
         <!-- ─── 공지사항 관리(super only) ─── -->
         <li th:if="${session.admin.role == 'super'}" class="menu-group">
-          <button type="button" class="group-btn" onclick="notice()" data-url="">
+          <button type="button" class="group-btn" onclick="superNoticeLink()" data-url="/admin/notice/list">
             공지사항 관리
           </button>
         </li>
 
         <!-- ─── 공지사항(super 빼고) ─── -->
         <li th:if="${session.admin.role != 'super'}" class="menu-group">
-          <button type="button" class="group-btn" onclick="notice()" data-url="/admin/notice/list">
+          <button type="button" class="group-btn" onclick="noticeLink()" data-url="/admin/notice/list">
             공지사항
           </button>
         </li>
@@ -107,7 +111,16 @@
         function faqLink() {
           location.href = "/admin/faq/list";
         }
-        function notice() {
+        function approverLink() {
+          location.href = "/admin/approval/manage";
+        }
+        function plannerLink() {
+          location.href = "/admin/approval/list";
+        }
+        function superNoticeLink() {
+          location.href = "/admin/notice/list";
+        }
+        function noticeLink() {
           location.href = "/admin/notice/list";
         }
         document.addEventListener("DOMContentLoaded", () => {

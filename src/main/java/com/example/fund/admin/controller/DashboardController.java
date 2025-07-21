@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 
+
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -68,10 +69,15 @@ public class DashboardController {
                     .getApprovalsByStatus("결재대기", 0)
                     .getTotalElements();
             model.addAttribute("waitingApproveCount", waiting);
+
             model.addAttribute("oldestApprovals",
                     approvalService.findOldestApprovals("결재대기", 5));
             model.addAttribute("avgApprovalDays",
                     approvalService.calculateAverageApprovalDays());
+
+            Map<String, Integer> approverStatusSummary =
+                    approvalService.getStatusSummaryForApprover();  // (새 메소드 또는 기존 서비스 메소드)
+            model.addAttribute("approverStatusSummary", approverStatusSummary);
         }
 
         // Super 전용: 결재 흐름 요약, FAQ 건수
@@ -128,6 +134,8 @@ public class DashboardController {
             model.addAttribute("waitingApproveCount", 0);
             model.addAttribute("oldestApprovals", List.of());
             model.addAttribute("avgApprovalDays", 0.0);
+
+            model.addAttribute("approverStatusSummary", Collections.emptyMap());
         }
 
         return "admin/main";

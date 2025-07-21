@@ -88,26 +88,6 @@
           position: relative;
         }
     </style>
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        document.addEventListener('DOMContentLoaded', () => {
-          const form = document.querySelector('form');
-          const submit = form.querySelector('.btn-submit');
-          submit.addEventListener('click', e => {
-            e.preventDefault();
-            Swal.fire({
-              title: /*[[${approval != null} ? '재기안 하시겠습니까?' : '등록하시겠습니까?']]*/,
-              icon: 'question',
-              showCancelButton: true,
-              confirmButtonText: '예',
-              cancelButtonText: '아니오'
-            }).then(result => {
-              if (result.isConfirmed) form.submit();
-            });
-          });
-        });
-        /*]]>*/
-    </script>
 </head>
 <body>
 <div class="layout">
@@ -150,5 +130,25 @@
         </main>
     </div>
 </div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.querySelector('form');
+      const submit = form.querySelector('.btn-submit');
+      submit.addEventListener('click', e => {
+        e.preventDefault();
+        Swal.fire({
+          title: /*[[${approval != null} ? '재기안 하시겠습니까?' : '등록하시겠습니까?']]*/,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: '예',
+          cancelButtonText: '아니오'
+        }).then(result => {
+          if (result.isConfirmed) form.submit();
+        });
+      });
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

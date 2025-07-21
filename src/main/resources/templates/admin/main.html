@@ -18,79 +18,157 @@
           --font-title: 'Segoe UI Semibold', sans-serif;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #333; }
-        .content { padding: 0 40px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #333;
+        }
+        .content { padding: 0 40px;
+        }
 
         /* 상단 바 */
         .topbar {
           display: flex; justify-content: space-between; align-items: center;
           background: var(--primary); color: #fff; padding: 14px 40px;
         }
-        .notifications { display: flex; align-items: center; gap: 6px; }
-        .notif-list { display: none !important; }
+        .notifications { display: flex; align-items: center; gap: 6px;
+        }
+        .notif-list { display: none !important;
+        }
         .notif-cycle {
           max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
           font-size: 14px; transform: translateY(20px); opacity: 0;
           transition: transform .5s, opacity .5s;
         }
         .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 15px; font-weight: 600; }
-        .notice-list-link { color: #fff; text-decoration: underline; }
-        .notice-list-link:hover { opacity: .8; }
-
-        /* Super 전용 2-컬럼 */
-        .super-dashboard-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 32px;
-          width: 100%;
-          margin: 40px 0;
+        .notice-list-link { color: #fff; text-decoration: underline;
         }
-        .super-chart-card {
-          display: flex; flex-direction: column;
-          background: var(--card); border: 1px solid var(--border);
-          border-radius: 16px; box-shadow: 0 6px 18px var(--shadow);
-          height: calc(100vh - 200px); padding: 28px;
-        }
-        .super-chart-card h3 {
-          font-family: var(--font-title); font-size: 20px; color: var(--primary);
-          margin-bottom: 16px;
-        }
-        .super-chart-card canvas {
-          flex: 1; width: 100% !important; height: 100% !important;
-        }
-        .super-metrics {
-          display: flex; flex-direction: column;
-          height: calc(100vh - 200px); gap: 32px;
-        }
-        .super-metrics .card {
-          flex: 1; background: var(--card); border: 1px solid var(--border);
-          border-radius: 16px; box-shadow: 0 6px 18px var(--shadow);
-          padding: 28px 30px; font-family: var(--font-title);
+        .notice-list-link:hover { opacity: .8;
         }
 
-        /* 공통 dashboard 그리드 */
-        .dashboard {
-          max-width: 1240px; margin: 40px auto; padding: 0 30px;
-          display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 32px;
-        }
+        /* 카드 공통 스타일 */
         .card {
-          background: var(--card); border: 1px solid var(--border);
-          border-radius: 16px; box-shadow: 0 6px 18px var(--shadow);
-          padding: 28px 30px; display: flex; flex-direction: column; gap: 12px;
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          box-shadow: 0 6px 18px var(--shadow);
+          padding: 28px 30px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
           transition: .25s;
         }
         .card:hover {
-          transform: translateY(-4px); box-shadow: 0 10px 22px var(--shadow);
+          transform: translateY(-4px);
+          box-shadow: 0 10px 22px var(--shadow);
         }
         .card h3 {
-          font-size: 18px; color: var(--primary);
-          display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
           font-family: var(--font-title);
+          font-size: 1.25rem;
+          font-variant: small-caps;
+          letter-spacing: .08em;
+          margin-bottom: .75em;
+          color: var(--primary);
         }
-        .metric { font-size: 34px; font-weight: 800; color: var(--primary); }
-        .card ul { list-style: none; padding: 0; margin: 0; }
-        .card ul li { font-size: 14px; margin-bottom: 4px; }
-        .report-link { display: inline-block; margin-top: 8px; color: var(--primary); text-decoration: underline; }
+        .card ul { list-style: none; padding: 0; margin: 0;
+        }
+        .card ul li { font-size: 1rem; margin-bottom: .5em;
+        }
+        .metric { font-size: 34px;
+         font-weight: 800;
+          color: var(--primary);
+        }
+        .report-link {
+          font-style: italic;
+          border-bottom: 1px solid currentColor;
+          text-decoration: none;
+          padding-bottom: 2px;
+          color: var(--primary);
+        }
+
+        /* 그리드 레이아웃 */
+        .super-dashboard-grid,
+        .planner-dashboard-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+          margin: 32px 0;
+          align-items: stretch;
+        }
+        .super-metrics { display: flex;
+         flex-direction: column;
+         gap: 32px;
+        }
+
+        /* 차트 래퍼 */
+        .chart-wrapper {
+          width: 100%;
+          max-width: 400px;
+          aspect-ratio: 1 / 1;
+          position: relative;
+          margin: auto;
+        }
+        .chart-wrapper canvas {
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        /* 작은 요약 텍스트 */
+        .chart-summary {
+          font-size: .9rem;
+          color: #555;
+          text-align: center;
+          margin-top: 8px;
+        }
+
+        /* 추가 정보 리스트 */
+        .info-list {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+          gap: 8px;
+          width: 100%;
+        }
+        .info-list li {
+          padding: 12px;
+          border-radius: 8px;
+          background: #117C88;
+          color: #fff;
+          font-weight: 600;
+          font-size: 1rem;
+          text-align: center;
+        }
+
+        /* FAQ 카드 — flex 하단 배치 */
+        .faq-chart-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center !important;
+          text-align: center;
+        }
+        .faq-chart-card .chart-wrapper {
+          margin: auto auto 16px !important;
+           max-width: none;
+           height: 250px;
+           text-align: center;
+        }
+
+        /* 최근 반려된 요청의 사유 */
+        .planner-dashboard-grid .card .reject-reason {
+          display: inline-block;
+          margin-top: 4px;
+          padding: 6px 10px;
+          background: #e1f5fe;
+          color: #003366;
+          border-radius: 6px;
+          font-size: 0.95rem;
+          font-weight: 600;
+        }
+
+        /* detail 로 가는 링크를 흰색으로 강제 */
+        .card a {
+          color: #fff !important;
+          text-decoration: none; /* 필요시 밑줄 제거 */
+        }
     </style>
 </head>
 <body>
@@ -98,8 +176,8 @@
     <div th:replace="admin/admin_header :: adminHeader"></div>
     <div class="main-wrapper">
         <div th:replace="admin/admin_aside :: adminAside"></div>
-
         <main class="content">
+
             <!-- 상단 바 -->
             <div class="topbar">
                 <div class="notifications">
@@ -116,77 +194,97 @@
                 </div>
             </div>
 
-            <!-- Super 관리자 전용 레이아웃 -->
+            <!-- Super 관리자 -->
             <div th:if="${role=='super'}" class="super-dashboard-grid">
-                <div class="super-chart-card">
+                <div class="card super-chart-card">
                     <h3><i class="fas fa-stream"></i> 결재 흐름 요약</h3>
-                    <canvas id="flowChart"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="flowChart"></canvas>
+                    </div>
+                    <ul class="info-list">
+                        <li th:each="e : ${flowSummary.entrySet()}"
+                            th:text="${e.key + ' ' + e.value + '건'}">상태 건수</li>
+                    </ul>
                 </div>
                 <div class="super-metrics">
-                    <div class="card">
-                        <h3><i class="fas fa-chart-bar"></i> FAQ 카테고리 분포 (상위 3)</h3>
-                        <ul>
-                            <li th:each="e,st : ${faqCategoryCounts.entrySet()}" th:if="${st.index < 3}">
-                                <span th:text="${e.key}">카테고리</span>: <strong th:text="${e.value}">0</strong>건
-                            </li>
-                        </ul>
-                        <a th:href="@{/admin/faq/list}" class="report-link">FAQ 관리</a>
-                    </div>
+                    <!-- 순서 교체: 1:1 문의 -> FAQ -->
                     <div class="card">
                         <h3><i class="fas fa-question-circle"></i> 1:1 문의 미답변 현황</h3>
-                        <ul>
-                            <li>전체 미답변: <strong th:text="${unansweredCount}">0</strong>건</li>
-                            <li>24시간 이상 대기: <strong th:text="${longPendingCount}">0</strong>건</li>
-                            <li th:if="${oldestUnanswered != null}">
-                                최장 대기 문의:
-                                <a th:href="@{/admin/qna/{id}(id=${oldestUnanswered.qnaId})}"
-                                   th:text="${oldestUnanswered.title}">제목</a> (<span th:text="${oldestDuration}">0시간</span>)
-                            </li>
-                            <li th:unless="${oldestUnanswered != null}">최장 대기 문의가 없습니다.</li>
+                        <ul class="info-list">
+                            <li th:text="'전체 미답변: ' + ${unansweredCount} + '건'">0건</li>
+                            <li th:text="'24시간 이상 대기: ' + ${longPendingCount} + '건'">0건</li>
                         </ul>
                         <a th:href="@{/admin/qnaList}" class="report-link">문의 관리</a>
+                    </div>
+                    <div class="card faq-chart-card">
+                        <h3><i class="fas fa-chart-bar"></i> FAQ 카테고리 분포 (상위3)</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="faqCatChart"></canvas>
+                        </div>
+                        <div id="faqSummary" class="chart-summary"></div>
+                        <a th:href="@{/admin/faq/list}" class="report-link">FAQ 관리</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Planner / Approver / CS 공통 뷰 -->
-            <section th:unless="${role=='super'}" class="dashboard">
-                <!-- Planner -->
-                <div class="card" th:if="${role=='planner'}">
-                    <h3><i class="fas fa-chart-pie"></i> 상태별 결재 요청 분포</h3>
-                    <canvas id="plannerStatusChart" height="200"></canvas>
-                </div>
-                <div class="card" th:if="${role=='planner'}">
-                    <h3><i class="fas fa-times-circle"></i> 최근 반려된 요청</h3>
-                    <ul>
-                        <li th:each="r : ${recentRejected}">
-                            <strong th:text="${r.title}">제목</strong>
-                            <span style="color:#999;" th:text="' - ' + ${r.rejectReason}">사유</span>
-                        </li>
+            <!-- Planner 관리자 -->
+            <div th:if="${role=='planner'}" class="planner-dashboard-grid">
+                <div class="card super-chart-card">
+                    <h3><i class="fas fa-chart-pie"></i> 결재 요청 분포</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="plannerStatusChart"></canvas>
+                    </div>
+                    <ul class="info-list">
+                        <li th:each="e : ${myStatusSummary.entrySet()}"
+                            th:text="${e.key + ' ' + e.value + '건'}">상태 건수</li>
                     </ul>
                 </div>
-                <div class="card" th:if="${role=='planner'}">
-                    <h3><i class="fas fa-hourglass-half"></i> 평균 결재 소요 시간</h3>
-                    <span class="metric" th:text="${#numbers.formatDecimal(myAvgDuration,1,1)}+'일'">0.0일</span>
+                <div class="super-metrics">
+                    <div class="card">
+                        <h3><i class="fas fa-times-circle"></i> 최근 반려된 요청</h3>
+                        <ul class="info-list">
+                            <li th:each="r : ${recentRejected}">
+                                <a th:href="@{/admin/approval/detail/{id}(id=${r.approvalId})}"
+                                         th:text="${r.title}">제목</a>
+                                </li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-hourglass-half"></i> 평균 결재 소요 시간</h3>
+                        <span class="metric"
+                              th:text="${#numbers.formatDecimal(myAvgDuration,1,1)} + '일'">0.0일</span>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-file-signature"></i> 내 결재 대기</h3>
+                        <span class="metric" th:text="${myPendingCount}">0</span>
+                        <ul class="info-list">
+                            <li th:each="v : ${recentMyRequests}">
+                                <a th:href="@{/admin/approval/detail/{id}(id=${v.approvalId})}"
+                                   th:text="${v.title}">기안제목</a>
+                            </li>
+                        </ul>
+                        <a th:href="@{/admin/approval/list}" class="report-link">내 결재 목록</a>
+                    </div>
                 </div>
-                <div class="card" th:if="${role=='planner'}">
-                    <h3><i class="fas fa-file-signature"></i> 내 결재 대기</h3>
-                    <span class="metric" th:text="${myPendingCount}">0</span>
-                    <ul>
-                        <li th:each="v : ${recentMyRequests}">
-                            <a th:href="@{/admin/approval/detail/{id}(id=${v.approvalId})}"
-                               th:text="${v.title}">기안제목</a>
-                        </li>
-                    </ul>
-                    <a th:href="@{/admin/approval/list}" class="report-link">내 결재 요청 목록</a>
-                </div>
+            </div>
 
-                <!-- Approver -->
-                <div class="card" th:if="${role=='approver'}">
+            <!-- Approver 관리자 -->
+            <div th:if="${role=='approver'}" class="super-dashboard-grid">
+                <div class="card super-chart-card">
+                    <h3><i class="fas fa-chart-pie"></i> 승인 상태 분포</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="approverStatusChart"></canvas>
+                    </div>
+                    <ul class="info-list">
+                        <li th:each="e : ${approverStatusSummary.entrySet()}"
+                            th:text="${e.key + ' ' + e.value + '건'}">상태 건수</li>
+                    </ul>
+                </div>
+                <div class="card">
                     <h3><i class="fas fa-check-double"></i> 승인 대기</h3>
                     <span class="metric" th:text="${waitingApproveCount}">0</span>
-                    <p>평균 처리일 : <strong th:text="${avgApprovalDays+'일'}">0일</strong></p>
-                    <ul>
+                    <p>평균 처리일: <strong th:text="${avgApprovalDays + '일'}">0일</strong></p>
+                    <ul class="info-list">
                         <li th:each="r : ${oldestApprovals}">
                             <a th:href="@{/admin/approval/detail/{id}(id=${r.approvalId})}"
                                th:text="${r.title}">기안제목</a>
@@ -194,114 +292,145 @@
                     </ul>
                     <a th:href="@{/admin/approval/manage}" class="report-link">승인 관리</a>
                 </div>
+            </div>
 
-                <!-- CS -->
-                <div class="card" th:if="${role=='cs'}">
-                    <h3><i class="fas fa-question-circle"></i> 미답변 문의</h3>
-                    <span class="metric" th:text="${unansweredCount}">0</span>
-                    <ul>
-                        <li th:each="q : ${recentUnanswered}">
-                            <a th:href="@{/admin/qna/{qnaId}(qnaId=${q.qnaId})}"
-                               th:text="${q.title}">문의제목</a>
-                        </li>
-                    </ul>
+            <!-- CS 관리자 -->
+            <div th:if="${role=='cs'}" class="planner-dashboard-grid">
+                <div class="card faq-chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> FAQ 카테고리 분포</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="faqCatChart"></canvas>
+                    </div>
+                    <div id="faqSummary" class="chart-summary"></div>
+                    <a th:href="@{/admin/faq/list}" class="report-link">FAQ 관리</a>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-question-circle"></i> 1:1 문의 응답 현황</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="qnaStatusChart"></canvas>
+                    </div>
+                    <div id="qnaSummary" class="chart-summary"></div>
                     <a th:href="@{/admin/qnaList}" class="report-link">문의 관리</a>
                 </div>
-            </section>
+            </div>
 
         </main>
     </div>
 </div>
 
 <script th:inline="javascript">
-    // 공지 슬라이드 & 실시간 시계
-    const notif = document.querySelector('.notifications'),
-          titles = Array.from(notif.querySelectorAll('.notif-list li')).map(li=>li.textContent);
-    let idx = 0;
-    function slideIn() {
-      const c = notif.querySelector('.notif-cycle');
-      c.style.transform = 'translateY(20px)'; c.style.opacity = 0;
-      c.textContent = titles[idx];
-      requestAnimationFrame(()=>{ c.style.transform='translateY(0)'; c.style.opacity=1; });
-      idx = (idx+1)%titles.length;
-    }
-    if(titles.length){ slideIn(); setInterval(slideIn,4000); }
-    const timeEl = document.getElementById('currentTime');
-    function updateTime(){
-      const n = new Date();
-      timeEl.textContent = n.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    }
-    updateTime(); setInterval(updateTime,1000);
-
-    // Shadow 플러그인 + datalabels
-    Chart.register({
-      id:'shadow',
-      beforeDatasetDraw(chart,args,opts){
-        const ctx=chart.ctx; ctx.save();
-        ctx.shadowColor=opts.color||'rgba(0,0,0,0.2)';
-        ctx.shadowBlur=opts.blur||20;
-        ctx.shadowOffsetY=opts.offsetY||10;
-      },
-      afterDatasetDraw(chart){ chart.ctx.restore(); }
-    });
     Chart.register(ChartDataLabels);
 
-    // Super: 3D 도넛
-    const flowCounts = /*[[${flowSummary}]]*/ {}, fc = document.getElementById('flowChart');
-    if(fc) new Chart(fc.getContext('2d'),{
-      type:'doughnut',
-      data:{
-        labels:Object.keys(flowCounts),
-        datasets:[{ data:Object.values(flowCounts),
-          backgroundColor:['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f'],
-          borderColor:'#fff', borderWidth:4 }]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false, cutout:'50%',
-        plugins:{
-          shadow:{color:'rgba(0,0,0,0.15)',blur:25,offsetY:8},
-          legend:{position:'bottom',labels:{font:{family:'Segoe UI',weight:'600'}}},
-          tooltip:{callbacks:{label:ctx=>{
-            const v=ctx.parsed, t=ctx.chart._metasets[ctx.datasetIndex].total;
-            return `${ctx.label}: ${v}건 (${(v/t*100).toFixed(1)}%)`;
-          }}},
-          datalabels:{
-            color:'#fff', font:{weight:'600',size:14},
-            formatter:(v,ctx)=>ctx.chart.data.labels[ctx.dataIndex],
-            anchor:'center', align:'center'
+    function makeGradient(ctx, colors) {
+      const g = ctx.createLinearGradient(0,0,0,ctx.canvas.height);
+      colors.forEach((c,i) => g.addColorStop(i/(colors.length-1), c));
+      return g;
+    }
+
+    function createDonut(id, dataMap, cutout, labelColor='#fff') {
+      const c = document.getElementById(id);
+      if (!c) return;
+      const ctx = c.getContext('2d'),
+            labels = Object.keys(dataMap),
+            values = Object.values(dataMap),
+            palettes = [
+            ['#4ACBC3','#4ACBC3'],
+            ['#1B4E83','#1B4E83'],
+            ['#56B3E8','#56B3E8'],
+            ['#2CAEA0','#2CAEA0'],
+            ['#3478B4','#3478B4']
+            ],
+            bg = palettes.slice(0, labels.length).map(p => makeGradient(ctx, p));
+
+      return new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data: values, backgroundColor: bg, borderColor: '#fff', borderWidth: 2, borderRadius: 6, spacing: 4, hoverOffset: 10 }] },
+        options: {
+          responsive: true, maintainAspectRatio: true, cutout,
+          plugins: {
+            datalabels: {
+              color: labelColor,
+              font: { weight: '600', size: 12 },
+              formatter: (_, ctx) => ctx.chart.data.labels[ctx.dataIndex],
+              anchor: 'center', align: 'center'
+            },
+            legend: {
+              position: 'bottom',
+              labels: { color: '#333', font: {
+              family: 'Segoe UI', size: 13, weight: '500'
+              }, padding: 12 }
+            },
+            tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed}건` } }
           }
         }
-      }
-    });
+      });
+    }
 
-    // CS: FAQ 막대
-    const faqCounts = /*[[${faqCategoryCounts}]]*/ {}, fq = document.getElementById('faqCatChart');
-    if(fq) new Chart(fq.getContext('2d'),{
-      type:'bar',
-      data:{
-        labels:Object.keys(faqCounts),
-        datasets:[{ label:'FAQ 건수', data:Object.values(faqCounts), backgroundColor:'#337D89' }]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false, layout:{padding:{bottom:30}},
-        scales:{y:{beginAtZero:true}},
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}건`}}}
-      }
-    });
+    function createBar(id, dataMap) {
+      const c = document.getElementById(id);
+      if (!c) return;
+      const ctx = c.getContext('2d'),
+            labels = Object.keys(dataMap),
+            values = Object.values(dataMap),
+            bg = [ ['#4e79a7','#6fa8dc'] ].map(p => makeGradient(ctx, p));
 
-    // Planner: 상태별 분포
-    const plannerStatus = /*[[${myStatusSummary}]]*/ {}, pc = document.getElementById('plannerStatusChart');
-    if(pc) new Chart(pc.getContext('2d'),{
-      type:'doughnut',
-      data:{
-        labels:Object.keys(plannerStatus),
-        datasets:[{ data:Object.values(plannerStatus) }]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false, cutout:'60%',
-        plugins:{legend:{position:'bottom'}}
-      }
-    });
+      return new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: '건수', data: values, backgroundColor: bg, barThickness: 24, borderRadius: 4 }] },
+        options: {
+          responsive: true, maintainAspectRatio: true,
+          scales: {
+            x: { ticks: { color: '#333', font: { size: 13 } } },
+            y: { beginAtZero: true, ticks: { color: '#333', font: { size: 13 } } }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => `${ctx.parsed.y}건` } },
+            datalabels: { color: '#333', anchor: 'end', align: 'top', formatter: v => v }
+          }
+        }
+      });
+    }
+
+    // 차트 초기화
+    createDonut('flowChart',           /*[[${flowSummary}]]*/ {}, '40%');
+    createDonut('plannerStatusChart',  /*[[${myStatusSummary}]]*/ {}, '60%');
+
+    createBar('faqCatChart', /*[[${faqCategoryCounts}]]*/ {});
+
+    (function(){
+      const total  = /*[[${unansweredCount}]]*/ 0,
+            over24 = /*[[${longPendingCount}]]*/ 0,
+            within24 = total - over24;
+      createDonut('qnaStatusChart', { '24시간 이내': within24, '24시간 초과': over24 }, '60%', '#333');
+      const e = document.getElementById('qnaSummary');
+      if (e) e.textContent = `전체 ${total}건 중 ${over24}건이 24시간 초과`;
+    })();
+
+    createDonut('approverStatusChart', /*[[${approverStatusSummary}]]*/ {}, '50%');
+
+    // 공지 슬라이드 & 실시간 시계
+    const notif = document.querySelector('.notifications'),
+          titles = Array.from(notif.querySelectorAll('.notif-list li')).map(li => li.textContent);
+    let idx = 0;
+    function slideIn(){
+      const c = notif.querySelector('.notif-cycle');
+      c.style.transform='translateY(20px)'; c.style.opacity=0;
+      c.textContent = titles[idx];
+      requestAnimationFrame(()=>{
+        c.style.transform='translateY(0)'; c.style.opacity=1;
+      });
+      idx = (idx+1) % titles.length;
+    }
+    if (titles.length) { slideIn(); setInterval(slideIn, 4000); }
+
+    const timeEl = document.getElementById('currentTime');
+    function updateTime(){
+      timeEl.textContent = new Date().toLocaleTimeString('ko-KR', {
+        hour:'2-digit', minute:'2-digit', second:'2-digit'
+      });
+    }
+    updateTime(); setInterval(updateTime, 1000);
 </script>
 </body>
 </html>

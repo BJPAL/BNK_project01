@@ -115,7 +115,7 @@ public class ApprovalService {
                 .build();
 
         approvalRepository.save(approval);   // save 후 PK 채워짐
-        return approval.getApprovalId();     // ⬅️ 바로 리턴
+        return approval.getApprovalId();     // ⬅바로 리턴
     }
 
     /* ───── 6. 목록 조회 (요청자·승인자) ───── */
@@ -227,5 +227,14 @@ public class ApprovalService {
                 StatusCount::getStatus,
                 s -> s.getCnt().intValue()
         ));
+    }
+
+     /* approver(또는 super) 용: 전체 승인 상태별 건수 요약*/
+    public Map<String, Integer> getStatusSummaryForApprover() {
+        return approvalRepository.countByStatus().stream()
+                .collect(Collectors.toMap(
+                        StatusCount::getStatus,
+                        sc -> sc.getCnt().intValue()
+                ));
     }
 }
