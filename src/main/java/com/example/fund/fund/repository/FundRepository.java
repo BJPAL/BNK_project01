@@ -11,13 +11,29 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FundRepository extends JpaRepository<Fund, Long> {
-    // 펀드 기본 정보 조회
+    /**
+     * 펀드 기본 정보 조회
+     */
     Optional<Fund> findByFundId(Long fundId);
 
     /**
      * 위험 등급에 따른 펀드 목록
      */
     Page<Fund> findByRiskLevelBetween(int start, int end, Pageable pageable);
+
+    /**
+     * 펀드 ID로 펀드 존재 여부 확인
+     */
+    boolean existsByFundId(Long fundId);
+
+    /**
+     * 펀드 ID로 위험등급만 조회 (성능 최적화)
+     */
+    @Query("SELECT f.riskLevel FROM Fund f WHERE f.fundId = :fundId")
+    Optional<Integer> findRiskLevelByFundId(@Param("fundId") Long fundId);
+
+
+    // =========================================================================================
 
     /*이름으로 펀드 검색*/
     List<Fund> findByFundNameContainingIgnoreCase(String name);
@@ -47,4 +63,8 @@ public interface FundRepository extends JpaRepository<Fund, Long> {
             @Param("regions") List<String> regions,
             Pageable pageable
     );
+
+
+    @Query("SELECT f FROM Fund f WHERE f.fundId NOT IN (SELECT fp.fund.fundId FROM FundPolicy fp)")
+    List<Fund> findFundsNotInFundPolicy();
 }

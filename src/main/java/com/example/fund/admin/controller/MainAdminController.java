@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -205,9 +206,9 @@ public class MainAdminController {
     }
 
     @GetMapping("/fund/list")
-    public String fundListPage(Model model) {
-        List<FundPolicy> policyList = fundPolicyRepository.findAllWithFund();
-        model.addAttribute("policyList", policyList);
+    public String fundListPage(@PageableDefault(size = 10) Pageable pageable, Model model) {
+        Page<FundPolicy> policyPage = fundPolicyRepository.findAllWithFund(pageable);
+        model.addAttribute("policyPage", policyPage);
         return "fund/fundRegistList";
     }
 
@@ -235,5 +236,10 @@ public class MainAdminController {
 
         model.addAttribute("fund", fund);
         return "fund/fundRegistEdit";
+    }
+
+    @GetMapping("/construction")
+    public String construction(){
+        return "admin/constructionPage";
     }
 }
