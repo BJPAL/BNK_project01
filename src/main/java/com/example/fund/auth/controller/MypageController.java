@@ -103,6 +103,8 @@ public class MypageController {
         if (user == null)
             return "redirect:/auth/login";
 
+        long countQna = service.countUserQna(user.getUserId());
+        m.addAttribute("countQna", countQna);
         m.addAttribute("qnaList", qnaService.getQnaListByUser(user.getUserId()));
         return "mypage/qna-list";
     }

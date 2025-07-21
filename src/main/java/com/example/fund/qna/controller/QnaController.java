@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.fund.qna.dto.QnaDto;
 import com.example.fund.qna.entity.Qna;
 import com.example.fund.qna.repository.QnaRepository;
 import com.example.fund.qna.service.QnaService;
@@ -131,15 +133,39 @@ public class QnaController {
 		return "mypage/qna-detail";
 	}
 
+	// @GetMapping("/mypage/qna/{qnaId}")
+	// public String mypageQnaDetail(@PathVariable Long qnaId, Model model,
+	// HttpSession session) {
+	// User user = (User) session.getAttribute("user");
+	// if (user == null)
+	// return "redirect:/auth/login";
+
+	// Qna qna = qnaService.getQnaById(qnaId);
+	// model.addAttribute("qna", qna);
+	// return "mypage/qna-detail"; // 상세 보기 페이지 경로
+	// }
+
 	@GetMapping("/mypage/qna/{qnaId}")
-	public String mypageQnaDetail(@PathVariable Long qnaId, Model model, HttpSession session) {
+	public String mypageQnaDetailAjax(
+			@PathVariable Long qnaId,
+			HttpSession session, Model model) {
+
 		User user = (User) session.getAttribute("user");
-		if (user == null)
-			return "redirect:/auth/login";
+		if (user == null) {
+			// 인증 안 된 경우 401 리턴
+			return "fragments/empty :: empty";
+		}
 
 		Qna qna = qnaService.getQnaById(qnaId);
-		model.addAttribute("qna", qna);
-		return "mypage/qna-detail"; // 상세 보기 페이지 경로
+		QnaDto dto = new QnaDto(
+				qna.getQnaId(),
+				qna.getTitle(),
+				qna.getContent(),
+				qna.getRegDate(),
+				qna.getStatus(),
+				qna.getAnswer());
+		System.out.println(dto);
+		model.addAttribute("qna", dto);
+		return "fragments/qnaDetailModal :: qnaDetailModal";
 	}
-
 }
