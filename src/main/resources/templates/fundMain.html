@@ -1,11 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>펀드 메인 페이지</title>
+
+  <!-- 폰트 & 아이콘 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="/css/fundMain.css">
 </head>
 <body>
-<h1>펀드 메인 페이지</h1>
-<hr>
+  <div class="wrapper">
+
+    <!-- 페이지 제목 -->
+    <h2 class="section-title">펀드</h2>
+
+    <!-- 검색창 -->
+    <div class="search-bar">
+      <input type="text" placeholder="관심있는 펀드를 검색해보세요" />
+      <i class="fa-solid fa-search"></i>
+    </div>
+
+    <!-- 안내 문구 -->
+    <div style="display:flex; align-items:center; margin-bottom:12px;">
+      <p class="slogan">나의 투자 성향에 맞는 <b>다양한 펀드</b>를 확인해보세요.</p>
+      <a href="#" class="inline-link">투자 성향 분석 시작하기 →</a>
+    </div>
+
+    <!-- 카드 영역 -->
+    <section class="cards">
+      <div class="card big"><span class="card-title">수익률 BEST</span></div>
+      <div class="card big"><span class="card-title">판매 BEST</span></div>
+
+      <div class="card small">
+        <span class="card-title" style="font-size:14px;">
+          펀드가 처음이신가요?<br /><b>펀드 가이드</b>
+        </span>
+      </div>
+      <div class="card small">
+        <span class="card-title" style="font-size:14px;">
+          간단하게 고객님의 투자성향을 알아봐요<br /><b>펀드 MBTI</b>
+        </span>
+      </div>
+    </section>
+
+    <!-- 캐러셀 도트(모양만) -->
+    <div class="carousel-dots">
+      <span class="dot"></span>
+      <span class="dot active"></span>
+      <span class="dot"></span>
+    </div>
+
+  </div>
 </body>
 </html>

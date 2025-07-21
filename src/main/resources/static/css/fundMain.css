@@ -1,0 +1,64 @@
+@charset "UTF-8";
+    :root {
+      --primary: #10747d;
+      --border : #96c3c7;
+      --gray   : #f2f2f2;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Noto Sans KR', sans-serif; color:#222; background:#fff; line-height:1.5; }
+
+    /* ===== 전체 레이아웃 ===== */
+    .wrapper { max-width:1100px; margin:0 auto; padding:40px 20px; }
+
+    /* ===== 페이지 타이틀 ===== */
+    .section-title{ font-size:28px; font-weight:700; margin-bottom:14px; }
+
+    /* ===== 검색창 ===== */
+    .search-bar{ position:relative; margin-bottom:32px; }
+    .search-bar input{
+      width:100%; padding:14px 60px 14px 20px; font-size:16px;
+      border:2px solid var(--primary); border-radius:9999px; outline:none;
+    }
+    .search-bar .fa-search{
+      position:absolute; right:24px; top:50%; transform:translateY(-50%);
+      color:var(--primary); font-size:20px; pointer-events:none;
+    }
+
+    /* ===== 슬로건 ===== */
+    .slogan{ font-size:18px; }
+    .slogan b{ font-weight:700; }
+    .inline-link{
+      margin-left:auto; font-size:13px; font-weight:600; color:#000; text-decoration:none;
+    }
+    .inline-link:hover{ text-decoration:underline; }
+
+    /* ===== 카드 그리드 ===== */
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);  /* 데스크톱: 3열 */
+      grid-auto-rows:140px;                  /* 1행 높이 */
+      gap:32px;
+    }
+    .card{
+      background:var(--gray); border-radius:12px; padding:24px;
+      display:flex; align-items:center; justify-content:center;
+      text-align:center;
+    }
+    .card.big{ grid-row:span 2; min-height:280px; } /* 큰 카드 */
+    .card.small{ min-height:140px; flex-direction:column; }
+
+    .card-title{ font-size:18px; font-weight:700; }
+
+    /* ===== 캐러셀 도트 ===== */
+    .carousel-dots{ display:flex; justify-content:center; gap:8px; margin:22px 0; }
+    .dot{ width:8px; height:8px; border-radius:50%; background:#c4c4c4; }
+    .dot.active{ background:var(--primary); }
+
+    /* ===== 반응형 ===== */
+    @media(max-width:900px){
+      .cards{ grid-template-columns:repeat(2,1fr); }
+      .card.big{ grid-row:span 1; }
+    }
+    @media(max-width:600px){
+      .cards{ grid-template-columns:1fr; }
+    }
