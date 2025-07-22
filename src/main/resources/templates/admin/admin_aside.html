@@ -65,14 +65,6 @@
             class="menu-group"
             th:if="${session.admin.role == 'approver' or session.admin.role == 'super'}"
           >
-            <button type="button" class="group-btn">결재 업무</button>
-          </li>
-
-          <!-- ─── 결재 업무(approver) ─── -->
-          <li
-            class="menu-group"
-            th:if="${session.admin.role == 'approver' or session.admin.role == 'super'}"
-          >
             <button
               type="button"
               class="group-btn"
