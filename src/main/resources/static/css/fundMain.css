@@ -146,8 +146,25 @@ button.card{
   font:inherit;          /* 글꼴·크기 상속    */
 }
 
-.card.small.icon{ cursor:pointer; transition:transform .25s ease; }
-.card.small.icon:hover{ transform:scale(1.05); }   /* 5% 확대 */
+#big1 {
+	background-color: #02ccc2;
+	color: #ffffff;
+}
+#big2 {
+	background-color: #02a3cc;
+	color: #ffffff;
+}
+
+.card.small.icon,
+.card.big {
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.card.small.icon:hover,
+.card.big:hover {
+  transform: scale(1.05);   /* 5% 확대 */
+}
 /* ========= ⑥ 캐러셀 도트 ========= */
 .carousel-dots{
   display:flex; justify-content:center;

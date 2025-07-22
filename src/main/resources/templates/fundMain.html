@@ -33,17 +33,20 @@
 
     <!-- 카드 영역 -->
     <section class="cards">
-      <div class="card big">
+      <button onclick="location.href='/fund/list'" class="card big" id="big1">
       	<span class="card-title2">추천 펀드</span>
-      </div>
-      <div class="card big"><span class="card-title2">수익률 BEST</span></div>
+      </button>
+      
+      <button class="card big" id="big2">
+      	<span class="card-title2">수익률 BEST</span>
+      </button>
 
-     <div class="card small icon guide-card">
+     <button onclick="location.href='/guide'" class="card small icon guide-card">
 		<img src="/images/main1.png" alt="">
 		<span class="card-title">
 		   펀드가 처음이신가요?<br><b class="card-title2">펀드 가이드</b>
 		 </span>
-	 </div>
+	 </button>
 	<!-- 아이콘형 카드 (펀드 MBTI) -->
 	<button type="button" onclick="location.href='/test'" class="card small icon mbti-card">
 	  <img src="/images/main2.png" alt="MBTI" class="mbti-img">
