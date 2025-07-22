@@ -30,8 +30,13 @@ public class MypageController {
     @GetMapping
     public String home(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
+        if (user == null)
+            return "redirect:/auth/login";
         String investType = service.user_invertType(user.getUserId());
+        long countQna = service.countUserQna(user.getUserId());
         model.addAttribute("investType", investType);
+        model.addAttribute("user", user);
+        model.addAttribute("countQna", countQna);
 
         return "mypage/index"; // 내용 없는 화면
     }

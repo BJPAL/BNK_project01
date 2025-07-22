@@ -37,7 +37,7 @@
       box-shadow: 0 6px 18px rgba(0,0,0,.06);
     }
 
-    h1 {
+    .title1 {
       font-size: 26px;
       color: var(--primary);
       margin-bottom: 28px;
@@ -170,12 +170,6 @@
       background: var(--primary);
       color: #fff;
     }
-
-    /* 헤더 로고 위치 조정 */
-    .admin-header .logo {
-      position: relative;
-      top: 14px;
-    }
   </style>
 </head>
 
@@ -186,7 +180,7 @@
     <div th:replace="admin/admin_aside :: adminAside"></div>
     <main class="content">
       <div class="manage-container">
-        <h1>결재 요청 승인 관리</h1>
+        <h1 class="title1">결재 요청 승인 관리</h1>
 
         <!-- 요약 버튼 -->
         <div class="summary-bar">
@@ -316,11 +310,12 @@
     e.preventDefault();
     Swal.fire({
       title: '정말 배포하시겠습니까?',
+      text: '펀드가 등록됩니다',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: '예',
       cancelButtonText: '아니오',
-      reverseButtons: true
+      reverseButtons: false
     }).then(res => {
       if (res.isConfirmed) form.submit();
     });

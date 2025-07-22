@@ -35,7 +35,10 @@ public interface FundRepository extends JpaRepository<Fund, Long> {
 
     // =========================================================================================
 
-    /*이름으로 펀드 검색*/
+
+    /**
+     * 이름으로 펀드 검색
+     * */
     List<Fund> findByFundNameContainingIgnoreCase(String name);
 
     /**
@@ -54,7 +57,8 @@ public interface FundRepository extends JpaRepository<Fund, Long> {
             "f.riskLevel BETWEEN :startRiskLevel AND :endRiskLevel " +
             "AND (:riskLevels IS NULL OR f.riskLevel IN :riskLevels) " +
             "AND (:fundTypes IS NULL OR f.fundType IN :fundTypes) " +
-            "AND (:regions IS NULL OR f.investmentRegion IN :regions)")
+            "AND (:regions IS NULL OR f.investmentRegion IN :regions)"
+    )
     Page<Fund> findWithFilters(
             @Param("startRiskLevel") int startRiskLevel,
             @Param("endRiskLevel") int endRiskLevel,
@@ -64,6 +68,23 @@ public interface FundRepository extends JpaRepository<Fund, Long> {
             Pageable pageable
     );
 
+    /**
+     * 투자 성향에 따른 위험 등급 범위 내에서 3개월 수익률이 높은 펀드 추천 (Fund 엔티티만 반환)
+     * @param startRiskLevel 시작 위험 등급
+     * @param endRiskLevel 종료 위험 등급
+     * @param pageable 페이징 정보 (최대 10개)
+     * @return 3개월 수익률 기준 내림차순 정렬된 펀드 엔티티 리스트
+     */
+    @Query("SELECT f FROM Fund f " +
+            "JOIN FundReturn fr ON f.fundId = fr.fund.fundId " +
+            "WHERE f.riskLevel BETWEEN :startRiskLevel AND :endRiskLevel " +
+            "AND fr.return3m IS NOT NULL " +
+            "ORDER BY fr.return3m DESC")
+    List<Fund> findTopFundsByRiskLevelAndReturn3m(
+            @Param("startRiskLevel") int startRiskLevel,
+            @Param("endRiskLevel") int endRiskLevel,
+            Pageable pageable
+    );
 
     @Query("SELECT f FROM Fund f WHERE f.fundId NOT IN (SELECT fp.fund.fundId FROM FundPolicy fp)")
     List<Fund> findFundsNotInFundPolicy();

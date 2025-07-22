@@ -306,8 +306,22 @@
               </span>
           </div>
         </section>
-
+        <div style="margin-top:20px;">
+          <!-- 기획자(요청자)는 자신의 리스트로 -->
+          <a th:if="${admin.role=='planner'}"
+             th:href="@{/admin/approval/my-list}"
+             style="color:var(--primary); font-weight:600; text-decoration:none;">
+            ← 내 요청 목록으로
+          </a>
+          <!-- 승인권한자(super, approver)는 관리 리스트로 -->
+          <a th:if="${admin.role=='super' or admin.role=='approver'}"
+             th:href="@{/admin/approval/manage}"
+             style="color:var(--primary); font-weight:600; text-decoration:none;">
+            ← 관리 목록으로
+          </a>
+        </div>
       </div>
+
     </main>
   </div>
 </div>

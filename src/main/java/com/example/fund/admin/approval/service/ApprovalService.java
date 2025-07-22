@@ -1,9 +1,11 @@
 package com.example.fund.admin.approval.service;
 
 import com.example.fund.admin.approval.entity.Approval;
+import com.example.fund.admin.approval.entity.ApprovalLog;
 import com.example.fund.admin.approval.repository.ApprovalRepository;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.repository.AdminRepository_A;
+import com.example.fund.admin.repository.projection.StatusCount;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,7 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +46,7 @@ public class ApprovalService {
     }
 
     /* ───── 2. 승인 ───── */
-    public void approve(Long approvalId, String role, String reason) {
+    public void approve(Integer approvalId, String role, String reason) {
 
         if (!APPROVER_ROLES.contains(role))
             throw new SecurityException("승인 권한이 없습니다.");
@@ -59,7 +64,7 @@ public class ApprovalService {
     }
 
     /* ───── 3. 반려 ───── */
-    public void reject(Long id, String reason, String role) {
+    public void reject(Integer id, String reason, String role) {
 
         if (!APPROVER_ROLES.contains(role))
             throw new SecurityException("반려 권한이 없습니다.");
@@ -77,7 +82,7 @@ public class ApprovalService {
     }
 
     /* ───── 4. 배포 (요청자 본인) ───── */
-    public void publish(Long id, String adminname) {
+    public void publish(Integer id, String adminname) {
 
         Approval approval = approvalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("결재 없음"));
@@ -95,25 +100,9 @@ public class ApprovalService {
         // TODO: fundService.register(approval) 등 실제 펀드 등록 로직 호출
     }
 
-//    /* createApproval 아래로 변경 ( css 추가로) */
-//    public void createApproval(String title, String content, Integer adminId) {
-//
-//        Admin writer = adminRepository.findById(adminId)
-//                .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
-//
-//        Approval approval = Approval.builder()
-//                .title(title)
-//                .content(content)
-//                .writer(writer)
-//                .status("결재대기")
-//                .build();
-//
-//        approvalRepository.save(approval);
-//    }
-
     /* ───── 5. 결재 요청 등록 (요청자) ───── */
     @Transactional
-    public Long createApproval(String title, String content, Integer adminId) {   // ⬅️ 반환형 Long
+    public Integer createApproval(String title, String content, Integer adminId) {
 
         Admin writer = adminRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
@@ -126,7 +115,7 @@ public class ApprovalService {
                 .build();
 
         approvalRepository.save(approval);   // save 후 PK 채워짐
-        return approval.getApprovalId();     // ⬅️ 바로 리턴
+        return approval.getApprovalId();     // ⬅바로 리턴
     }
 
     /* ───── 6. 목록 조회 (요청자·승인자) ───── */
@@ -146,7 +135,7 @@ public class ApprovalService {
     }
 
     /* ───── 7. 상세/재기안 등 기타 ───── */
-    public Approval findById(Long id) {
+    public Approval findById(Integer id) {
         return approvalRepository.findById(id).orElse(null);
     }
 
@@ -156,7 +145,7 @@ public class ApprovalService {
                 .getContent();
     }
 
-    public void updateApproval(Long id, String title, String content,
+    public void updateApproval(Integer id, String title, String content,
                                String adminname) {
 
         Approval approval = approvalRepository.findById(id)
@@ -175,5 +164,77 @@ public class ApprovalService {
         approvalRepository.save(approval);
 
         approvalLogService.saveLog(approval, adminname, "결재대기", "재기안");
+    }
+
+    /* 작성자별 상위 `limit`개 기안 반환 */
+    public List<Approval> findRecentByWriter(String writer, int limit) {
+        Page<Approval> page = getApprovalsByStatus(writer, "결재대기", 0);
+        return page.getContent().stream()
+                .limit(limit)
+                .toList();
+    }
+
+    /* 상태별 오래된(등록일 오름차순) 상위 `limit`개 기안 반환 */
+    public List<Approval> findOldestApprovals(String status, int limit) {
+        Pageable p = PageRequest.of(0, limit, Sort.by("regDate").ascending());
+        return approvalRepository
+                .findByStatus(status, p)
+                .getContent();
+    }
+
+    /* 평균 승인 처리 일수 계산 */
+    public Integer calculateAverageApprovalDays() {
+        return (int) approvalLogService.findAllByNewStatus("배포대기").stream()
+                .mapToLong(log ->
+                        Duration.between(
+                                log.getApproval().getRegDate(),
+                                log.getChangedAt()
+                        ).toDays()
+                )
+                .average()
+                .orElse(0.0);
+    }
+
+    /*상태별 건수를 Map<status, count> 형태로 반환*/
+    public Map<String, Integer> getStatusSummaryByWriter(String writerName) {
+        return approvalRepository.countByStatusAndWriter(writerName).stream()
+                .collect(Collectors.toMap(
+                        StatusCount::getStatus,
+                        s -> s.getCnt().intValue()  // Long → Integer로 변환
+                ));
+    }
+
+    public List<Approval> findRecentRejectedByWriter(String adminname, int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "regDate"));
+        return approvalRepository.findByWriterAdminnameAndStatus(adminname, "반려", pageable).getContent();
+    }
+    // 특정 작성자 기준 평균 처리일
+    public double calculateAvgDaysByWriter(String adminname) {
+        return approvalLogService.findAllByNewStatusAndWriter("배포", adminname).stream()
+                .mapToLong(log ->
+                        Duration.between(
+                                log.getApproval().getRegDate(),
+                                log.getChangedAt()
+                        ).toDays()
+                )
+                .average()
+                .orElse(0.0);
+    }
+
+    public Map<String, Integer> getFlowSummary() {
+        List<StatusCount> counts = approvalRepository.countByStatus(); // 상태별 전체 개수
+        return counts.stream().collect(Collectors.toMap(
+                StatusCount::getStatus,
+                s -> s.getCnt().intValue()
+        ));
+    }
+
+     /* approver(또는 super) 용: 전체 승인 상태별 건수 요약*/
+    public Map<String, Integer> getStatusSummaryForApprover() {
+        return approvalRepository.countByStatus().stream()
+                .collect(Collectors.toMap(
+                        StatusCount::getStatus,
+                        sc -> sc.getCnt().intValue()
+                ));
     }
 }

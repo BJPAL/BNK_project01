@@ -7,6 +7,7 @@ import com.example.fund.user.entity.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,6 +56,34 @@ public class FundViewController {
             return "redirect:/profile";
         }
     }
+
+    @GetMapping("/best-return")
+    public String bestReturnPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+
+        // 사용자 세션 여부
+        if (user == null) {
+            return "redirect:/auth/login";      // 로그인 필요
+        }
+
+        // 투자 성향 존재 여부 확인
+        Integer userId = user.getUserId();
+        Optional<InvestProfileResult> investResult = investProfileResultRepository.findByUser_UserId(userId);
+
+        if (investResult.isPresent()) {
+            InvestProfileResult result = investResult.get();
+            Integer investType = result.getType().getTypeId().intValue();
+
+            model.addAttribute("userId", userId);
+            model.addAttribute("investType", investType);
+
+            return "fund/fundThemeList";
+        } else {
+            // 투자 성향 검사 필요
+            return "redirect:/profile";
+        }
+    }
+
 
     @GetMapping("/{fundId}")  // 상세 페이지
     public String detailPage(

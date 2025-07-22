@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Approval extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long approvalId;
+    private Integer approvalId;
 
     @Column(length = 100, nullable = false)
     private String title;

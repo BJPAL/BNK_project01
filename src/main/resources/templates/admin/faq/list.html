@@ -144,9 +144,10 @@
       padding:6px 12px;
       border-radius:6px;
       font-weight:600;cursor:pointer;
+      transition: background .2s;
      }
     .delete-btn:hover{
-    filter:brightness(.9)
+    background: #c0392b;
     }
 
     /* 페이징 */
@@ -181,6 +182,34 @@
     th:nth-child(3) {
       text-align: left;
       padding-left: 12px;
+    }
+
+    /* 모달 confirm 버튼 (삭제) */
+    .swal2-confirm-delete {
+      background-color: #e74c3c !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 6px;
+      padding: 6px 16px;
+      font-weight: 600;
+      transition: background .2s;
+    }
+    .swal2-confirm-delete:hover {
+      background-color: #c0392b !important;
+    }
+
+    /* 모달 cancel 버튼 (취소) – 원하는 스타일 대로 */
+    .swal2-cancel {
+      background-color: #aaa !important;
+      color: #fff !important;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 16px;
+      margin-left: 8px;
+      transition: background .2s;
+    }
+    .swal2-cancel:hover {
+      background-color: #888 !important;
     }
   </style>
 </head>
@@ -276,7 +305,6 @@
   });
 </script>
 
-<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   function openDeleteModal(e, btn){
@@ -284,13 +312,18 @@
     const form = btn.closest('form');
 
     Swal.fire({
-      title:'정말 삭제하시겠습니까?',
+      title: '<i class="fas fa-exclamation-triangle"></i> 정말 삭제하시겠습니까?',
       text:'삭제 후에는 복구할 수 없습니다.',
-      icon:'warning',
-      showCancelButton:true,
-      confirmButtonText:'삭제',
-      cancelButtonText:'취소'
-    }).then(res=>{
+      icon: 'warning',
+      iconColor: '#e74c3c',
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+      customClass: {
+        confirmButton: 'swal2-confirm-delete',
+        cancelButton:  'swal2-cancel'
+      }
+    }).then(res => {
       if(res.isConfirmed) form.submit();
     });
   }

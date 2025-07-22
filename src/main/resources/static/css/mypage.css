@@ -68,6 +68,7 @@ background-color: #D7191F;
 
 .mypage-banner {
   margin-top: 40px;
+  margin-bottom: 40px;
   width: 100%;
   height: 150px;               
   border-radius: 8px;
@@ -79,6 +80,142 @@ background-color: #D7191F;
   background-repeat: no-repeat;
 }
 
+/* ── “내 정보” 카드 ── */
+.user-info-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  overflow: hidden;
+  max-width: 1000px;
+  margin: 40px auto 32px;
+}
+
+/* 프로필 메인 */
+.profile-main {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* 투자성향 배지 컨테이너 */
+.profile-investment {
+  margin-left: auto;  /* 프로필 정보 우측 끝으로 붙이기 */
+}
+
+/* 공통 배지 스타일 */
+.investment-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* 타입별 색상 */
+.investment-badge.stable        { background-color: #3182ce; } /* 안 정 형 */
+.investment-badge.conservative  { background-color: #38a169; } /* 안 정 추 구 형 */
+.investment-badge.neutral       { background-color: #d69e2e; } /* 위 험 중 립 형 */
+.investment-badge.aggressive    { background-color: #ed8936; } /* 적 극 투 자 형 */
+.investment-badge.attack        { background-color: #e53e3e; } /* 공 격 투 자 형 */
+
+.profile-avatar {
+  width: 80px;  height: 80px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+.profile-avatar img {
+  width:100%; height:100%; object-fit:cover;
+}
+.profile-info h2 {
+  margin: 0; font-size:1.5rem; color:#333;
+}
+.profile-username {
+  margin-top:4px; color:#888; font-size:0.95rem;
+}
+
+/* 프로필 완성도 */
+.profile-completion {
+  padding: 0 24px 16px;
+}
+.profile-completion span {
+  font-size: 0.95rem;
+  color: #555;
+}
+.progress {
+  margin-top: 8px;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: #4e73df;
+  border-radius: 4px;
+}
+
+/* 주요 통계 */
+.profile-stats {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px 24px;
+  margin: 0;
+  list-style: none;
+  border-bottom: 1px solid #eee;
+}
+.profile-stats li {
+  text-align: center;
+  flex: 1;
+}
+.profile-stats li + li {
+  border-left: 1px solid #eee;
+}
+.profile-stats strong {
+  display: block;
+  color: #333;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+.profile-stats span {
+  color: #4e73df;
+  font-weight: 600;
+}
+
+/* 빠른 액션 버튼 */
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 24px 24px;
+}
+.profile-actions .btn-outline {
+  padding: 8px 20px;
+  border: 1px solid #D7191F;
+  border-radius: 4px;
+  color: #D7191F;
+  transition: background 0.2s, color 0.2s;
+  text-decoration: none;
+}
+.profile-actions .btn-outline:hover {
+  background: #D7191F;
+  color: #fff;
+}
+
+/* 모바일에서 줄 바꿈 & 가운데 정렬 */
+@media (max-width: 600px) {
+  .profile-main {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  .profile-investment {
+    margin-left: 0;
+  }
+}
 
 
 /* 반응형: 모바일 */

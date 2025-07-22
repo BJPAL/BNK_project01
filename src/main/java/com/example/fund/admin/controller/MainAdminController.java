@@ -44,7 +44,7 @@ public class MainAdminController {
     @GetMapping({ "/", "" })
     public String root(HttpSession session) {
         return (session.getAttribute("admin") != null)
-                ? "redirect:/admin/dashboard" // ★ 지표 있는 화면으로 보냄
+                ? "redirect:/admin/dashboard"
                 : "admin/login";
 
     }
@@ -61,20 +61,8 @@ public class MainAdminController {
     /* 2) /admin/main → 과거 주소로 들어와도 대시보드로 보냄 */
     @GetMapping("/main")
     public String legacyMain() {
-        return "redirect:/admin/dashboard"; // ★ 한 줄로 끝
+        return "redirect:/admin/dashboard";
     }
-
-    // 기존 2번
-    // @GetMapping("/main")
-    // public String main(HttpSession session, Model model) {
-    // AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-    //
-    // if (admin != null && "cs".equals(admin.getRole())) {
-    // int unanswered = qnaService.countUnanwseQna();
-    // model.addAttribute("unansweredCount", unanswered);
-    // }
-    // return "admin/main";
-    // }
 
     /* 3) 로그인 성공 후 → /admin/dashboard */
     @PostMapping("/login")
@@ -99,8 +87,6 @@ public class MainAdminController {
 
         return "redirect:/admin/dashboard"; // ★ 대시보드로 이동
     }
-
-    /* ------------- 이하 기존 코드(로그아웃·관리자 CRUD 등) 그대로 -------------- */
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, RedirectAttributes rttr) {
@@ -130,30 +116,6 @@ public class MainAdminController {
         rttr.addFlashAttribute("msg", "관리자 등록을 완료하였습니다");
         return "admin/super/adminSetting";
     }
-
-    // @GetMapping("/list")
-    // public String getAdminList(@RequestParam(required = false) String role,
-    // Model model) {
-    // List<AdminDTO> admins = (role == null || role.isEmpty())
-    // ? adminService_a.getAllAdmins()
-    // : adminService_a.getAdminsByRole(role);
-    // model.addAttribute("adminList", admins);
-    // return "admin/super/adminList :: admin-list-content";
-    // }
-
-    // 관리자 리스트 컨트롤러(role 파라미터는 필수값 X)
-    // @GetMapping("/list")
-    // public String getAdminList(@RequestParam(required = false) String role, Model
-    // model){
-    // List<AdminDTO> admins = new ArrayList<>();
-    // if (role == null || role.isEmpty()) {
-    // admins = adminService_a.getAllAdmins();
-    // } else {
-    // admins = adminService_a.getAdminsByRole(role); // 역할별 조회
-    // }
-    // model.addAttribute("adminList", admins);
-    // return "admin/super/adminList :: admin-list-content";
-    // }
 
     // 관리자 리스트 컨트롤러(role 파라미터는 필수값 X) + 페이지네이션
     @GetMapping("/list")

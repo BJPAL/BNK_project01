@@ -1,32 +1,28 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <link rel="stylesheet" href="/css/admin/admin_layout.css" />
   <meta charset="UTF-8">
-  <title>FAQ 등록/수정</title>
+  <title th:text="${faq != null} ? 'FAQ 수정' : 'FAQ 등록'">FAQ 등록/수정</title>
+  <link rel="stylesheet" href="/css/admin/admin_layout.css" />
   <style>
     body {
+      font-family: 'Segoe UI', sans-serif;
       background-color: #eef3f5;
       margin: 0;
       padding: 0;
     }
-
-    /* 수정·등록 전용 스크롤 없는 max-height */
     .edit-container {
-      max-height: 75vh;      /* 화면 높이의 75% 안에서만 표시 */
-      overflow-y: auto;      /* 컨텐츠 넘치면 내부에서만 스크롤 */
+      max-height: 75vh;
+      overflow-y: auto;
     }
-
     .container {
-      font-family: 'Segoe UI', sans-serif;
       max-width: 700px;
       margin: 50px auto;
-      background-color: #fff;
+      background: #fff;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
     .faq-title {
       color: #337D89;
       font-size: 28px;
@@ -34,9 +30,8 @@
       border-left: 6px solid #337D89;
       padding-left: 12px;
     }
-
     .alert-success {
-      background-color: #d4edda;
+      background: #d4edda;
       color: #155724;
       font-weight: bold;
       padding: 12px 20px;
@@ -45,19 +40,16 @@
       border: 1px solid #c3e6cb;
       animation: fadeIn 0.4s ease;
     }
-
     .message {
       color: red;
       font-weight: bold;
       margin-bottom: 10px;
     }
-
     label {
       display: block;
       margin: 18px 0 8px;
       font-weight: bold;
     }
-
     input[type="text"], textarea {
       width: 100%;
       padding: 12px;
@@ -66,17 +58,14 @@
       font-size: 15px;
       transition: border 0.3s ease;
     }
-
     input[type="text"]:focus, textarea:focus {
       border: 1px solid #337D89;
       outline: none;
     }
-
     textarea {
       height: 150px;
       resize: none;
     }
-
     .toggle-switch {
       position: relative;
       display: inline-block;
@@ -84,13 +73,11 @@
       height: 26px;
       margin-right: 10px;
     }
-
     .toggle-switch input {
       opacity: 0;
       width: 0;
       height: 0;
     }
-
     .slider {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -99,38 +86,48 @@
       cursor: pointer;
       transition: 0.4s;
     }
-
     .slider:before {
       content: "";
       position: absolute;
-      height: 20px;
-      width: 20px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background: white;
       border-radius: 50%;
       transition: 0.4s;
     }
-
     .toggle-switch input:checked + .slider {
       background-color: #337D89;
     }
-
     .toggle-switch input:checked + .slider:before {
       transform: translateX(24px);
     }
 
+    /* ── 버튼 스타일 ── */
+    .btn, .back-btn {
+      display: inline-block;
+      background-color: #337D89;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      margin-top: 0;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover, .back-btn:hover {
+      background-color: #2a6673;
+    }
     .tooltip-btn {
       position: relative;
-      display: inline-block;
-      cursor: pointer;
     }
-
     .tooltip-btn:hover::after {
       content: attr(data-tooltip);
       position: absolute;
-      top: -32px;
-      left: 50%;
+      top: -32px; left: 50%;
       transform: translateX(-50%);
       background: #333;
       color: #fff;
@@ -140,63 +137,91 @@
       white-space: nowrap;
     }
 
-    button {
-      margin-top: 30px;
-      background-color: #337D89;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 15px;
-    }
-
-    button:hover {
-      background-color: #2a6673;
-    }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    /* 토글 그룹 */
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      margin-top: 18px;
+    }
+    /* 폼 액션 버튼 영역: 양 끝 정렬 */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
 <div class="layout">
   <div th:replace="admin/admin_header :: adminHeader"></div>
-
   <div class="main-wrapper">
     <div th:replace="admin/admin_aside :: adminAside"></div>
     <main class="content">
-<div class="container edit-container">
-  <h1 class="faq-title">FAQ 수정</h1>
+      <div class="container edit-container">
 
-  <div th:if="${successMessage}" th:text="${successMessage}" class="alert-success"></div>
-  <div th:if="${errorMessage}" th:text="${errorMessage}" class="message"></div>
+        <!-- 제목 -->
+        <h1 class="faq-title"
+            th:text="${faq != null} ? 'FAQ 수정' : 'FAQ 등록'">
+          FAQ 등록
+        </h1>
 
-  <form th:action="@{'/admin/faq/edit/' + ${faq.faqId}}" method="post">
-    <label for="question">질문</label>
-    <input type="text" name="question" id="question" th:value="${faq.question}" required placeholder="질문을 입력하세요" />
+        <!-- 메시지 -->
+        <div th:if="${successMessage}" th:text="${successMessage}" class="alert-success"></div>
+        <div th:if="${errorMessage}" th:text="${errorMessage}"   class="message"></div>
 
-    <label for="answer">답변</label>
-    <textarea name="answer" id="answer" th:text="${faq.answer}" required placeholder="답변을 입력하세요"></textarea>
+        <!-- form -->
+        <form th:action="${faq != null}
+                            ? @{/admin/faq/edit/{id}(id=${faq.faqId})}
+                            : @{/admin/faq/add}"
+              method="post">
 
-    <label>
-      <span style="font-weight: bold;">활성화 여부</span><br>
-      <label class="toggle-switch">
-        <input type="checkbox" name="active" th:checked="${faq.active}" />
-        <span class="slider"></span>
-      </label>
-    </label>
+          <!-- 질문 -->
+          <label for="question">질문</label>
+          <input type="text" id="question" name="question"
+                 th:value="${faq != null} ? ${faq.question} : ''"
+                 required placeholder="질문을 입력하세요" />
 
-    <button type="submit" class="tooltip-btn" data-tooltip="FAQ를 수정합니다">
-      수정
-    </button>
-  </form>
-</div>
+          <!-- 답변 -->
+          <label for="answer">답변</label>
+          <textarea id="answer" name="answer" required
+                    placeholder="답변을 입력하세요"
+                    th:text="${faq != null} ? ${faq.answer} : ''">
+            </textarea>
+
+          <!-- 활성화 여부 -->
+          <div class="toggle-group">
+            <span style="font-weight:bold; margin-right:8px;">활성화 여부</span>
+            <label class="toggle-switch">
+              <input type="checkbox" name="active"
+                     th:checked="${faq == null} ? true : ${faq.active}" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- 버튼 그룹 -->
+          <div class="form-actions">
+            <a th:href="@{/admin/faq/list}" class="back-btn">
+              ← 목록으로
+            </a>
+            <button type="submit"
+                    class="btn tooltip-btn"
+                    th:attr="data-tooltip=${faq != null}
+                                    ? 'FAQ를 수정합니다'
+                                    : 'FAQ를 등록합니다'"
+                    th:text="${faq != null} ? '수정' : '등록'">
+              등록
+            </button>
+          </div>
+        </form>
+
+      </div>
     </main>
-  </div><!--main-wrapper end-->
-</div><!--layout end-->
+  </div>
+</div>
 </body>
 </html>
