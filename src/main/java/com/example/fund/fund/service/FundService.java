@@ -222,7 +222,7 @@ public class FundService {
     private final String UPLOAD_DIR = "C:\\bnk_project\\data\\uploads\\fund_document\\";
 
     @Transactional
-    public void registerFundWithAllDocuments(
+    public Long registerFundWithAllDocuments(
             FundRegisterRequest request,
             MultipartFile fileTerms,
             MultipartFile fileManual,
@@ -231,10 +231,9 @@ public class FundService {
         Fund fund = fundRepository.findByFundId(request.getFundId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 펀드 ID"));
 
-        // 정책 저장 (한 번만)
+        // 정책 저장
         FundPolicy policy = FundPolicy.builder()
                 .fund(fund)
-                .fundPayout(request.getFundPayout())
                 .fundTheme(request.getFundTheme())
                 .fundActive(request.getFundActive())
                 .fundRelease(request.getFundRelease())
@@ -245,7 +244,11 @@ public class FundService {
         saveFundDocument(fund, fileTerms, "약관");
         saveFundDocument(fund, fileManual, "상품설명서");
         saveFundDocument(fund, fileProspectus, "투자설명서");
+
+        // 등록된 펀드 ID 반환
+        return fund.getFundId();
     }
+
 
     private void saveFundDocument(Fund fund, MultipartFile file, String docType) throws IOException {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
