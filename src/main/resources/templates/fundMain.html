@@ -19,16 +19,11 @@
     <!-- 페이지 제목 -->
     <h2 class="section-title">펀드</h2>
 
-    <!-- 검색창 -->
-    <div class="search-bar">
-      <input type="text" placeholder="관심있는 펀드를 검색해보세요" />
-      <i class="fa-solid fa-search"></i>
-    </div>
+
 
     <!-- 안내 문구 -->
     <div class="headline">
       <p class="slogan">나의 투자 성향에 맞는 <b>다양한 펀드</b>를 확인해보세요.</p>
-      <a href="/profile" class="inline-link">투자 성향 분석 시작하기 →</a>
     </div>
 
     <!-- 카드 영역 -->
@@ -67,27 +62,28 @@
     </section>
     
   <section class="cards2">
-  <button class="c2 faq" data-desc="자주 묻는 질문 모음">
+  <button onclick="location.href='/faq'"  class="c2 faq" data-desc="자주 묻는 질문 모음">
   <img src="/images/faq-1.png" alt="">
   <span class="card-title2 br">FAQ</span>
 </button>
 
 
- <button class="c2 market" data-desc="- 이번 주 펀드 시장 한눈에
+ <button onclick="location.href='/fund_status'"  class="c2 market" data-desc="- 이번 주 펀드 시장 한눈에
 - 국내·해외 시황 리포트">
   <img src="/images/status.png">
   <span class="card-title2 br">펀드시황</span>
   </button>
 
-  <button class="c2 profile tall">
+  <button onclick="location.href='/profile'"  class="c2 profile tall">
 	  <span class="profile-title">투자성향분석</span>
 	  <span class="profile-desc">
 	    - 내 투자 성향 알아보기<br>
 	    - 성향 진단하고 맞춤 상품 보기
 	  </span>
+	  <img src="/images/invest.png">
   </button>
 
-  <button class="c2 qna"    data-desc="나만의 맞춤 상담">
+  <button onclick="location.href='/qna'" class="c2 qna"  data-desc="나만의 맞춤 상담">
     <img src="/images/btn1.png" alt="">
     <span class="card-title2 br">1:1 문의</span>
   </button>
