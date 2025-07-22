@@ -133,18 +133,6 @@ public class QnaController {
 		return "mypage/qna-detail";
 	}
 
-	// @GetMapping("/mypage/qna/{qnaId}")
-	// public String mypageQnaDetail(@PathVariable Long qnaId, Model model,
-	// HttpSession session) {
-	// User user = (User) session.getAttribute("user");
-	// if (user == null)
-	// return "redirect:/auth/login";
-
-	// Qna qna = qnaService.getQnaById(qnaId);
-	// model.addAttribute("qna", qna);
-	// return "mypage/qna-detail"; // 상세 보기 페이지 경로
-	// }
-
 	@GetMapping("/mypage/qna/{qnaId}")
 	public String mypageQnaDetailAjax(
 			@PathVariable Long qnaId,

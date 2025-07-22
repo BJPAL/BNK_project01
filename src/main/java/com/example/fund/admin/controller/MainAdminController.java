@@ -131,30 +131,6 @@ public class MainAdminController {
         return "admin/super/adminSetting";
     }
 
-    // @GetMapping("/list")
-    // public String getAdminList(@RequestParam(required = false) String role,
-    // Model model) {
-    // List<AdminDTO> admins = (role == null || role.isEmpty())
-    // ? adminService_a.getAllAdmins()
-    // : adminService_a.getAdminsByRole(role);
-    // model.addAttribute("adminList", admins);
-    // return "admin/super/adminList :: admin-list-content";
-    // }
-
-    // 관리자 리스트 컨트롤러(role 파라미터는 필수값 X)
-    // @GetMapping("/list")
-    // public String getAdminList(@RequestParam(required = false) String role, Model
-    // model){
-    // List<AdminDTO> admins = new ArrayList<>();
-    // if (role == null || role.isEmpty()) {
-    // admins = adminService_a.getAllAdmins();
-    // } else {
-    // admins = adminService_a.getAdminsByRole(role); // 역할별 조회
-    // }
-    // model.addAttribute("adminList", admins);
-    // return "admin/super/adminList :: admin-list-content";
-    // }
-
     // 관리자 리스트 컨트롤러(role 파라미터는 필수값 X) + 페이지네이션
     @GetMapping("/list")
     public String getAdminList(
@@ -197,8 +173,8 @@ public class MainAdminController {
     public String qnaList() {
         return "admin/cs/qnaSetting";
     }
-    
-    //펀드 등록 폼으로 이동
+
+    // 펀드 등록 폼으로 이동
     @GetMapping("/fund/new")
     public String newFundForm() {
 
@@ -212,11 +188,11 @@ public class MainAdminController {
         return "fund/fundRegistList";
     }
 
-    //상세보기 페이지로 이동
+    // 상세보기 페이지로 이동
     @GetMapping("/fund/view/{id}")
     public String viewFundDetail(@PathVariable("id") Long id,
-                                @RequestParam(name = "includePolicy", defaultValue = "true") boolean includePolicy,
-                                Model model) {
+            @RequestParam(name = "includePolicy", defaultValue = "true") boolean includePolicy,
+            Model model) {
         FundDetailResponse fund = includePolicy
                 ? fundService.getFundDetailWithPolicy(id)
                 : fundService.getFundDetailBasic(id);
@@ -225,11 +201,11 @@ public class MainAdminController {
         return "fund/fundRegistDetail"; // 🔁 템플릿 경로에 맞게 파일명 확인
     }
 
-    //수정하기 페이지로 이동
+    // 수정하기 페이지로 이동
     @GetMapping("/fund/edit/{id}")
     public String editPage(@PathVariable("id") Long id,
-                        @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy,
-                        Model model) {
+            @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy,
+            Model model) {
         FundDetailResponse fund = includePolicy
                 ? fundService.getFundDetailWithPolicy(id)
                 : fundService.getFundDetailBasic(id);
@@ -239,7 +215,7 @@ public class MainAdminController {
     }
 
     @GetMapping("/construction")
-    public String construction(){
+    public String construction() {
         return "admin/constructionPage";
     }
 }

@@ -533,7 +533,102 @@
   margin: 8px 0 16px; /* qna-note 와 테이블 사이 적당한 여백 */
 }
 
+/* ── 폼 컨테이너 ── */
+.form-container {
+  max-width: 600px;
+  margin: 40px auto 60px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  font-family: 'Segoe UI', sans-serif;
+}
 
+/* 페이지 타이틀 */
+.page-title {
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+/* ── 폼 그룹 ── */
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 레이블 */
+.form-label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #444;
+}
+
+/* 입력창 */
+.form-control {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+  border-color: #4e73df;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(78,115,223,0.2);
+}
+
+/* readonly/plaintext 입력 */
+.form-control-plaintext {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  color: #555;
+}
+
+/* 에러 메시지 */
+.form-error {
+  margin-top: 4px;
+  color: #d93025;
+  font-size: 0.875rem;
+}
+
+/* 성공 메시지 */
+.form-success {
+  margin-top: 4px;
+  color: #188038;
+  font-size: 0.875rem;
+}
+
+/* ── 액션 버튼 ── */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background-color: transparent;  /* 배경 투명 */
+  color: #D7191F;  /* 글자색 */
+  border: 1px solid #D7191F; /* 테두리 색 */
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #D7191F;
+  color: #fff;  /* 글자색 */
+}
 
 
 /* 반응형: 작은 화면에서 글자 크기 약간 축소 */
