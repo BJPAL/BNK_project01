@@ -23,4 +23,6 @@ public interface QnaRepository extends JpaRepository<Qna, Integer> {
 
     /* 가장 오래된 미답변 한 건 */
     Optional<Qna> findFirstByStatusIsNullOrderByRegDateAsc();
+
+    long countByUser_UserId(long userId);
 }
