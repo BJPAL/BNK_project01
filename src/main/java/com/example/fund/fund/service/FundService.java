@@ -9,7 +9,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -377,6 +379,46 @@ public class FundService {
         return convertToFundResponseDTO(fundPage);
     }
 
+    public Page<FundResponseDTO> findWithFilters_policy(
+            Integer investType,
+            List<String> riskLevels,
+            List<String> fundTypes,
+            List<String> regions,
+            Pageable pageable
+    ) {
+        // 1. 투자 성향 → 위험 등급 범위 계산 (기본 필터)
+        int startRiskLevel;
+        int endRiskLevel = 6;
+
+        switch (investType) {
+            case 1 -> startRiskLevel = 6; // 안정형: 6등급만
+            case 2 -> startRiskLevel = 5; // 안정 추구형: 5~6등급
+            case 3 -> startRiskLevel = 4; // 위험 중립형: 4~6등급
+            case 4 -> startRiskLevel = 3; // 적극 투자형: 3~6등급
+            case 5 -> startRiskLevel = 1; // 공격 투자형: 1~6등급
+            default -> throw new IllegalArgumentException("올바르지 않은 투자 성향입니다.");
+        }
+
+        // 2. 문자열 리스트를 적절한 타입으로 변환
+        List<Integer> riskLevelInts = convertToIntegerList(riskLevels);
+        List<String> processedFundTypes = processEmptyList(fundTypes);
+        List<String> processedRegions = processEmptyList(regions);
+
+        // 3. FundPolicy에서 isActive=true인 데이터만 필터링하여 조회
+        Page<FundPolicy> fundPolicyPage = fundPolicyRepository.findActiveFundPoliciesWithFilters(
+                startRiskLevel,
+                endRiskLevel,
+                riskLevelInts,
+                processedFundTypes,
+                processedRegions,
+                pageable
+        );
+
+        // 4. FundPolicy → FundResponseDTO 변환 (fundRelease를 launchDate로 사용)
+        return convertFundPolicyToFundResponseDTO(fundPolicyPage);
+    }
+
+
     /**
      * 투자 성향에 따른 펀드 목록 조회 - pagination
      */
@@ -489,6 +531,64 @@ public class FundService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * FundPolicy 페이지를 FundResponseDTO 페이지로 변환
+     * N+1 문제를 해결하기 위해 배치로 FundReturn 조회
+     */
+    private Page<FundResponseDTO> convertFundPolicyToFundResponseDTO(Page<FundPolicy> fundPolicyPage) {
+        // 1. 모든 fundId 수집
+        List<Long> fundIds = fundPolicyPage.getContent()
+                .stream()
+                .map(fp -> fp.getFund().getFundId())
+                .collect(Collectors.toList());
+
+        // 2. 배치로 FundReturn 조회하여 Map으로 변환 (N+1 해결)
+        Map<Long, FundReturn> fundReturnMap = new HashMap<>();
+        if (!fundIds.isEmpty()) {
+            List<FundReturn> fundReturns = fundReturnRepository.findByFund_FundIdIn(fundIds);
+            fundReturnMap = fundReturns.stream()
+                    .collect(Collectors.toMap(
+                            fr -> fr.getFund().getFundId(),
+                            fr -> fr,
+                            (existing, replacement) -> existing // 중복 키 처리
+                    ));
+        }
+
+        // 3. FundPolicy -> FundResponseDTO로 변환
+        final Map<Long, FundReturn> finalFundReturnMap = fundReturnMap;
+
+        return fundPolicyPage.map(fundPolicy -> {
+            Fund fund = fundPolicy.getFund();
+            FundReturn fundReturn = finalFundReturnMap.get(fund.getFundId());
+
+            return FundResponseDTO.builder()
+                    .fundId(fund.getFundId())
+                    .fundName(fund.getFundName())
+                    .fundType(fund.getFundType())
+                    .investmentRegion(fund.getInvestmentRegion())
+                    .establishDate(fund.getEstablishDate())
+                    .fundRelease(fundPolicy.getFundRelease())   // fundRelease 사용!
+//                    .launchDate(fundPolicy.getFundRelease())  // deprecated
+                    .nav(fund.getNav())
+                    .aum(fund.getAum())
+                    .totalExpenseRatio(fund.getTotalExpenseRatio())
+                    .riskLevel(fund.getRiskLevel())
+                    .managementCompany(fund.getManagementCompany())
+
+                    // FundPolicy 추가 정보
+                    .fundPayout(fundPolicy.getFundPayout())
+                    .fundTheme(fundPolicy.getFundTheme())
+
+                    // 수익률 정보
+                    .return1m(fundReturn != null ? fundReturn.getReturn1m() : null)
+                    .return3m(fundReturn != null ? fundReturn.getReturn3m() : null)
+                    .return6m(fundReturn != null ? fundReturn.getReturn6m() : null)
+                    .return12m(fundReturn != null ? fundReturn.getReturn12m() : null)
+                    .returnSince(fundReturn != null ? fundReturn.getReturnSince() : null)
+                    .build();
+        });
     }
 
     /**

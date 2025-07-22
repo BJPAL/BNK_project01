@@ -51,7 +51,8 @@ public class Fund extends BaseEntity {
     @Column(name = "management_company", length = 100)
     private String managementCompany;
 
-    @JoinColumn(name = "fund_policy_id")
-    @OneToOne(mappedBy = "fund", fetch = FetchType.LAZY)
-    private FundPolicy fundPolicy;
+//    @JoinColumn(name = "fund_policy_id")
+//    @JoinColumn(name = "policy_id")
+//    @OneToOne(mappedBy = "fund", fetch = FetchType.LAZY)
+//    private FundPolicy fundPolicy;
 }

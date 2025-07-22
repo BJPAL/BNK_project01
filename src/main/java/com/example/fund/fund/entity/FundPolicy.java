@@ -21,9 +21,15 @@ public class FundPolicy {
     @Column(name = "policy_id")
     private Long policyId;
 
+    /*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fund_id", nullable = false)
     @OneToOne(mappedBy = "fundPolicy")
+    private Fund fund;
+    */
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fund_id", nullable = false)
     private Fund fund;
 
     @Column(name = "fund_payout", precision = 5, scale = 4)

@@ -60,6 +60,40 @@ public class FundViewController {
     }
 
 
+    /**
+     * 투자 성향에 따른 배포된 펀드 목록
+     */
+    @GetMapping("/list-policy")
+    public String listPagePolicy(
+            HttpSession session,
+            Model model
+    ) {
+        User user = (User) session.getAttribute("user");
+
+        // 사용자 세션 여부 확인
+        if (user == null) {
+            return "redirect:/auth/login";      
+        }
+
+        // 투자 성향 존재 여부 확인
+        Integer userId = user.getUserId();
+        Optional<InvestProfileResult> investResult = investProfileResultRepository.findByUser_UserId(userId);
+
+        // 투자 성향 검사 필요
+        if(!investResult.isPresent()) {
+            return "redirect:/profile";
+        }
+
+        InvestProfileResult result = investResult.get();
+        Integer investType = result.getType().getTypeId().intValue();
+
+        model.addAttribute("userId", userId);
+        model.addAttribute("investType", investType);
+
+        return "fund/fundListPolicy";
+    }
+
+
     @GetMapping("/best-return")
     public String bestReturnPage(
             HttpSession session,
