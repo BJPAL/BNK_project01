@@ -73,7 +73,7 @@ public class ApprovalController {
         }
 
         try {
-            /* ✏️ 두 번째 파라미터를 admin.getRole() 으로 전달 */
+            /* 두번째 파라미터를 admin.getRole() 으로 전달 */
             approvalService.approve(id, admin.getRole(), reason);
             redirect.addFlashAttribute("alertMessage", "승인 처리되었습니다.");
         } catch (SecurityException ex) {
@@ -96,8 +96,13 @@ public class ApprovalController {
         try {
             approvalService.reject(id, reason, admin.getRole());
             rttr.addFlashAttribute("msg", "반려 완료");
+        } catch (SecurityException e) {
+            rttr.addFlashAttribute("msg", "반려 권한이 없습니다.");
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            rttr.addFlashAttribute("msg", "반려 불가 상태입니다: " + e.getMessage());
         } catch (Exception e) {
-            rttr.addFlashAttribute("msg", "반려 실패: " + e.getMessage());
+            e.printStackTrace();
+            rttr.addFlashAttribute("msg", "반려 중 오류 발생");
         }
 
         return "redirect:/admin/approval/manage";
@@ -119,8 +124,15 @@ public class ApprovalController {
         }
 
         // 정상 배포 처리
-        approvalService.publish(id, admin.getAdminname());
-        redirectAttributes.addFlashAttribute("successMessage", "성공적으로 배포되었습니다.");
+        try {
+            approvalService.publish(id, admin.getAdminname());
+            redirectAttributes.addFlashAttribute("successMessage", "성공적으로 배포되었습니다.");
+        } catch (SecurityException e) {
+            redirectAttributes.addFlashAttribute("alertMessage", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("alertMessage", "배포 처리 중 오류가 발생했습니다.");
+        }
         return "redirect:/admin/approval/my-list";
     }
 
@@ -248,11 +260,20 @@ public class ApprovalController {
     public String updateApproval(@PathVariable("id") Integer id,
                                  @RequestParam("title") String title,
                                  @RequestParam("content") String content,
-                                 HttpSession session) {
+                                 HttpSession session,
+                                 RedirectAttributes redirect) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
-        approvalService.updateApproval(id, title, content, admin.getAdminname());
+        try {
+            approvalService.updateApproval(id, title, content, admin.getAdminname());
+            redirect.addFlashAttribute("successMessage", "재기안 완료되었습니다.");
+        } catch (SecurityException | IllegalStateException | IllegalArgumentException ex) {
+            redirect.addFlashAttribute("alertMessage", ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            redirect.addFlashAttribute("alertMessage", "시스템 오류가 발생했습니다.");
+        }
         return "redirect:/admin/approval/my-list";
     }
 
