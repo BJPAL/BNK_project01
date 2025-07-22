@@ -21,6 +21,7 @@ import com.example.fund.fund.repository.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -300,9 +301,29 @@ public class FundService {
 
     // ============================================================================================================
 
+    /** 투자 성향 + 3개월 수익률 중에세 가장 높은 수익률 10개를 조회 */
+    public List<FundResponseDTO> findBestReturn(
+            Integer investType,
+            Pageable pageable
+    ) {
+        // 투자 성향 → 위험 등급 범위 계산 (기본 필터)
+        int startRiskLevel;
+        int endRiskLevel = 6;
+        switch (investType) {
+            case 1 -> startRiskLevel = 6; // 안정형: 6등급만
+            case 2 -> startRiskLevel = 5; // 안정 추구형: 5~6등급
+            case 3 -> startRiskLevel = 4; // 위험 중립형: 4~6등급
+            case 4 -> startRiskLevel = 3; // 적극 투자형: 3~6등급
+            case 5 -> startRiskLevel = 1; // 공격 투자형: 1~6등급
+            default -> throw new IllegalArgumentException("올바르지 않은 투자 성향입니다.");
+        }
+
+        List<Fund> fundList = fundRepository.findTopFundsByRiskLevelAndReturn3m(startRiskLevel, endRiskLevel, pageable);
+        return convertToFundResponseDTO(fundList);
+    }
 
     /**
-     * 새로운 메서드 - 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
+     * 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
      *
      * @param investType 투자성향 (1~5)
      * @param riskLevels 사용자가 선택한 위험등급 리스트 (선택사항)
@@ -407,7 +428,7 @@ public class FundService {
     }
 
     /**
-     * Fund Entity Page를 FundResponseDTO Page로 변환하는 공통 메서드
+     * Page<Fund>를 Page<FundResponseDTO>로 변환하는 메서드
      */
     private Page<FundResponseDTO> convertToFundResponseDTO(
             Page<Fund> fundPage
@@ -435,6 +456,39 @@ public class FundService {
                     .returnSince(fundReturn != null ? fundReturn.getReturnSince() : null)
                     .build();
         });
+    }
+
+    /**
+     * List<Fund>를 List<FundResponseDTO>로 변환하는 메서드
+     */
+    private List<FundResponseDTO> convertToFundResponseDTO(
+            List<Fund> fundList
+    ) {
+        return fundList.stream()
+                .map(fund -> {
+                    // 각 펀드의 수익률 정보 조회
+                    FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
+
+                    return FundResponseDTO.builder()
+                            .fundId(fund.getFundId())
+                            .fundName(fund.getFundName())
+                            .fundType(fund.getFundType())
+                            .investmentRegion(fund.getInvestmentRegion())
+                            .establishDate(fund.getEstablishDate())
+                            .launchDate(fund.getLaunchDate())
+                            .nav(fund.getNav())
+                            .aum(fund.getAum())
+                            .totalExpenseRatio(fund.getTotalExpenseRatio())
+                            .riskLevel(fund.getRiskLevel())
+                            .managementCompany(fund.getManagementCompany())
+                            .return1m(fundReturn != null ? fundReturn.getReturn1m() : null)
+                            .return3m(fundReturn != null ? fundReturn.getReturn3m() : null)
+                            .return6m(fundReturn != null ? fundReturn.getReturn6m() : null)
+                            .return12m(fundReturn != null ? fundReturn.getReturn12m() : null)
+                            .returnSince(fundReturn != null ? fundReturn.getReturnSince() : null)
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     /**

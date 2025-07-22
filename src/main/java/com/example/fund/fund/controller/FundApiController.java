@@ -48,70 +48,6 @@ public class FundApiController {
     private static final int MAX_INVEST_TYPE = 5;
 
     /**
-     * 사용자 투자성향 조회 API
-     */
-    /*
-        // 투자성향이 있는 경우
-        {
-          "success": true,
-          "hasProfile": true,
-          "investType": 3,
-          "investTypeName": "위험 중립형",
-          "message": "투자 성향을 성공적으로 조회했습니다."
-        }
-
-        // 투자성향이 없는 경우
-        {
-          "success": true,
-          "hasProfile": false,
-          "message": "투자 성향 검사가 필요합니다.",
-          "investType": null
-        }
-    */
-    @GetMapping("/invest-type")
-    public ResponseEntity<ApiResponse<InvestTypeResponse>> getUserInvestType(@RequestParam Integer userId) {
-        try {
-            // 사용자 투자성향 조회
-            Optional<InvestProfileResult> investResult = investProfileResultRepository.findByUser_UserId(userId);
-
-            if (investResult.isEmpty()) {
-                InvestTypeResponse response = InvestTypeResponse.builder()
-                        .hasProfile(false)
-                        .investType(null)
-                        .investTypeName(null)
-                        .build();
-
-                return ResponseEntity.ok(
-                        ApiResponse.success(response, "투자 성향 검사가 필요합니다.")
-                );
-            }
-
-            InvestProfileResult result = investResult.get();
-            Integer investType = result.getType().getTypeId().intValue();
-            String investTypeName = getInvestTypeName(investType);
-
-            InvestTypeResponse response = InvestTypeResponse.builder()
-                    .hasProfile(true)
-                    .investType(investType)
-                    .investTypeName(investTypeName)
-                    .build();
-
-            log.info("투자 성향 조회 성공: userId={}, investType={}", userId, investType);
-            return ResponseEntity.ok(
-                    ApiResponse.success(response, "투자 성향을 성공적으로 조회했습니다.")
-            );
-
-        } catch (Exception e) {
-            log.error("투자성향 조회 중 오류 발생: userId={}", userId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.failure(
-                            "투자 성향 조회 중 오류가 발생했습니다.",
-                            "INTERNAL_SERVER_ERROR"
-                    ));
-        }
-    }
-
-    /**
      * 투자 성향에 따른 펀드 목록 - REST API
      */
     /*
@@ -220,6 +156,72 @@ public class FundApiController {
         }
     }
 
+
+    /**
+     * 투자 성향에 따른 수익률 BEST 펀드 목록 - REST API
+     */
+    /*
+        {
+          "success": true,
+          "data": [...],
+          "investType": 3,
+          "investTypeName": "위험 중립형",
+        }
+    */
+    @GetMapping("/best-return")
+    public ResponseEntity<ApiResponse<FundListResponse>> getBestReturnFundList(
+            @RequestParam int investType
+    ) {
+        try {
+            // 1. 투자성향 유효성 검사
+            if (investType < MIN_INVEST_TYPE || investType > MAX_INVEST_TYPE) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.failure(
+                                "투자 성향은 1~5 사이의 값이어야 합니다.",
+                                "INVALID_INVESTMENT_TYPE"
+                        ));
+            }
+
+            // 최대 10개 조회
+            Pageable pageable = PageRequest.of(0, 10);
+
+            // 데이터 조회
+            List<FundResponseDTO> fundList = fundService.findBestReturn(investType, pageable);
+
+            // 투자 성향 조회
+            String investTypeName = getInvestTypeName(investType);
+
+            // 6. 응답 데이터 구성
+            FundListResponse fundListResponse = FundListResponse.builder()
+                    .funds(fundList)
+                    .investType(investType)
+                    .investTypeName(investTypeName)
+                    .build();
+
+            // 성공 응답 메세지
+            String responseMessage = String.format("%s에 맞는 수익률 펀드 %d개를 조회했습니다.", investTypeName, fundList.size());
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            fundListResponse,
+                            responseMessage
+                    )
+            );
+
+        } catch (IllegalArgumentException e) {
+            log.warn("잘못된 입력값: investType={}, error={}", investType, e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.failure(e.getMessage(), "INVALID_PARAMETER"));
+        } catch (Exception e) {
+            log.error("펀드 수익률 BEST 목록 조회 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.failure(
+                            "서버 오류가 발생했습니다.",
+                            "INTERNAL_SERVER_ERROR"
+                    ));
+        }
+    }
+
     /** 펀드 상세 정보 제공 - REST API */
     @GetMapping("/detail/{fundId}")
     public ResponseEntity<ApiResponse<?>> getFund(
@@ -257,6 +259,70 @@ public class FundApiController {
             log.error("펀드 상세 정보 API 오류 - fundId: {}", fundId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.failure("서버 오류가 발생했습니다.", "INTERNAL_ERROR"));
+        }
+    }
+
+    /**
+     * 사용자 투자성향 조회 API
+     */
+    /*
+        // 투자성향이 있는 경우
+        {
+          "success": true,
+          "hasProfile": true,
+          "investType": 3,
+          "investTypeName": "위험 중립형",
+          "message": "투자 성향을 성공적으로 조회했습니다."
+        }
+
+        // 투자성향이 없는 경우
+        {
+          "success": true,
+          "hasProfile": false,
+          "message": "투자 성향 검사가 필요합니다.",
+          "investType": null
+        }
+    */
+    @GetMapping("/invest-type")
+    public ResponseEntity<ApiResponse<InvestTypeResponse>> getUserInvestType(@RequestParam Integer userId) {
+        try {
+            // 사용자 투자성향 조회
+            Optional<InvestProfileResult> investResult = investProfileResultRepository.findByUser_UserId(userId);
+
+            if (investResult.isEmpty()) {
+                InvestTypeResponse response = InvestTypeResponse.builder()
+                        .hasProfile(false)
+                        .investType(null)
+                        .investTypeName(null)
+                        .build();
+
+                return ResponseEntity.ok(
+                        ApiResponse.success(response, "투자 성향 검사가 필요합니다.")
+                );
+            }
+
+            InvestProfileResult result = investResult.get();
+            Integer investType = result.getType().getTypeId().intValue();
+            String investTypeName = getInvestTypeName(investType);
+
+            InvestTypeResponse response = InvestTypeResponse.builder()
+                    .hasProfile(true)
+                    .investType(investType)
+                    .investTypeName(investTypeName)
+                    .build();
+
+            log.info("투자 성향 조회 성공: userId={}, investType={}", userId, investType);
+            return ResponseEntity.ok(
+                    ApiResponse.success(response, "투자 성향을 성공적으로 조회했습니다.")
+            );
+
+        } catch (Exception e) {
+            log.error("투자성향 조회 중 오류 발생: userId={}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.failure(
+                            "투자 성향 조회 중 오류가 발생했습니다.",
+                            "INTERNAL_SERVER_ERROR"
+                    ));
         }
     }
 
