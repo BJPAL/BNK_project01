@@ -38,12 +38,20 @@
           </ul>
         </li>
 
-        <!-- ─── 결재 업무(approver) ─── -->
-        <li class="menu-group" th:if="${session.admin.role == 'approver' or session.admin.role == 'super'}">
-          <button type="button" class="group-btn" onclick="approverLink()" data-url="/admin/approval/manage">
-            결재 업무
-          </button>
-        </li>
+          <!-- ─── 결재 업무(approver) ─── -->
+          <li
+            class="menu-group"
+            th:if="${session.admin.role == 'approver' or session.admin.role == 'super'}"
+          >
+            <button
+              type="button"
+              class="group-btn"
+              onclick="approverLink()"
+              data-url="/admin/approval/manage"
+            >
+              결재 업무
+            </button>
+          </li>
 
         <!-- ─── 문서함(planner) ─── -->
         <li class="menu-group" th:if="${session.admin.role == 'planner'}">
