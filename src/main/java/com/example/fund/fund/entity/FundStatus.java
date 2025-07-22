@@ -4,8 +4,6 @@ import com.example.fund.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "fund_status")
 @Getter
@@ -30,22 +28,5 @@ public class FundStatus extends BaseEntity {
     private String content;
 
     @Column(name = "view_count", nullable = false)
-    private Integer viewCount;
-    // private Integer viewCount = 0;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fund_id", nullable = false)
-    private Fund fund;
-
-    @Column(name = "aum")
-    private Integer aum; // 억원 단위
-
-    @Column(name = "fund_scale")
-    private Integer fundScale; // 설정액
-
-    @Column(name = "fund_grade", length = 10)
-    private String fundGrade;
-
-    @Column(name = "updated_date")
-    private LocalDate updatedDate;
+    private Integer viewCount = 0;
 }
