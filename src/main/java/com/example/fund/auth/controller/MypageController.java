@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -68,7 +69,7 @@ public class MypageController {
             BindingResult br,
             HttpServletRequest request,
             HttpSession session,
-            Model m) {
+            Model m, RedirectAttributes rttr) {
 
         User user = (User) session.getAttribute(SESSION_KEY);
         if (user == null)
@@ -78,19 +79,20 @@ public class MypageController {
             br.rejectValue("confirmNewPassword", "nomatch", "새 비밀번호가 서로 다릅니다.");
         }
         if (br.hasErrors()) {
-            m.addAttribute("requestURI", request.getRequestURI());
+            rttr.addFlashAttribute("requestURI", request.getRequestURI());
             return "mypage/form";
         }
 
         try {
             User updated = service.updateProfile(user.getUserId(), dto);
             session.setAttribute(SESSION_KEY, updated);
-            m.addAttribute("success", "변경되었습니다.");
+            rttr.addFlashAttribute("success", "변경되었습니다.");
         } catch (IllegalStateException e) {
-            m.addAttribute("updateError", e.getMessage());
+            rttr.addFlashAttribute("updateError", e.getMessage());
+            return "redirect:/mypage/edit";
         }
 
-        return "mypage/form";
+        return "redirect:/mypage";
     }
 
     /* ────────────────── 4. 내 1:1 문의 목록 ────────────────── */
@@ -103,6 +105,8 @@ public class MypageController {
         if (user == null)
             return "redirect:/auth/login";
 
+        long countQna = service.countUserQna(user.getUserId());
+        m.addAttribute("countQna", countQna);
         m.addAttribute("qnaList", qnaService.getQnaListByUser(user.getUserId()));
         return "mypage/qna-list";
     }

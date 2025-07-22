@@ -59,4 +59,11 @@ public class QnaService {
         return qnaRepository.findByStatus(status, pageable);
     }
 
+    /** 상위 `limit`개 미답변 문의를 최신순으로 가져옴 */
+    public List<Qna> findRecentUnanswered(int limit) {
+        Page<Qna> page = getQnaListByStatus("대기", 0);
+        return page.getContent().stream()
+                .limit(limit)
+                .toList();
+    }
 }
