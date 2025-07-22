@@ -7,7 +7,6 @@ import com.example.fund.user.entity.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,15 +20,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/fund")
 public class FundViewController {
-
     private final InvestProfileResultRepository investProfileResultRepository;
     private final FundService fundService;
+
 
     /**
      * 투자 성향에 따른 펀드 목록
      */
     @GetMapping("/list")
-    public String listPage(HttpSession session, Model model) {
+    public String listPage(
+            HttpSession session,
+            Model model
+    ) {
         log.debug("펀드 목록 페이지 접근 요청");
         User user = (User) session.getAttribute("user");
 
@@ -57,8 +59,12 @@ public class FundViewController {
         }
     }
 
+
     @GetMapping("/best-return")
-    public String bestReturnPage(HttpSession session, Model model) {
+    public String bestReturnPage(
+            HttpSession session,
+            Model model
+    ) {
         User user = (User) session.getAttribute("user");
 
         // 사용자 세션 여부
@@ -111,7 +117,7 @@ public class FundViewController {
             log.warn("존재하지 않는 펀드 접근 시도 - userId: {}, fundId: {}", userId, fundId);
             return "redirect:/fund/list";      // 펀드 목록으로 리다이렉트
         }
-        
+
         InvestProfileResult result = investResult.get();    // 투자 성향 결과
         Integer investType = result.getType().getTypeId().intValue();   // 투자 성향 번호
 
