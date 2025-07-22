@@ -9,6 +9,26 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css">
 </head>
 <body>
+
+  <div id="intro-overlay">
+    <!-- 구름 -->
+  <div class="cloud c1">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="cloud c2">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  
+  
+    <!-- 풍선 래퍼 -->
+  <div class="balloon-row">
+    <img src="/images/balloon_M.png" class="balloon" style="--idx:0" id="letter-M">
+    <img src="/images/balloon_B2.png" class="balloon" style="--idx:1"id="letter-B">
+    <img src="/images/balloon_T.png" class="balloon" style="--idx:2">
+    <img src="/images/balloon_I.png" class="balloon" style="--idx:3" id="letter-I">
+  </div>
+  </div>
+
   <div class="slot-machine">
     <div class="top-label">펀드 MBTI</div>
     <div class="screen">
@@ -53,40 +73,120 @@
   </div>
 
   <!-- [3] 결과 화면 -->
-<!-- 결과 박스 ➜ 그대로 유지 -->
 <div class="result-container" id="result-box" style="display:none;">
 
-  <!-- ✅ ① 브라우저 래퍼를 새로 추가 -->
-  <div class="browser-frame">
-    <!-- ② 헤더 바 -->
-    <div class="browser-header">
-      <span class="window-title">Result</span>
-      <span class="nav-btn"></span><span class="nav-btn"></span><span class="nav-btn"></span>
-      <div class="url-bar"></div>
-      <span class="header-icon"></span><span class="header-icon"></span>
+  <!-- ✅ 박스와 버튼을 묶는 래퍼 (폭 = 브라우저 박스) -->
+  <div class="frame-wrap">
+
+    <!-- ① 결과 박스 -->
+    <div class="browser-frame">
+      <!-- 헤더 바 -->
+      <div class="browser-header">
+        <span class="window-title">Result</span>
+        <span class="nav-btn"></span><span class="nav-btn"></span><span class="nav-btn"></span>
+        <div class="url-bar"></div>
+        <span class="header-icon"></span><span class="header-icon"></span>
+      </div>
+
+      <!-- 본문 -->
+      <div class="browser-body">
+        <div class="mbti-card" style="font-family:'Galmuri11',sans-serif;">
+          <h2>나의 <span class="highlight">투자 MBTI</span>는 ?</h2>
+          <div id="mbti-type" style="font-size:35px;font-weight:bold;margin-top:20px;"></div>
+          <p id="mbti-desc" class="subtext" style="margin:20px 0;"></p>
+          <p id="mbti-tag"  style="color:gray;font-weight:bold;"></p>
+          <img id="mbti-image" src="" alt="MBTI 캐릭터" class="icon" style="margin-top:30px;width:400px;">
+        </div>
+      </div>
+    </div><!-- /.browser-frame -->
+
+    <!-- ② 버튼 세트 → 옆으로 붙음 -->
+    <div class="btn-column">
+      <button onclick="location.href='/test'">테스트 다시하기</button>
+      <button onclick="location.href='/profile'">투자성향 분석하러 가기</button>
     </div>
 
-    <!-- ③ 본문 : 기존 mbti‑card 그대로 넣기 -->
-    <div class="browser-body">
-      <div class="mbti-card" style="font-family: 'Galmuri11', sans-serif;">
-        <h2>나의 <span class="highlight">투자 MBTI</span>는 ?</h2>
-        <div id="mbti-type"
-             style="font-size:35px;font-weight:bold;margin-top:20px;"></div>
-        <p id="mbti-desc" class="subtext" style="margin:20px 0;"></p>
-        <p id="mbti-tag"  style="color:gray;font-weight:bold;"></p>
-        <img id="mbti-image" src=""
-             alt="MBTI 캐릭터" class="icon"
-             style="margin-top:30px;width:400px;">
-      </div>
-    </div>
-  </div>
-</div>
+  </div><!-- /.frame-wrap -->
+</div><!-- /.result-container -->
 
 
   <!-- 반짝이 효과 요소 -->
   <div class="sparkle one"></div>
   <div class="sparkle two"></div>
   <div class="sparkle three"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay  = document.getElementById('intro-overlay');
+  const slot     = document.querySelector('.slot-machine');
+  const balloons = overlay.querySelectorAll('.balloon');
+  const clouds   = overlay.querySelectorAll('.cloud');
+
+  /* 0) 메인은 미리 투명 상태로 준비 (CSS에 opacity:0;transition:.45s 넣어둬) */
+  slot.style.display = 'block';          // display:none 대신 block + 투명
+  slot.classList.remove('show');         // 혹시나
+  // 구형 CSS라면 일단 opacity 0 넣어도 됨: slot.style.opacity = 0;
+
+  /* 1) 구름 등장 */
+  clouds.forEach(c => c.classList.add('enter'));
+
+  /* 2) 구름 등장 끝 → 풍선 drop */
+  waitAnimEnd(clouds[clouds.length - 1], 'cloudEnter', 1500)
+    .then(() => {
+      balloons.forEach(b => b.classList.add('drop'));
+      return waitAnimEnd(balloons[balloons.length - 1], 'balloonDrop', 1500);
+    })
+    .then(() => {
+      /* 3) 동시에 시작!
+         - 풍선 페이드
+         - 구름 좌우 이동
+         - 메인 화면 페이드인
+         - 오버레이 페이드아웃(조금 딜레이 주고 시작하면 더 자연스러움)
+      */
+      balloons.forEach(b => b.classList.add('fade'));
+      clouds[0]?.classList.add('exit-left');
+      clouds[1]?.classList.add('exit-right');
+
+      // 메인 바로 페이드인
+      slot.classList.add('show');    // CSS: .slot-machine.show{opacity:1;}
+
+      // 오버레이 페이드 약간 늦게
+      setTimeout(() => overlay.classList.add('fade-overlay'), 150);
+
+      return waitAnimEnd(overlay, 'overlayFade', 1200);
+    })
+    .then(() => {
+      overlay.remove();
+      document.body.classList.add('gradient-ready');
+    });
+
+  /* 특정 animationName 기다리기 + 타임아웃 보호 */
+  function waitAnimEnd(el, name, timeout = 2000){
+    return new Promise(res => {
+      let done = false;
+      function handler(e){
+        if (!name || e.animationName === name){
+          done = true;
+          el.removeEventListener('animationend', handler);
+          res();
+        }
+      }
+      el.addEventListener('animationend', handler);
+      // 타임아웃 대비
+      setTimeout(() => {
+        if(!done){
+          el.removeEventListener('animationend', handler);
+          res();
+        }
+      }, timeout);
+    });
+  }
+});
+</script>
+
+
+
+
 
 <script>
   const startBtn = document.querySelector('.start-btn');

@@ -190,16 +190,22 @@ body {
   }
 }
 
-.result-container {
-  width: 100%;
-  min-height: 100vh;
-  background: #e4d0ff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  max-width: 90%; 
+.result-container{
+  display:flex;
+  justify-content:center;   /* 가로 중앙 */
+  align-items:center;       /* 세로 중앙 */
+  min-height:100vh;
+  background:#e4d0ff;
+  position:relative;        /* 버튼 절대위치 기준 */
 }
+
+
+/* ② 박스+버튼 묶음 */
+.frame-wrap{
+  position:relative;        /* btn-column 의 기준 */
+  display:inline-block;     /* 폭이 browser-frame 만큼만 */
+}
+
 .mbti-card{
   background: white;
   border-radius: 30px;
@@ -453,4 +459,175 @@ justify-content: center;
 /* 기존 mbti-card 헤더 스트립 겹침 방지 */
 .browser-body .mbti-card::before{display:none;}
 .browser-body .mbti-card{padding-top:30px;}
+
+/* 결과‑창과 버튼을 한 줄에 놓기 */
+.result-row{
+  display:flex;
+  justify-content:center;  /* ★ 이 한 줄 추가 */
+  align-items:center;       /* 세로 중앙 */
+  gap:28px;
+}
+
+/* ③ 버튼 컬럼 – 오른쪽 옆에 절대 위치 */
+.btn-column{
+  position:absolute;
+  top:50%;                  /* 세로 가운데 */
+  left:100%;                /* 박스 끝 기준 */
+  transform:translateX(28px) translateY(-50%); /* 28px 간격 주고 중앙 정렬 */
+  
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* 버튼 스타일 (기존 유지) */
+.btn-column button{
+  font-family:'Galmuri11',sans-serif;
+  padding:10px 22px;
+  border:2px solid #2b20a8;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:2px 2px 0 #2b20a8;
+  cursor:pointer;
+  transition:transform .2s;
+  min-width:180px;     /* ▶︎ 버튼 가로폭 확보 */
+  white-space:nowrap;  /* ▶︎ 줄바꿈 금지 (가로 유지) */
+}
+.btn-column button:hover{transform:translateY(-2px);}
+
+/* ─── 오버레이 기본 ─── */
+#intro-overlay{
+  position:fixed; inset:0;
+  background:#e4d0ff;
+  display:flex; justify-content:center; align-items:flex-start;
+  overflow:hidden; z-index:9999;
+  pointer-events:none;
+}
+
+/* ─── 풍선 ─── */
+.balloon{
+  position:absolute;
+  top:35vh;                                   /* 중앙보다 살짝 위 */
+  left:50%;
+  width:110px; height:auto;
+  opacity:0;
+  z-index:2;                                  /* 구름 위 */
+  will-change:transform,opacity;
+  transform:translate(calc((var(--idx)*120px) - 180px), -80px) scale(.9);
+}
+
+/* ↓ 떨어질 때 (JS: .drop 추가) */
+.balloon.drop{
+  animation:balloonDrop 0.95s cubic-bezier(.34,1.56,.64,1) forwards;
+  animation-delay:calc(var(--idx)*0.25s);
+}
+@keyframes balloonDrop{
+  0%   {opacity:0; transform:translate(calc((var(--idx)*120px) - 180px), -140px) scale(.85) rotate(-6deg);}
+  65%  {opacity:1; transform:translate(calc((var(--idx)*120px) - 180px),   0)     scale(1.05) rotate(3deg);}
+  100% {opacity:1; transform:translate(calc((var(--idx)*120px) - 180px),   0)     scale(1)    rotate(0deg);}
+}
+
+/* ↓ 서서히 사라질 때 (JS: .fade 추가) */
+.balloon.fade{
+  animation:balloonFade 0.65s ease-in-out forwards;
+}
+@keyframes balloonFade{
+  0%   {opacity:1;   transform:translate(calc((var(--idx)*120px) - 180px),   0)    scale(1)    rotate(0deg);}
+  60%  {opacity:.4;  transform:translate(calc((var(--idx)*120px) - 180px), -40px)  scale(.92)  rotate(-3deg);}
+  100% {opacity:0;   transform:translate(calc((var(--idx)*120px) - 180px), -80px)  scale(.85)  rotate(-6deg);}
+}
+
+
+
+/* 원하는 배율만 바꿔서 쓰기 (전체 공통) */
+:root{
+  --cloud-scale: 1.5;   /* ← 1 = 원래 크기, 1.5면 50% 크게 */
+}
+
+/* ─── 구름 ─── */
+.cloud{
+  --s: var(--cloud-scale);
+
+  position:absolute;
+  width:calc(340px * var(--s));
+  height:calc(160px * var(--s));
+  bottom:12%;
+  filter:blur(2px);
+  opacity:0;
+  transform:translateY(60px) scale(calc(.95 * var(--s)));
+  z-index:1;
+  will-change:transform,opacity;
+}
+.cloud span{
+  position:absolute;
+  background:#fff;
+  border-radius:50%;
+  box-shadow:0 0 6px rgba(255,255,255,.6) inset;
+  backface-visibility:hidden;
+  
+}
+
+/* 구름 내부 원들의 위치/크기 (원 5개 예시) */
+.cloud span:nth-child(1){ width:120px;height:120px; left:10px;  bottom:0;   }
+.cloud span:nth-child(2){ width:150px;height:150px; left:90px;  bottom:10px;}
+.cloud span:nth-child(3){ width:110px;height:110px; left:200px; bottom:25px;}
+.cloud span:nth-child(4){ width:90px; height:90px;  left:250px; bottom:0;   }
+.cloud span:nth-child(5){ width:100px;height:100px; left:150px; bottom:-10px;}
+
+/* 등장 */
+.cloud.enter{
+  animation:cloudEnter 1s ease-out forwards;
+}
+@keyframes cloudEnter{
+  0% {opacity:0; transform:translateY(60px) scale(.95);}
+  100%{opacity:1; transform:translateY(0)   scale(1);}
+}
+
+/* 퇴장: 좌우로 밀리며 서서히 페이드 */
+.cloud.exit-left{
+  animation:cloudLeftFade 1.3s ease-in-out forwards;
+}
+.cloud.exit-right{
+  animation:cloudRightFade 1.3s ease-in-out forwards;
+}
+@keyframes cloudLeftFade{
+  0%   {opacity:1; transform:translateX(0)       scale(1);}
+  100% {opacity:0; transform:translateX(-120vw)  scale(.9);}
+}
+@keyframes cloudRightFade{
+  0%   {opacity:1; transform:translateX(0)       scale(1);}
+  100% {opacity:0; transform:translateX(120vw)   scale(.9);}
+}
+
+/* 기존 공용 퇴장(.exit) 쓰고 싶으면 여기 유지/삭제 선택 */
+.cloud.exit{
+  animation:cloudExit .8s forwards;
+}
+@keyframes cloudExit{
+  to{transform:translateY(-50px) scale(.8); opacity:0;}
+}
+
+/* 위치 조절용 */
+.c1{ left:-60px; }
+.c2{ right:-40px; bottom:16%; width:380px; height:180px; }
+
+#intro-overlay.fade-overlay{
+  animation:overlayFade 1.0s ease forwards;
+}
+@keyframes overlayFade{
+  to{opacity:0; background:rgba(228,208,255,0); visibility:hidden;}
+}
+
+#letter-M{
+  width:120px;   /* 기존 110px → 원하는 크기 */
+}
+#letter-B{
+  width:100px;   /* 기존 110px → 원하는 크기 */
+  margin-left: 16px;
+  margin-right: 5px;
+}
+
+#letter-I{
+  width:100px;   /* 기존 110px → 원하는 크기 */
+}
 

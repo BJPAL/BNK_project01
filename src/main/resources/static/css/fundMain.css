@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+/* --------------------------------------------------------------------
+   Font faces
+-------------------------------------------------------------------- */
 @font-face {
   font-family: 'BNKGothic';
   src: url('/font/BNKGothic-Regular.ttf') format('truetype');
@@ -16,144 +19,209 @@
   font-display: swap;
 }
 
-/* ========= 컬러 변수 ========= */
+/* --------------------------------------------------------------------
+   Color variables
+-------------------------------------------------------------------- */
 :root {
   --primary: #10747d;
   --border : #96c3c7;
   --gray   : #f2f2f2;
 }
-html, body{ height:100%; } 
-* { box-sizing:border-box; margin:0; padding:0; }
+
+/* --------------------------------------------------------------------
+   Base reset & page layout
+-------------------------------------------------------------------- */
+html, body { height: 100%; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   font-family: 'BNKGothic';
-  color:#222;
-  background:#fff;
-  line-height:1.5;
-  display:flex;                     /* 🔹 Flex 레이아웃 */
-  justify-content:center;           /* 가로 중앙 */
-  align-items:center;               /* 세로 중앙 */
+  color: #222;
+  background: #fff;
+  line-height: 1.5;
+  display: flex;                 /* overall center */
+  justify-content: center;
+  align-items: center;
 }
 
-/* ========= ① 중앙 래퍼 ========= */
-.wrapper{
-  width:90vw;               /* 화면폭 90% 사용 */
-  max-width:1280px;         /* 너무 넓어지지 않게 제한 */
-  margin:0 auto;            /* 좌우 중앙 */
-  padding:40px 20px;
+/* --------------------------------------------------------------------
+   Wrapper & headings
+-------------------------------------------------------------------- */
+.wrapper {
+  width: 90vw;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
-/* ========= ② 제목 ========= */
-.section-title{
-  font-size:28px;
-  font-weight:700;
-  margin-bottom:14px;
-  font-faimily: 'BNKGothic';
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  font-family: 'BNKGothic';
 }
 
-/* ========= ③ 검색창 ========= */
-.search-bar{ position:relative; margin-bottom:32px; }
-.search-bar input{
-  width:100%; padding:14px 60px 14px 20px; font-size:16px;
-  border:2px solid var(--primary); border-radius:9999px; outline:none;
+/* --------------------------------------------------------------------
+   Search bar
+-------------------------------------------------------------------- */
+.search-bar { position: relative; margin-bottom: 32px; }
+.search-bar input {
+  width: 100%;
+  padding: 14px 60px 14px 20px;
+  font-size: 16px;
+  border: 2px solid var(--primary);
+  border-radius: 9999px;
+  outline: none;
 }
-.search-bar .fa-search{
-  position:absolute; right:24px; top:50%; transform:translateY(-50%);
-  color:var(--primary); font-size:20px; pointer-events:none;
-}
-
-/* ========= ④ 슬로건 & 링크 ========= */
-.headline{
-  display:flex; align-items:center; margin-bottom:12px;
-}
-.slogan{ font-size:18px; }
-.slogan b{ font-weight:700; }
-.inline-link{
-  margin-left:auto; font-size:20px; font-weight:600;
-  color:#000; text-decoration:none;
-}
-.inline-link:hover{ text-decoration:underline; }
-
-/* ========= ⑤ 카드 그리드 ========= */
-.cards{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);  /* 데스크톱: 3열 */
-  grid-auto-rows:140px;                  /* 한 행 높이 */
-  gap:32px;
-}
-.card{
-  background:var(--gray);
-  border-radius:12px;
-  padding:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-.card.big{ grid-row:span 2; min-height:280px; }
-.card.small{ min-height:140px; flex-direction:column; }
-.card-title{ font-size:18px; font-weight:700; color: #333333; }
-
-.card.small.icon{
-  position:relative;
-  padding-left:120px;          /* 아이콘 공간 확보 */
-  overflow:hidden;             /* 이미지가 넘치지 않게 */
+.search-bar .fa-search {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 20px;
+  pointer-events: none;
 }
 
-/* 아이콘 이미지 */
-.card.small.icon img{
-  position:absolute;
-  left:40px;                   /* 카드 왼쪽에서 32px */
-  top:50%;
-  transform:translateY(-50%);  /* 세로 중앙 정렬 */
-  width:140px; height:130px;     /* 크기(필요시 조절) */
-  object-fit:contain;          /* 비율 유지 */
-  pointer-events:none;
+/* --------------------------------------------------------------------
+   Headline row (slogan & link)
+-------------------------------------------------------------------- */
+.headline { display: flex; align-items: center; margin-bottom: 12px; }
+.slogan   { font-size: 18px; }
+.slogan b { font-weight: 700; }
+
+.inline-link {
+  margin-left: auto;
+  font-size: 18px;
+  font-weight: 600;
+  color: #404040;
+  text-decoration: none;
+}
+.inline-link:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------
+   Card grid layout
+-------------------------------------------------------------------- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* desktop: 3 cols */
+  grid-auto-rows: 140px;
+  gap: 32px;
 }
 
-/* 텍스트 */
-.card.small.icon .card-title{
-  position:absolute;
-  right:24px;                  /* 카드 오른쪽 아래 */
-  bottom:24px;
-  font-size:16px;
-  line-height:1.4;
-  text-align:right;            /* 줄바꿈도 오른쪽 맞춤 */
+.card {
+  background: var(--gray);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
-.card-title2{
-  font-family:'BNKGothic';
-  font-weight:1000;
-  font-size: 24px;
+.card.big   { grid-row: span 2; min-height: 280px; }
+.card.small { min-height: 140px; flex-direction: column; }
+
+.card-title  { font-size: 18px; font-weight: 700; color: #000; }
+.card-title2 { font-family: 'BNKGothic'; font-weight: 1000; font-size: 24px; }
+#best-title, #rec-title {font-size: 26px;}
+
+/* --------------------------------------------------------------------
+   Small icon cards (가이드 & MBTI)
+-------------------------------------------------------------------- */
+.card.small.icon {
+  position: relative;
+  padding-left: 120px;   /* reserve icon space */
+  overflow: hidden;
 }
 
-.card.small.icon.guide-card{
-   background-color: #e0fff7;
+.card.small.icon img {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 140px;
+  height: 130px;
+  object-fit: contain;
+  pointer-events: none;
 }
-.card.small.icon.mbti-card{
-   background-color: #f4ffe0;
+
+.card.small.icon .card-title {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  font-size: 16px;
+  line-height: 1.4;
+  text-align: right;
 }
+
+.card.small.icon.guide-card { background-color: #e0fff7; }
+.card.small.icon.mbti-card  { background-color: #f4ffe0; }
 
 .card.small.icon .mbti-img {
-	width: 210px;
-	height: 210px;
-	left: 20px;
+  width: 210px;
+  height: 210px;
+  left: 20px;
 }
 
-button.card{
-  border:none;           /* 기본 테두리 제거  */
-  background:none;       /* 기본 배경 제거    */
-  padding:0;             /* 기본 내부 여백 제거*/
-  font:inherit;          /* 글꼴·크기 상속    */
+/* --------------------------------------------------------------------
+   >>>  Big card layout (추천 펀드 · 수익률 BEST) <<<
+-------------------------------------------------------------------- */
+.card.big {
+  position: relative;            /* positioning context */
+  display: block;                /* disable flex */
+  padding: 32px 32px 32px 220px; /* reserve left space for image */
+  text-align: right;
 }
 
-#big1 {
-	background-color: #02ccc2;
-	color: #ffffff;
+.card.big img {
+  position: absolute;
+  top: 50%;
+  left: 40px;
+  transform: translateY(-50%);
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  pointer-events: none;
 }
-#big2 {
-	background-color: #02a3cc;
-	color: #ffffff;
+
+.card.big .card-title2 {
+  position: absolute;
+  right: 32px;
+  bottom: 32px;
+  line-height: 1.2;
 }
+
+/* 설명 텍스트(hover) --------------------------------------------- */
+.card.big .card-desc {
+  position: absolute;
+  right: 32px;
+  bottom: 71px;                   /* title 위로 32px + 약간 여유 */
+  font-size: 16px;                /* 더 작게 */
+  line-height: 1.35;
+  text-align: right;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.card.big:hover .card-desc { opacity: 1; }
+
+/* — Fine‑tune individual card elements — */
+#big1 img    { left: 40px; }
+
+/* --------------------------------------------------------------------
+   Button reset & interactive states
+-------------------------------------------------------------------- */
+button.card {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+}
+
+#big1 { background-color: #00d1a7; color: #fff; }
+#big2 { background-color: #3C99F7; color: #fff; }
 
 .card.small.icon,
 .card.big {
@@ -162,22 +230,28 @@ button.card{
 }
 
 .card.small.icon:hover,
-.card.big:hover {
-  transform: scale(1.05);   /* 5% 확대 */
-}
-/* ========= ⑥ 캐러셀 도트 ========= */
-.carousel-dots{
-  display:flex; justify-content:center;
-  gap:8px; margin:22px 0;
-}
-.dot{ width:8px; height:8px; border-radius:50%; background:#c4c4c4; }
-.dot.active{ background:var(--primary); }
+.card.big:hover { transform: scale(1.05); }
 
-/* ========= ⑦ 반응형 ========= */
-@media (max-width:900px){
-  .cards{ grid-template-columns:repeat(2,1fr); }
-  .card.big{ grid-row:span 1; }
+/* --------------------------------------------------------------------
+   Carousel dots
+-------------------------------------------------------------------- */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 22px 0;
 }
-@media (max-width:600px){
-  .cards{ grid-template-columns:1fr; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #c4c4c4; }
+.dot.active { background: var(--primary); }
+
+/* --------------------------------------------------------------------
+   Responsive tweaks
+-------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .card.big { grid-row: span 1; }
+}
+
+@media (max-width: 600px) {
+  .cards { grid-template-columns: 1fr; }
 }

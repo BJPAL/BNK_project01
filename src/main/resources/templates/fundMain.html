@@ -34,11 +34,21 @@
     <!-- 카드 영역 -->
     <section class="cards">
       <button onclick="location.href='/fund/list'" class="card big" id="big1">
-      	<span class="card-title2">추천 펀드</span>
+      	<img src="/images/rec5.png" id="rec-img">
+      	<span class="card-desc">
+		   나의 투자 성향에<br>
+		   꼭 맞는 펀드 추천
+		</span>
+      	<span class="card-title2" id="rec-title">추천 펀드</span>
       </button>
       
-      <button class="card big" id="big2">
-      	<span class="card-title2">수익률 BEST</span>
+      <button class="card big" id="big2" onclick="location.href='/fund/list'">
+      	<img src="/images/best.png">
+      	<span class="card-desc">
+		   수익률이 가장 높은<br>
+		   펀드 상품 TOP 10
+		</span>
+      	<span class="card-title2" id="best-title">수익률 BEST</span>
       </button>
 
      <button onclick="location.href='/guide'" class="card small icon guide-card">
