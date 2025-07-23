@@ -11,19 +11,24 @@
 
   <!-- 전용 CSS -->
   <link rel="stylesheet" href="/css/fundMain.css">
+	<link rel="stylesheet" href="/css/reset.css" />
+	<link rel="stylesheet" href="/css/userHeader.css" />
+	<link rel="stylesheet" href="/css/footer.css" />
+	<link rel="stylesheet" href="/css/fundMainHeader.css" />
 </head>
 <body>
+<th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+<th:block th:replace="fragments/fundMainHeader :: fundMainHeader"></th:block>
+
   <!-- 📌 중앙 정렬 래퍼 -->
   <div class="wrapper">
 
     <!-- 페이지 제목 -->
     <h2 class="section-title">펀드</h2>
 
-
-
     <!-- 안내 문구 -->
     <div class="headline">
-      <p class="slogan">나의 투자 성향에 맞는 <b>다양한 펀드</b>를 확인해보세요.</p>
+      <p class="slogan">나의 투자 성향에 맞는 <b>다양한 펀드</b>를 확인해보세요</p>
     </div>
 
     <!-- 카드 영역 -->
@@ -37,7 +42,7 @@
       	<span class="card-title2" id="rec-title">추천 펀드</span>
       </button>
       
-      <button class="card big" id="big2" onclick="location.href='/fund/list'">
+      <button class="card big" id="big2" onclick="location.href='/fund/best-return'">
       	<img src="/images/best.png">
       	<span class="card-desc">
 		   수익률이 가장 높은<br>
@@ -53,7 +58,7 @@
 		 </span>
 	 </button>
 	<!-- 아이콘형 카드 (펀드 MBTI) -->
-	<button type="button" onclick="location.href='/test'" class="card small icon mbti-card">
+	<button type="button" onclick="location.href='/mbti'" class="card small icon mbti-card">
 	  <img src="/images/main2.png" alt="MBTI" class="mbti-img">
 	  <span class="card-title">
 	    나의 투자 성격은?<br><b class="card-title2">펀드 MBTI</b>
@@ -88,7 +93,22 @@
     <span class="card-title2 br">1:1 문의</span>
   </button>
 </section>
-
   </div>
+<th:block th:replace="fragments/footer :: siteFooter" class="site-footer"></th:block>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const path = location.pathname;
+  document.querySelectorAll('.fund-tabs .tab').forEach(a => {
+    if (path.startsWith(a.getAttribute('href'))) {
+      a.classList.add('active');
+    }
+  });
+});
+</script>
+
+
+
+
 </body>
 </html>

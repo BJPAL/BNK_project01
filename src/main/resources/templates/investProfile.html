@@ -3,144 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>투자성향분석</title>
-  <style>
-body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background-color: #ffffff;
-  margin: 0;
-  padding: 0;
-  color: #222;
-}
-
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-h2 {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 16px;
-  color: #1a1a1a;
-}
-
-.section {
-  margin-top: 60px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  margin-bottom: 40px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 12px 16px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-th {
-  background-color: #f5f7fa;
-  font-weight: 600;
-  color: #333;
-}
-
-td {
-  color: #444;
-}
-
-ul {
-  font-size: 14px;
-  line-height: 1.8;
-  padding-left: 20px;
-  margin: 0;
-}
-
-.danger {
-  color: #b22222;
-  font-weight: bold;
-}
-
-.notice {
-  border: 1px solid #ccc;
-  background-color: #f8f8f8;
-  padding: 24px;
-  color: #222;
-  font-size: 14px;
-  line-height: 1.7;
-  margin-top: 40px;
-  border-left: 5px solid #d9534f;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.btn-box {
-  text-align: center;
-  margin-top: 30px;
-}
-
-.btn-analyze {
-  background-color: #d9534f;
-  color: white;
-  padding: 12px 40px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-analyze:hover {
-  background-color: #b52b27;
-}
-
-/* 위험도 색상 */
-.risk-1 { background-color: #7A0000; color: #fff; font-weight: bold; }
-.risk-2 { background-color: #A80000; color: #fff; font-weight: bold; }
-.risk-3 { background-color: #D00000; color: #fff; font-weight: bold; }
-.risk-4 { background-color: #F25B5B; color: #fff; font-weight: 500; }
-.risk-5 { background-color: #FFBABA; color: #222; font-weight: 500; }
-.risk-6 { background-color: #FFF5F5; color: #222; }
-
-/* 테이블 설명 */
-.table-note {
-  background-color: #fff8f8;
-  border: 1px solid #e0cfcf;
-  border-left: 5px solid #d9534f;
-  padding: 20px 24px;
-  margin-top: 30px;
-  font-size: 13.5px;
-  line-height: 1.8;
-  color: #333;
-  border-radius: 6px;
-}
-
-.table-note ul {
-  padding-left: 20px;
-  margin: 0;
-}
-
-.table-note li {
-  margin-bottom: 10px;
-}
-
-.table-note .warning-text {
-  color: #b22222;
-  font-weight: bold;
-  margin-top: 20px;
-}
-  </style>
+<link rel="stylesheet" href="/css/investProfile.css">
+<link rel="stylesheet" href="/css/reset.css" />
+<link rel="stylesheet" href="/css/userHeader.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/fundMainHeader.css" />
 </head>
 <body>
+<th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+<th:block th:replace="fragments/fundMainHeader :: fundMainHeader"></th:block>
 <div class="container">
   <h2><span th:text="|${user.name}님의 투자자정보확인|"></span></h2>
   <table>
@@ -318,5 +189,6 @@ ul {
     <button class="btn-analyze" onclick="location.href='terms'">분석하기</button>
   </div>
 </div>
+<th:block th:replace="fragments/footer :: siteFooter"></th:block>
 </body>
 </html>

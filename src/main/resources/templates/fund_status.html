@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title>펀드 시황</title>
   <link rel="stylesheet" href="/css/fund_status.css">
+  <link rel="stylesheet" href="/css/reset.css" />
+  <link rel="stylesheet" href="/css/userHeader.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/fundMainHeader.css" />
   <style>
     .no-result {
       text-align: center;
@@ -19,10 +23,11 @@
   </style>
 </head>
 <body>
+<th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+<th:block th:replace="fragments/fundMainHeader :: fundMainHeader"></th:block>
 <div class="container">
-  <h1>펀드시황</h1>
-
   <div class="header-box">
+  <h1>펀드시황</h1>
     <!-- ✅ 검색 폼 -->
     <form method="get" th:action="@{/fund_status}" class="search-box">
       <input type="text" name="keyword" th:value="${keyword}" placeholder="검색어를 입력하세요">
@@ -80,5 +85,6 @@
        th:style="${currentPage == totalPages - 1} ? 'visibility: hidden;' : ''">&gt;</a>
   </div>
 </div>
+<th:block th:replace="fragments/footer :: siteFooter"></th:block>
 </body>
 </html>

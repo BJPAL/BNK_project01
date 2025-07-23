@@ -4,10 +4,12 @@
 body {
   font-family: 'Noto Sans KR', sans-serif;
   background-color: #fafafa;
-  padding: 40px;
-  text-align: center;
   color: #222;
+  margin: 0;
+  padding: 0; /* ✅ padding 제거해서 전체 폭 사용 */
+  text-align: center;
 }
+
 
 /* === 제목 === */
 h1 {
@@ -245,4 +247,8 @@ h1 {
   .answer img {
     margin-bottom: 4px;
   }
+}
+
+.site-footer {
+  margin-top: 100px;
 }

@@ -8,11 +8,8 @@ public class FundMBTIController {
 	
 	@GetMapping("/mbti")
 	public String fundMbti() {
-		return "fundMbti";
+		return "mbti";
 	}
 	
-	@GetMapping("/test")
-	public String test() {
-		return "test";
-	}
+
 }

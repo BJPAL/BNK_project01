@@ -6,8 +6,14 @@
   <link rel="stylesheet" href="/css/userHeader.css">
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/faq.css">
+  <link rel="stylesheet" href="/css/userHeader.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/fundMainHeader.css" />
 </head>
 <body>
+<th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+<th:block th:replace="fragments/fundMainHeader :: fundMainHeader"></th:block>
+
 <h1>자주 묻는 질문</h1>
 
 <div class="search-wrapper">
@@ -95,6 +101,6 @@
     searchFaq(); // 초기 FAQ 목록 + 페이지네이션
   });
 </script>
-
+<th:block th:replace="fragments/footer :: siteFooter"></th:block>
 </body>
 </html>
