@@ -1,8 +1,9 @@
-<div th:fragment="userHeader" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:fragment="userHeader" xmlns:th="http://www.thymeleaf.org">
   <header class="header">
     <div class="logo">
-      <img src="/images/logo.png" alt="BNK 부산은행 로고" />
+      <a th:href="@{/user/}"><img src="/images/logo.png" alt="BNK 부산은행 로고" /></a>
     </div>
+
   <div class="right-section">
     <nav class="main-nav">
       <button class="nav-btn">개인</button>
@@ -23,8 +24,8 @@
     </nav>
 
     <div class="user-info">
-        <a href="/login">로그인</a>
-      <span>|</span> <a href="/logout">회원가입</a>
+        <a th:href="@{/auth/login}">로그인</a>
+      <span>|</span> <a th:href="@{/auth/join}">회원가입</a>
       <button class="menu-icon" onclick="toggleMenu()"><img src="/images/menu_icon.png" alt="menu 아이콘"></button>
     </div>
 
@@ -49,14 +50,6 @@
             </div>
             <div class="hidden-menu-subTab">
                 <span class="active">조회</span> | 
-                <span>이체</span> | 
-                <span>예금/신탁</span> | 
-                <span>퇴직연금</span> | 
-                <span>ISA</span> | 
-                <span>대출</span> | 
-                <span>웰스타로보B</span> | 
-                <span>펀드</span> | 
-                <span>카드</span> | 
                 <span>외환</span> | 
                 <span>보험</span> | 
                 <span>공과금납부</span> | 
@@ -88,22 +81,6 @@
                 });
             });
             </script>
-
-            <hr>
-            <h4 class="hidden-menu-subTab-title">조회</h4>
-            <ul class="hidden-menu-subTab-list">
-                <li><a href="#">전체 계좌 조회</a></li>
-                <li><a href="#">거래 내역 조회</a></li>
-                <li><a href="#">이체 내역 조회</a></li>
-                <li><a href="#">특정일전체계좌잔액조회</a></li>
-                <li><a href="#">썸패스가맹점거래조회</a></li>
-                <li><a href="#">수표/어음</a></li>
-                <li><a href="#">세금우대/비과세한도조회</a></li>
-                <li><a href="#">해지계좌조회</a></li>
-                <li><a href="#">해지계좌거래내역조회</a></li>
-                <li><a href="#">기일도래명도세조회</a></li>
-                <li><a href="#">계좌통합관리서비스</a></li>
-            </ul>
         </div>
     </div>
   </header>
