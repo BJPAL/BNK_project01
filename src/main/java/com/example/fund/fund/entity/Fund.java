@@ -33,8 +33,8 @@ public class Fund extends BaseEntity {
     @Column(name = "establish_date")
     private LocalDate establishDate;    // 펀드 설정일
 
-    @Column(name = "launch_date")
-    private LocalDate launchDate;        // 펀드 출범일
+    @Column(name = "launch_date")       // 삭제 해야 될 수도
+    private LocalDate launchDate;       // 펀드 출범일
 
     @Column(name = "nav", precision = 10, scale = 2)
     private BigDecimal nav;        // 기준가
@@ -51,7 +51,8 @@ public class Fund extends BaseEntity {
     @Column(name = "management_company", length = 100)
     private String managementCompany;
 
-    @JoinColumn(name = "fund_policy_id")
-    @OneToOne(mappedBy = "fund", fetch = FetchType.LAZY)
-    private FundPolicy fundPolicy;
+//    @JoinColumn(name = "fund_policy_id")
+//    @JoinColumn(name = "policy_id")
+//    @OneToOne(mappedBy = "fund", fetch = FetchType.LAZY)
+//    private FundPolicy fundPolicy;
 }

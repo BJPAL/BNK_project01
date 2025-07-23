@@ -19,7 +19,7 @@
       </div>
       <div class="container edit-container">
         <div class="regist-title">
-          <button class="new-fund-btn" onclick="location.href='/admin/fund/new'">+ 펀드 등록</button>
+          <button class="new-fund-btn" th:if="${session.admin.role != 'super'}" onclick="location.href='/admin/fund/new'">+ 펀드 등록</button>
         </div>
 
         <table class="fund-table" >

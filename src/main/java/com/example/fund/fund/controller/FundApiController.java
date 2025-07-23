@@ -71,7 +71,7 @@ public class FundApiController {
     public ResponseEntity<ApiResponse<FundListResponse>> getFundList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam int investType,
+            @RequestParam Integer investType,
             @RequestParam(required = false) List<String> risk,      // 위험등급 필터
             @RequestParam(required = false) List<String> type,      // 펀드유형 필터
             @RequestParam(required = false) List<String> region     // 투자지역 필터
@@ -151,6 +151,90 @@ public class FundApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.failure(
                             "서버 오류가 발생했습니다.",
+                            "INTERNAL_SERVER_ERROR"
+                    ));
+        }
+    }
+
+    /**
+     * 투자 성향에 따른 배포된 펀드 목록 - REST API
+     */
+    /*
+        {
+          "success": true,
+          "data": [...],
+          "investType": 3,
+          "investTypeName": "위험 중립형",
+          "pagination": {
+            "page": 1,
+            "limit": 10,
+            "total": 50,
+            "totalPages": 5,
+            "hasNext": true,
+            "hasPrev": false,
+            "currentItems": 10
+          }
+        }
+    */
+    @GetMapping("/list-policy")
+    public ResponseEntity<ApiResponse<FundListResponse>> getFundList_policy(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam int investType,
+            @RequestParam(required = false) List<String> risk,      // 위험등급 필터
+            @RequestParam(required = false) List<String> type,      // 펀드유형 필터
+            @RequestParam(required = false) List<String> region     // 투자지역 필터
+    ) {
+        try {
+            // 투자성향 유효성 검사
+            if (investType < MIN_INVEST_TYPE || investType > MAX_INVEST_TYPE) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.failure(
+                                "투자 성향은 1~5 사이의 값이어야 합니다.",
+                                "INVALID_INVESTMENT_TYPE"
+                        ));
+            }
+
+            // 페이지 설정
+            Pageable pageable = PageRequest.of(page, size, Sort.by("policyId").descending());
+
+            // 데이터 조회
+            Page<FundResponseDTO> fundPage = fundService.findWithFilters_policy(investType, risk, type, region, pageable);
+
+            // 투자성향 이름 조회
+            String investTypeName = getInvestTypeName(investType);
+
+            // 응답 데이터 구성
+            FundListResponse fundListResponse = FundListResponse.builder()
+                    .funds(fundPage.getContent())
+                    .investType(investType)
+                    .investTypeName(investTypeName)
+                    .build();
+
+            // 페이지 정보 생성
+            PaginationInfo paginationInfo = PaginationInfo.from(fundPage, page);
+
+            // 성공 응답 반환
+            String responseMessage = String.format("펀드 %d개를 조회", fundPage.getNumberOfElements());
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            fundListResponse,
+                            responseMessage,
+                            paginationInfo
+                    )
+            );
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.failure(e.getMessage(), "INVALID_PARAMETER"));
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.failure(
+                            "서버 오류",
                             "INTERNAL_SERVER_ERROR"
                     ));
         }

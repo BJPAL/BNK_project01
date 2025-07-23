@@ -21,7 +21,12 @@
           <td th:text="${qna.user.username}"></td>
           <td th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd')}"></td>
           <td>
-            <a th:href="@{'/admin/qna/detail/' + ${qna.qnaId}}">답변하기</a>
+            <a
+              th:href="@{'/admin/qna/detail/' + ${qna.qnaId}}"
+              data-url="/admin/qnaList"
+              class="group_a"
+              >답변하기</a
+            >
           </td>
         </tr>
       </tbody>
