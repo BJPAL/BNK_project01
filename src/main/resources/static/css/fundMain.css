@@ -73,15 +73,7 @@ body {
   border-radius: 9999px;
   outline: none;
 }
-.search-bar .fa-search {
-  position: absolute;
-  right: 24px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary);
-  font-size: 20px;
-  pointer-events: none;
-}
+
 
 /* --------------------------------------------------------------------
    Headline row
@@ -512,3 +504,18 @@ button.card {
   transform: scale(1.05);
   box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
 }
+
+/* ▼ 헤더(탭)와 메인 사이 간격 줄이기 */
+.fund-tabs{
+  margin-bottom: 24px !important;   /* 기존 70px → 24px 정도로 */
+}
+
+/* 탭 바로 다음에 오는 래퍼 여백 제거 */
+.fund-tabs + .wrapper{
+  margin-top: 0 !important;
+  padding-top: 16px !important;     /* 필요하면 더 줄이거나 0 */
+}
+
+/* 제목·슬로건 여백도 조금만 */
+.section-title{ margin-top: 0; margin-bottom: 8px; }
+.headline{ margin-bottom: 8px; }
