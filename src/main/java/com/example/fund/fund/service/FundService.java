@@ -1,5 +1,22 @@
 package com.example.fund.fund.service;
 
+import com.example.fund.fund.dto.FundDetailResponse;
+import com.example.fund.fund.dto.FundDetailResponseDto;
+import com.example.fund.fund.dto.FundRegisterRequest;
+import com.example.fund.fund.dto.FundResponseDTO;
+import com.example.fund.fund.entity.*;
+import com.example.fund.fund.repository.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -14,27 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.imageio.ImageIO;
-
-import com.example.fund.fund.dto.FundDetailResponseDto;
-import com.example.fund.fund.entity.*;
-import com.example.fund.fund.repository.*;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.example.fund.fund.dto.FundDetailResponse;
-import com.example.fund.fund.dto.FundRegisterRequest;
-import com.example.fund.fund.dto.FundResponseDTO;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -174,6 +170,7 @@ public class FundService {
     public List<Fund> findAll() {
         return fundRepository.findAll();
     }
+
     public List<Fund> getAllFunds() {
         return fundRepository.findAll();
     }
@@ -303,7 +300,9 @@ public class FundService {
 
     // ============================================================================================================
 
-    /** 투자 성향 + 3개월 수익률 중에세 가장 높은 수익률 10개를 조회 */
+    /**
+     * 투자 성향 + 3개월 수익률 중에세 가장 높은 수익률 10개를 조회
+     */
     public List<FundResponseDTO> findBestReturn(
             Integer investType,
             Pageable pageable
@@ -329,9 +328,9 @@ public class FundService {
      *
      * @param investType 투자성향 (1~5)
      * @param riskLevels 사용자가 선택한 위험등급 리스트 (선택사항)
-     * @param fundTypes 사용자가 선택한 펀드유형 리스트 (선택사항)
-     * @param regions 사용자가 선택한 투자지역 리스트 (선택사항)
-     * @param pageable 페이지네이션 정보
+     * @param fundTypes  사용자가 선택한 펀드유형 리스트 (선택사항)
+     * @param regions    사용자가 선택한 투자지역 리스트 (선택사항)
+     * @param pageable   페이지네이션 정보
      * @param fundTypes  사용자가 선택한 펀드유형 리스트 (선택사항)
      * @param regions    사용자가 선택한 투자지역 리스트 (선택사항)
      * @param pageable   페이지네이션 정보

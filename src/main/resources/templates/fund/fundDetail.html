@@ -3,12 +3,21 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/css/fund/fund_detail.css" />
+        <!-- 라이브러리 -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <!-- 페이지 스타일 -->
+        <link rel="stylesheet" href="/css/fund/fund_detail.css" />
+        <!-- 프레그먼트 스타일 -->
+        <link rel="stylesheet" href="/css/userHeader.css" />
         <link rel="stylesheet" href="/css/footer.css" />
+        <!-- 제목 -->
         <title>펀드 상세 정보</title>
     </head>
     <body>
+        <!-- 헤더 영역 -->
+        <th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+
+        <!-- 메인 영역 -->
         <div class="container">
             <!-- 페이지 제목 영역 -->
             <div class="page-title-container">
@@ -142,8 +151,8 @@
             </div>
         </div>
 
-        <!--footer 자리-->
-        <div th:replace="fragments/footer :: siteFooter"></div>
+        <!-- 푸터 영역 -->
+        <th:block th:replace="fragments/footer :: siteFooter"></th:block>
     </body>
 
     <script>
