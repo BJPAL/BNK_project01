@@ -178,8 +178,8 @@
               <tr th:if="${approval.fund != null}">
                 <th>펀드명</th>
                 <td>
-                  <a th:href="@{/fund/fundDetail/{id}(id=${approval.fund.fundId})}"
-                     th:text="${approval.fund.name}"
+                  <a th:href="@{/admin/fund/view/{id}(id=${approval.fund.fundId})}"
+                     th:text="${approval.fund.fundName}"
                      style="color:var(--primary); font-weight:600;">
                   </a>
                 </td>

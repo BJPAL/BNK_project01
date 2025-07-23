@@ -41,6 +41,8 @@ public class FundService {
     private final FundReturnRepository fundReturnRepository;
     private final FundAssetRepository fundAssetRepository;  // deprecated 됨, 수정 필요
     private final FundPortfolioRepository fundPortfolioRepository;
+    private final FundPolicyRepository fundPolicyRepository;
+    private final FundDocumentRepository fundDocumentRepository;
 
     /**
      * 새로운 메서드 - 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
@@ -217,8 +219,8 @@ public class FundService {
     }
 
     /*PDF 저장 & JPG 변환*/
-    private final FundPolicyRepository fundPolicyRepository;
-    private final FundDocumentRepository fundDocumentRepository;
+//    private final FundPolicyRepository fundPolicyRepository;
+//    private final FundDocumentRepository fundDocumentRepository;
     private final String UPLOAD_DIR = "C:\\bnk_project\\data\\uploads\\fund_document\\";
 
     @Transactional
@@ -694,6 +696,45 @@ public class FundService {
 
         log.info("펀드 상세 정보 조회 완료 - fundId: {}", fundId);
         return builder.build();
+    }
+
+    //펀드 수정 메서드
+    @Transactional
+    public void updateFundAdmin(Long fundId,
+                                String fundTheme,
+                                MultipartFile fileTerms,
+                                MultipartFile fileManual,
+                                MultipartFile fileProspectus) throws IOException {
+
+        // 1. 정책 저장/수정
+        FundPolicy policy = fundPolicyRepository.findByFund_FundId(fundId)
+                .orElseGet(() -> FundPolicy.builder()
+                        .fund(fundRepository.findByFundId(fundId)
+                                .orElseThrow(() -> new RuntimeException("펀드 없음")))
+                        .build());
+        policy.setFundTheme(fundTheme);
+        fundPolicyRepository.save(policy);
+
+        // 2. 문서 교체 (있을 때만)
+        if (fileTerms != null && !fileTerms.isEmpty()) {
+            replaceDocument(fundId, "약관", fileTerms);
+        }
+        if (fileManual != null && !fileManual.isEmpty()) {
+            replaceDocument(fundId, "상품설명서", fileManual);
+        }
+        if (fileProspectus != null && !fileProspectus.isEmpty()) {
+            replaceDocument(fundId, "투자설명서", fileProspectus);
+        }
+    }
+
+    @Transactional
+    public void replaceDocument(Long fundId, String docType, MultipartFile newFile) throws IOException {
+        // 기존 문서 삭제 (있다면)
+        fundDocumentRepository.deleteByFund_FundIdAndDocType(fundId, docType);
+        // 새 문서 저장 (이미 있는 saveFundDocument 재사용)
+        Fund fund = fundRepository.findByFundId(fundId)
+                .orElseThrow(() -> new RuntimeException("펀드 없음"));
+        saveFundDocument(fund, newFile, docType);
     }
 
 }

@@ -27,33 +27,34 @@
                 <tr><td class="label">총보수율</td><td th:text="${fund.totalExpenseRatio}"></td></tr>
                 <tr><td class="label">위험등급</td><td th:text="${fund.riskLevel}"></td></tr>
                 <tr><td class="label">운용사</td><td th:text="${fund.managementCompany}"></td></tr>
-                <tr><td class="label">테마</td><td th:text="${fund.fundTheme}"></td></tr>
+                <tr><td class="label">테마</td>
+                    <td th:text="${policy != null ? policy.fundTheme : '-'}">-</td>
+                </tr>
             </table>
 
             <h3 class="detail-box-title">등록된 문서</h3>
             <table class="detail-table">
-                <tr>
+                <tr th:if="${termsFileId != null}">
                     <td class="label">약관</td>
                     <td>
-                        <a th:href="@{/api/funds/files/document/{id}(id=${fund.termsFileId})}" target="_blank">
-                          <span th:text="${fund.termsFileName} + '.pdf'">약관.pdf</span> 다운로드
+                        <a th:href="@{/api/funds/files/document/{id}(id=${termsFileId})}" target="_blank">
+                            <span th:text="${termsFileName} + '.pdf'">약관.pdf</span> 다운로드
                         </a>
                     </td>
                 </tr>
-                <tr>
+                <tr th:if="${manualFileId != null}">
                     <td class="label">상품설명서</td>
                     <td>
-                      <a th:href="@{/api/funds/files/document/{id}(id=${fund.manualFileId})}" target="_blank">
-                        <span th:text="${fund.manualFileName} + '.pdf'">manual.pdf</span> 다운로드
-                      </a>
+                        <a th:href="@{/api/funds/files/document/{id}(id=${manualFileId})}" target="_blank">
+                            <span th:text="${manualFileName} + '.pdf'">manual.pdf</span> 다운로드
+                        </a>
                     </td>
                 </tr>
-                <tr>
+                <tr th:if="${prospectusFileId != null}">
                     <td class="label">투자설명서</td>
                     <td>
-                        
-                        <a th:href="@{/api/funds/files/document/{id}(id=${fund.prospectusFileId})}" target="_blank">
-                            <span th:text="${fund.prospectusFileName} + '.pdf'">prospectus.pdf</span> 다운로드
+                        <a th:href="@{/api/funds/files/document/{id}(id=${prospectusFileId})}" target="_blank">
+                            <span th:text="${prospectusFileName} + '.pdf'">prospectus.pdf</span> 다운로드
                         </a>
                     </td>
                 </tr>

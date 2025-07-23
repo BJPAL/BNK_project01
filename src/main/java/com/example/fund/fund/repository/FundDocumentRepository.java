@@ -11,4 +11,6 @@ import com.example.fund.fund.entity.FundDocument;
 public interface FundDocumentRepository extends JpaRepository<FundDocument, Long>{
 
     List<FundDocument> findByFund_FundId(Long fundId);
+
+    void deleteByFund_FundIdAndDocType(Long fundId, String docType);
 }

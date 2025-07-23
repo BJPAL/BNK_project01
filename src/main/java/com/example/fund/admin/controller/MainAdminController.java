@@ -1,7 +1,12 @@
 package com.example.fund.admin.controller;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.entity.FundDocument;
+import com.example.fund.fund.repository.FundDocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.fund.admin.dto.AdminDTO;
@@ -39,6 +45,7 @@ import lombok.RequiredArgsConstructor;
 public class MainAdminController {
 
     private final AdminService_A adminService_a;
+    private final FundDocumentRepository fundDocumentRepository;
 
     /* 1) /admin/ → 세션 O : 대시보드로 / 세션 X : 로그인 */
     @GetMapping({ "/", "" })
@@ -174,28 +181,74 @@ public class MainAdminController {
         return "fund/fundRegistList";
     }
 
-    // 상세보기 페이지로 이동
+//    @GetMapping("/fund/view/{id}")
+//    public String viewFundDetail(@PathVariable Long id, Model model) {
+//
+//        Fund fund = fundService.findById(id)
+//                .orElseThrow(() -> new NoSuchElementException("펀드를 찾을 수 없습니다. id=" + id));
+//
+//        FundPolicy policy = fundPolicyRepository.findByFund_FundId(id).orElse(null);
+//
+//        // 문서들 조회 (리포지토리 이름은 예시 – 실제 이름에 맞게 사용)
+//        List<FundDocument> docs = fundDocumentRepository.findByFund_FundId(id);
+//
+//        Long termsFileId      = getDocId(docs, "약관");
+//        Long manualFileId     = getDocId(docs, "상품설명서");
+//        Long prospectusFileId = getDocId(docs, "투자설명서");
+//
+//        String termsFileName      = getDocName(docs, "약관");
+//        String manualFileName     = getDocName(docs, "상품설명서");
+//        String prospectusFileName = getDocName(docs, "투자설명서");
+//
+//        model.addAttribute("fund", fund);
+//        model.addAttribute("policy", policy);
+//        model.addAttribute("termsFileId", termsFileId);
+//        model.addAttribute("manualFileId", manualFileId);
+//        model.addAttribute("prospectusFileId", prospectusFileId);
+//        model.addAttribute("termsFileName", termsFileName);
+//        model.addAttribute("manualFileName", manualFileName);
+//        model.addAttribute("prospectusFileName", prospectusFileName);
+//
+//        return "fund/fundRegistDetail";
+//    }
+
     @GetMapping("/fund/view/{id}")
-    public String viewFundDetail(@PathVariable("id") Long id,
-            @RequestParam(name = "includePolicy", defaultValue = "true") boolean includePolicy,
-            Model model) {
-        FundDetailResponse fund = includePolicy
-                ? fundService.getFundDetailWithPolicy(id)
-                : fundService.getFundDetailBasic(id);
+    public String viewFundDetail(@PathVariable Long id, Model model) {
+        FundDetailResponse fund = fundService.getFundDetailWithPolicy(id);
+
+        FundPolicy policy = fundPolicyRepository.findByFund_FundId(id).orElse(null);
 
         model.addAttribute("fund", fund);
-        return "fund/fundRegistDetail"; // 🔁 템플릿 경로에 맞게 파일명 확인
+        model.addAttribute("policy", policy);
+        return "fund/fundRegistDetail";
     }
 
-    // 수정하기 페이지로 이동
-    @GetMapping("/fund/edit/{id}")
-    public String editPage(@PathVariable("id") Long id,
-            @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy,
-            Model model) {
-        FundDetailResponse fund = includePolicy
-                ? fundService.getFundDetailWithPolicy(id)
-                : fundService.getFundDetailBasic(id);
+//    // 수정하기 페이지로 이동
+//    @GetMapping("/fund/edit/{id}")
+//    public String editPage(@PathVariable("id") Long id,
+//            @RequestParam(name = "includePolicy", defaultValue = "false") boolean includePolicy,
+//            Model model) {
+//        FundDetailResponse fund = includePolicy
+//                ? fundService.getFundDetailWithPolicy(id)
+//                : fundService.getFundDetailBasic(id);
+//
+//        model.addAttribute("fund", fund);
+//        return "fund/fundRegistEdit";
+//    }
 
+//    // 수정 폼 위 메서드를 수정
+//    @GetMapping("/fund/edit/{id}")
+//    public String editFund(@PathVariable Long id, Model model) {
+//        FundDetailResponse fund = fundService.getFundDetailWithPolicy(id);
+//        model.addAttribute("fund", fund);
+//        return "fund/fundRegistEdit";
+//    }
+
+    //재수정
+    @GetMapping("/fund/edit/{id}")
+    public String editPage(@PathVariable("id") Long id, Model model) {
+        // 정책까지 꼭 포함된 DTO 를 가져오도록 강제
+        FundDetailResponse fund = fundService.getFundDetailWithPolicy(id);
         model.addAttribute("fund", fund);
         return "fund/fundRegistEdit";
     }
@@ -203,5 +256,32 @@ public class MainAdminController {
     @GetMapping("/construction")
     public String construction() {
         return "admin/constructionPage";
+    }
+
+    private Long getDocId(List<FundDocument> list, String type){
+        return list.stream()
+                .filter(d -> type.equals(d.getDocType()))
+                .map(FundDocument::getDocumentId)
+                .findFirst().orElse(null);
+    }
+    private String getDocName(List<FundDocument> list, String type){
+        return list.stream()
+                .filter(d -> type.equals(d.getDocType()))
+                .map(FundDocument::getDocTitle)
+                .findFirst().orElse(null);
+    }
+
+    @PostMapping("/fund/update/{id}")
+    public String updateFund(@PathVariable Long id,
+                             @RequestParam String fundTheme,
+                             @RequestParam(required = false) MultipartFile fileTerms,
+                             @RequestParam(required = false) MultipartFile fileManual,
+                             @RequestParam(required = false) MultipartFile fileProspectus,
+                             RedirectAttributes rttr) throws IOException {
+
+        fundService.updateFundAdmin(id, fundTheme, fileTerms, fileManual, fileProspectus);
+
+        rttr.addFlashAttribute("msg", "펀드 수정이 완료되었습니다.");
+        return "redirect:/admin/fund/view/" + id;
     }
 }
