@@ -56,7 +56,7 @@
         <!-- 페이징 -->
         <div class="pagination" th:if="${policyPage.totalPages > 1}">
           <span th:each="i : ${#numbers.sequence(0, policyPage.totalPages - 1)}">
-            <a th:href="@{/fund/list(page=${i})}"
+            <a th:href="@{/admin/fund/list(page=${i})}"
               th:text="${i + 1}"
               th:classappend="${i == policyPage.number} ? 'active' : ''">1</a>
           </span>

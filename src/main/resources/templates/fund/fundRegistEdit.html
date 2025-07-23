@@ -18,7 +18,7 @@
         <h2 class="fund-list-title">펀드 수정</h2>
 
         <form id="fundForm" method="post" enctype="multipart/form-data"
-              th:action="@{/fund/update/{id}(id=${fund.fundId})}">
+              th:action="@{/admin/fund/update/{id}(id=${fund.fundId})}">
           <input type="hidden" name="fundId" th:value="${fund.fundId}"/>
 
           <label>펀드 이름 :

@@ -83,6 +83,12 @@ public class ApprovalController {
             /* 두번째 파라미터를 admin.getRole() 으로 전달 */
             approvalService.approve(id, admin.getRole(), reason);
             redirect.addFlashAttribute("alertMessage", "승인 처리되었습니다.");
+            // 승인한 결재가 특정 펀드와 연결되어 있으면 그 펀드 상세로 이동
+            Approval approval = approvalService.findById(id);
+            if (approval != null && approval.getFund() != null) {
+                Long fundId = approval.getFund().getFundId();
+                return "redirect:/admin/fund/view/" + fundId;
+            }
         } catch (SecurityException ex) {
             redirect.addFlashAttribute("alertMessage", ex.getMessage());
         } catch (Exception ex) {
@@ -134,6 +140,12 @@ public class ApprovalController {
         try {
             approvalService.publish(id, admin.getAdminname());
             redirectAttributes.addFlashAttribute("successMessage", "성공적으로 배포되었습니다.");
+
+            Approval approval = approvalService.findById(id);
+            if (approval != null && approval.getFund() != null) {
+                Long fundId = approval.getFund().getFundId();
+                return "redirect:/admin/fund/view/" + fundId;
+            }
         } catch (SecurityException e) {
             redirectAttributes.addFlashAttribute("alertMessage", e.getMessage());
         } catch (Exception e) {

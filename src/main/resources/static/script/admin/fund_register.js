@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       return response.json(); 
     })
-    .then(result => {s
+    .then(result => {
       const fundId = result.fundId;
 
       document.getElementById('confirmModal').style.display = 'flex';
