@@ -177,9 +177,6 @@ public class ApprovalController {
 
     @GetMapping("/form")
     public String showForm(@RequestParam(value = "fundId", required = false) Long fundId, HttpSession session, Model model) {
-    public String showForm(@RequestParam("fundId") Long fundId,
-                        HttpSession session,
-                        Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null || !"planner".equals(admin.getRole())){
             return "redirect:/admin/";
