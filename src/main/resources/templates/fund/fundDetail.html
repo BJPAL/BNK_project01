@@ -3,12 +3,21 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/css/fund/fund_detail.css" />
+        <!-- 라이브러리 -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <!-- 페이지 스타일 -->
+        <link rel="stylesheet" href="/css/fund/fund_detail.css" />
+        <!-- 프레그먼트 스타일 -->
+        <link rel="stylesheet" href="/css/userHeader.css" />
         <link rel="stylesheet" href="/css/footer.css" />
+        <!-- 제목 -->
         <title>펀드 상세 정보</title>
     </head>
     <body>
+        <!-- 헤더 영역 -->
+        <th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+
+        <!-- 메인 영역 -->
         <div class="container">
             <!-- 페이지 제목 영역 -->
             <div class="page-title-container">
@@ -133,8 +142,8 @@
 
             <!-- 버튼 영역 -->
             <div class="button-container">
-                <button class="page-btn btn-secondary" onclick="goToList()">
-                    목록으로
+                <button class="page-btn btn-secondary" onclick="goBack()">
+                    뒤로가기
                 </button>
                 <button class="page-btn btn-primary" onclick="joinFund()">
                     가입하기
@@ -142,8 +151,8 @@
             </div>
         </div>
 
-        <!--footer 자리-->
-        <div th:replace="fragments/footer :: siteFooter"></div>
+        <!-- 푸터 영역 -->
+        <th:block th:replace="fragments/footer :: siteFooter"></th:block>
     </body>
 
     <script>
@@ -456,7 +465,7 @@
             // 도넛 차트 렌더링
             renderPortfolioChart(data);
         }
-        // 포트폴리오 테이블 렌더링 (새로운 구조)
+        // 포트폴리오 테이블 렌더링
         function renderPortfolioTable(data) {
             const tbody = document.getElementById("portfolioTableBody");
             tbody.innerHTML = "";
@@ -676,9 +685,15 @@
         }
 
         // 버튼 이벤트 핸들러
-        function goToList() {
+        function goBack() {
             // 목록 페이지로 이동
-            window.location.href = "/fund/list";
+            // window.location.href = "/fund/list";
+
+            // 한 페이지 뒤로
+            // window.history.go(-1); // -1은 한 페이지 뒤로
+
+            // 브라우저의 이전 페이지로 이동
+            window.history.back();
         }
         function joinFund() {
             if (!fundData) {

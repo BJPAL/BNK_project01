@@ -6,6 +6,8 @@ import com.example.fund.admin.approval.repository.ApprovalRepository;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.repository.AdminRepository_A;
 import com.example.fund.admin.repository.projection.StatusCount;
+import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.repository.FundRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ public class ApprovalService {
     private final ApprovalRepository approvalRepository;
     private final AdminRepository_A  adminRepository;
     private final ApprovalLogService approvalLogService;   // 결재 로그 기록용
+    private final FundRepository fundRepository;
 
     /* 승인/반려 가능한 역할 */
     private static final List<String> APPROVER_ROLES =
@@ -102,15 +105,22 @@ public class ApprovalService {
 
     /* ───── 5. 결재 요청 등록 (요청자) ───── */
     @Transactional
-    public Integer createApproval(String title, String content, Integer adminId) {
+    public Integer createApproval(String title, String content, Integer adminId, Long fundId) {
 
         Admin writer = adminRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("작성자 정보 없음"));
+
+        Fund fund = null;
+        if (fundId != null) {
+            fund = fundRepository.findById(fundId)
+                    .orElseThrow(() -> new IllegalArgumentException("펀드 정보 없음"));
+        }
 
         Approval approval = Approval.builder()
                 .title(title)
                 .content(content)
                 .writer(writer)
+                .fund(fund)
                 .status("결재대기")
                 .build();
 

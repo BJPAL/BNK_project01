@@ -2,6 +2,10 @@ body {
   overflow-x: hidden;
 }
 
+ul{
+  list-style: none;
+}
+
 .header {
   display: flex;
   height: 8vh;
@@ -40,10 +44,10 @@ body {
   background: #D7191F;
   color: white;
   border: none;
-  width: 120px; 
-  height: 40px;
-  line-height: 20px;
-  font-size: 1.25rem;
+  width: 90px; 
+  height: 30px;
+  line-height: 15px;
+  font-size: 1rem;
   padding: 8px 14px;
   border-radius: 8px;
   z-index: 999;
@@ -57,29 +61,30 @@ body {
 
 .dropdown {
   position: relative;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
 }
 
 .dropdown-content {
-  display: none;
   position: absolute;
-  margin-top: 20px;
-  top: 20px;
+  top: 100%; /* 버튼 바로 아래 */
   left: 0;
+  display: none;
   background: white;
   border: 3px solid #D7191F;
-  padding: 8px 0;
+  box-sizing: border-box;
+  border-top: none;
+  padding: 0;
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
-  width: 120px;
+  width: 100%; /* 버튼과 동일 너비로 하고 싶다면 */
   z-index: 998;
-  white-space: nowrap;     /* 줄바꿈 안 함 */
-  overflow-x: auto;        /* 가로 스크롤 가능하게 */
-  overflow-y: hidden;
 }
 
 .dropdown-content a {
   display: block;
-  font-size: 1rem;
+  font-size: 0.8rem;
   padding: 8px 16px;
   color: #333;
   text-decoration: none;
@@ -99,21 +104,35 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  
+  font-size: 1.2rem;
+}
+.user-info a:hover{
+  color: #D7191F;
+  font-weight: bold;
+}
+.user-info img{
+  margin-left: 5px;
+  height: 1.2rem;
+  text-align: center;
 }
 
 .menu-icon {
+  height: 20px;
   margin-left: 20px;
   background: none;
   border: none;
   cursor: pointer;
 }
 
+.menu-icon img{
+  height: 100%;
+}
+
 .hidden-menu {
   position: absolute;
   top: 8vh;
   right: 0;
-  width: 600px;
+  width: 400px;
   height: 92vh;
   background: white;
   border-left: 3px solid #D7191F;
@@ -159,12 +178,11 @@ body {
 .hidden-menu-tabBar {
   display: flex;
   margin: auto;
-  height: 40px;
-  margin-top: 40px;
+  height: 25px;
 }
 
 .hidden-menu-tab {
-  width: 25%;
+  width: 33%;
   height: 100%;
   padding: 10px;
   background: #fff;
@@ -188,11 +206,12 @@ body {
 }
 
 .hidden-menu-subTab{
-    gap: 10px;
-    padding: 10px;
-    padding-top: 20px;
+    margin-top: 40px;
+    margin-bottom: 20px;
     line-height: 1.7;
     font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
 }
 
 .hidden-menu-subTab span{
@@ -227,5 +246,17 @@ body {
     font-size: 16px;
     font-weight: 700;
   
+}
+
+.subTab-menu-list{
+  display: none;
+  font-size: 1rem;
+}
+.subTab-menu-list ul li{
+  margin: 10px 0;
+}
+.subTab-menu-list a:hover{
+  color: #D7191F;
+  font-weight: 800;
 }
 

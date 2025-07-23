@@ -1,19 +1,8 @@
 package com.example.fund.fund.entity;
 
 import com.example.fund.common.entity.BaseEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "fund_status")
@@ -39,6 +28,5 @@ public class FundStatus extends BaseEntity {
     private String content;
 
     @Column(name = "view_count", nullable = false)
-    private Integer viewCount;
-    // private Integer viewCount = 0;
+    private Integer viewCount = 0;
 }

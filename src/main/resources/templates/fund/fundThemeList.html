@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- 페이지 스타일 -->
         <link rel="stylesheet" href="/css/fund/fund_theme_list.css" />
-        <!-- <link rel="stylesheet" href="../../static/css/fund/fund_list.css" /> -->
+        <!-- 프레그먼트 스타일 -->
+        <link rel="stylesheet" href="/css/userHeader.css" />
         <link rel="stylesheet" href="/css/footer.css" />
+        <!-- 제목 -->
         <title>펀드 테마 목록</title>
     </head>
     <body>
+        <!-- 헤더 영역 -->
+        <th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+
+        <!-- 메인 영역 -->
         <div class="container">
             <!-- 제목 영역 -->
             <div class="title-container">
@@ -34,7 +41,7 @@
             </div>
         </div>
 
-        <!-- 하단 고정 비교바 추가 -->
+        <!-- 하단 고정 비교바 -->
         <div class="compare-bar" id="compareBar">
             <div class="compare-bar-content">
                 <div class="compare-info">
@@ -55,7 +62,7 @@
             </div>
         </div>
 
-        <!-- 비교 모달 - 기존 HTML 끝부분에 추가 -->
+        <!-- 비교 모달 -->
         <div class="modal-overlay" id="compareModal">
             <div class="modal-container">
                 <!-- 모달 헤더 -->
@@ -129,8 +136,8 @@
             </div>
         </div>
 
-        <!--footer 자리-->
-        <div th:replace="fragments/footer :: siteFooter"></div>
+        <!-- 푸터 영역 -->
+        <th:block th:replace="fragments/footer :: siteFooter"></th:block>
     </body>
 
     <script>

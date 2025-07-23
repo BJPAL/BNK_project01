@@ -61,11 +61,12 @@
 
             
             <div class="detail-actions">
-              <button id="detail-approval-btn">결재</button>
-                <div>
-                  <button class="deatil-list-btn" onclick="location.href='/admin/fund/list'">목록</button>
-                  <button th:onclick="|location.href='/admin/fund/edit/${fund.fundId}'|">수정</button>
-                </div>
+              <button id="detail-approval-btn" th:if="${session.admin.role != 'super'}" 
+                      th:onclick="|location.href='/admin/approval/form?fundId=${fund.fundId}'|">결재</button>
+              <div>
+                <button class="deatil-list-btn" onclick="location.href='/admin/fund/list'">목록</button>
+                <button th:if="${session.admin.role != 'super'}" th:onclick="|location.href='/admin/fund/edit/${fund.fundId}'|">수정</button>
+              </div>
             </div>
 
       </div>
