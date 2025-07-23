@@ -28,7 +28,6 @@ public class FundResponseDTO {
     private String managementCompany;   // 운용사
 
     // Fund_Policy 관련
-    private BigDecimal fundPayout;          // 펀드 수수료?
     private String fundTheme;               // 펀드 테마
 
     // Fund_Return 관련

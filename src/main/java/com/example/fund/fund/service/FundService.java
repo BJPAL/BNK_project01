@@ -580,7 +580,6 @@ public class FundService {
                     .managementCompany(fund.getManagementCompany())
 
                     // FundPolicy 추가 정보
-                    .fundPayout(fundPolicy.getFundPayout())
                     .fundTheme(fundPolicy.getFundTheme())
 
                     // 수익률 정보
@@ -643,7 +642,6 @@ public class FundService {
         // 1. 펀드 기본 정보 조회
         Optional<Fund> fundOpt = fundRepository.findByFundId(fundId);
         if (!fundOpt.isPresent()) {
-            log.warn("존재하지 않는 펀드 - fundId: {}", fundId);
             return FundDetailResponseDto.builder()
                     .accessAllowed(false)
                     .accessMessage("존재하지 않는 펀드입니다.")
