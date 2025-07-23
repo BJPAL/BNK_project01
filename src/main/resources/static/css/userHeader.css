@@ -1,14 +1,38 @@
+/* reset.css 다음에 로드되는 userHeader.css */
+.no-reset,
+.no-reset * {
+  all: revert;     /* CSS 속성값을 user-agent 기본값으로 되돌림 */
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+html,
 body {
+  margin: 0;
+  height: 100%;
   overflow-x: hidden;
+  overflow-y: auto; 
 }
 
 ul{
-  list-style: none;
+  list-style: none !important;
 }
+.no-reset a{
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
 
 .header {
   display: flex;
+  width: 96vw;
   height: 8vh;
+  z-index: 1000;
   justify-content: space-between; 
   align-items: center;
   padding: 0 30px;
@@ -91,9 +115,9 @@ ul{
 }
 
 .dropdown-content a:hover {
-  background: #D7191F;
+  background: #D7191F !important;
   font-weight: 900;
-  color: #fff;
+  color: #fff !important;
 }
 
 .dropdown:hover .dropdown-content {
@@ -107,7 +131,7 @@ ul{
   font-size: 1.2rem;
 }
 .user-info a:hover{
-  color: #D7191F;
+  color: #D7191F !important;
   font-weight: bold;
 }
 .user-info img{
@@ -178,17 +202,19 @@ ul{
 .hidden-menu-tabBar {
   display: flex;
   margin: auto;
-  height: 25px;
+  height: 45px;
 }
 
 .hidden-menu-tab {
-  width: 33%;
+  width: 33.3%;
   height: 100%;
-  padding: 10px;
+  text-align: center;
+  margin: 0 auto;
   background: #fff;
   cursor: pointer;
   font-size: 1rem;
-  line-height: 20px;
+  line-height: 45px;
+  box-sizing: border-box ;
   text-align : center;
   border: 1px solid #D7191F;
   border-right: none;
@@ -200,8 +226,8 @@ ul{
 }
 
 .hidden-menu-tabBar > .active, .hidden-menu-tab:hover {
-  background: #D7191F;
-  color: white;
+  background: #D7191F !important;
+  color: white !important;
   font-weight: 900;
 }
 
@@ -256,7 +282,6 @@ ul{
   margin: 10px 0;
 }
 .subTab-menu-list a:hover{
-  color: #D7191F;
+  color: #D7191F !important ;
   font-weight: 800;
 }
-

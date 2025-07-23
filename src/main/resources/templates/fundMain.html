@@ -17,7 +17,7 @@
 	<link rel="stylesheet" href="/css/fundMainHeader.css" />
 </head>
 <body>
-<th:block th:replace="fragments/userHeader :: userHeader"></th:block>
+<th:block th:replace="fragments/userHeader :: userHeader" th:unless="${disableReset}"/>
 <th:block th:replace="fragments/fundMainHeader :: fundMainHeader"></th:block>
 
   <!-- 📌 중앙 정렬 래퍼 -->

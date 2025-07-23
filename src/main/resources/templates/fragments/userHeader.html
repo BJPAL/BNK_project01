@@ -1,5 +1,5 @@
 <div th:fragment="userHeader" xmlns:th="http://www.thymeleaf.org">
-  <header class="header">
+  <header class="header no-reset">
     <div class="logo">
       <a th:href="@{/}"><img src="/images/logo.png" alt="BNK 부산은행 로고" /></a>
     </div>
@@ -32,7 +32,8 @@
 
         <!-- 로그인 된 경우 -->
         <div th:if="${session.user != null}">
-          <a th:href="@{/mypage}"><span th:text="${session.user.name + '님 환영합니다'}"></span><img src="/images/profile.svg" alt="마이페이지 프로필 아이콘"></a>
+          <a th:href="@{/mypage}"><span th:text="${session.user.name + '님 환영합니다'}"></span><img src="/images/profile.svg"
+              alt="마이페이지 프로필 아이콘"></a>
           <span>|</span>
           <a th:href="@{/auth/logout}">로그아웃</a>
         </div>
@@ -80,21 +81,29 @@
           </div>
 
           <script>
-            const mainTabSpans = document.querySelectorAll(".hidden-menu-tab");
-            mainTabSpans.forEach(tab => {
-              tab.addEventListener("click", function () {
-                mainTabSpans.forEach(t => t.classList.remove("active"));
-                this.classList.add("active");
+              const mainTabSpans = document.querySelectorAll(".hidden-menu-tab");
+              mainTabSpans.forEach(tab => {
+                tab.addEventListener("click", function () {
+                  mainTabSpans.forEach(t => t.classList.remove("active"));
+                  this.classList.add("active");
+                });
               });
-            });
 
-            const subTabSpans = document.querySelectorAll(".hidden-menu-subTab span");
-            subTabSpans.forEach(tab => {
-              tab.addEventListener("click", function () {
-                subTabSpans.forEach(t => t.classList.remove("active"));
-                this.classList.add("active");
+              const subTabSpans = document.querySelectorAll(".hidden-menu-subTab span");
+              subTabSpans.forEach(tab => {
+                tab.addEventListener("click", function () {
+                  subTabSpans.forEach(t => t.classList.remove("active"));
+                  this.classList.add("active");
+                });
               });
-            });
+
+              // 스크롤 시 active 자동 제거
+              window.addEventListener("scroll", () => {
+                if (window.scrollY > 0) {
+                  mainTabSpans.forEach(t => t.classList.remove("active"));
+                  subTabSpans.forEach(t => t.classList.remove("active"));
+                }
+              });
           </script>
 
           <script>
