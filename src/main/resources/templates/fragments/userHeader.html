@@ -1,7 +1,7 @@
 <div th:fragment="userHeader" xmlns:th="http://www.thymeleaf.org">
   <header class="header">
     <div class="logo">
-      <a th:href="@{/user/}"><img src="/images/logo.png" alt="BNK 부산은행 로고" /></a>
+      <a th:href="@{/}"><img src="/images/logo.png" alt="BNK 부산은행 로고" /></a>
     </div>
 
   <div class="right-section">
@@ -24,8 +24,20 @@
     </nav>
 
     <div class="user-info">
-        <a th:href="@{/auth/login}">로그인</a>
-      <span>|</span> <a th:href="@{/auth/join}">회원가입</a>
+    <!-- 로그인 안 된 경우 -->
+    <div th:if="${session.user == null}">
+      <a th:href="@{/auth/login}">로그인</a>
+      <span>|</span>
+      <a th:href="@{/auth/join}">회원가입</a>
+    </div>
+
+    <!-- 로그인 된 경우 -->
+    <div th:if="${session.user != null}">
+      <a th:href="@{/mypage}"></a><span th:text="${session.user.name + '님 환영합니다'}"></span>
+      <span>|</span>
+      <a th:href="@{/auth/logout}">로그아웃</a>
+    </div>
+
       <button class="menu-icon" onclick="toggleMenu()"><img src="/images/menu_icon.png" alt="menu 아이콘"></button>
     </div>
 

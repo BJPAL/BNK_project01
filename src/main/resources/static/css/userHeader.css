@@ -40,10 +40,10 @@ body {
   background: #D7191F;
   color: white;
   border: none;
-  width: 120px; 
-  height: 40px;
-  line-height: 20px;
-  font-size: 1.25rem;
+  width: 90px; 
+  height: 30px;
+  line-height: 15px;
+  font-size: 1rem;
   padding: 8px 14px;
   border-radius: 8px;
   z-index: 999;
@@ -63,14 +63,14 @@ body {
   display: none;
   position: absolute;
   margin-top: 20px;
-  top: 20px;
+  top: 0;
   left: 0;
   background: white;
   border: 3px solid #D7191F;
   padding: 8px 0;
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
-  width: 120px;
+  width: 90px;
   z-index: 998;
   white-space: nowrap;     /* 줄바꿈 안 함 */
   overflow-x: auto;        /* 가로 스크롤 가능하게 */
@@ -79,7 +79,7 @@ body {
 
 .dropdown-content a {
   display: block;
-  font-size: 1rem;
+  font-size: 0.8rem;
   padding: 8px 16px;
   color: #333;
   text-decoration: none;
