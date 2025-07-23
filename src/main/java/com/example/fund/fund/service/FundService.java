@@ -43,7 +43,7 @@ public class FundService {
 
     private final FundRepository fundRepository;
     private final FundReturnRepository fundReturnRepository;
-    private final FundAssetRepository fundAssetRepository;
+    private final FundAssetRepository fundAssetRepository;  // deprecated 됨, 수정 필요
     private final FundPortfolioRepository fundPortfolioRepository;
 
     /**
