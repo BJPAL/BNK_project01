@@ -6,13 +6,13 @@
     <link rel="stylesheet" href="/css/fund/fund_list.css" />
     <!-- <link rel="stylesheet" href="../../static/css/fund/fund_list.css" /> -->
     <link rel="stylesheet" href="/css/footer.css" />
-    <title>펀드 투자 - 맞춤 추천</title>
+    <title>펀드 맞춤 목록</title>
   </head>
   <body>
     <div class="container">
       <!-- 제목 영역 -->
       <div class="title-container">
-        <h1 class="title">맞춤 펀드 추천</h1>
+        <h1 class="title">맞춤 펀드 목록</h1>
         <span class="title-user-info">
           현재 회원님의 투자성향은
           <span id="invest-type">Unknown</span>입니다
@@ -328,7 +328,7 @@
       </div>
     </div>
 
-    <!-- 🔥 비교 모달 - 기존 HTML 끝부분에 추가 -->
+    <!-- 비교 모달 - 기존 HTML 끝부분에 추가 -->
     <div class="modal-overlay" id="compareModal">
       <div class="modal-container">
         <!-- 모달 헤더 -->
@@ -371,6 +371,9 @@
               </tbody>
             </table>
           </div>
+
+          <!-- 분석 콘텐츠 영역 -->
+          <div class="aiAnaylseContainer" id="aiAnaylseContainer"></div>
 
           <!-- 모달 버튼 영역 -->
           <div class="modal-actions">
@@ -566,7 +569,14 @@
         // 수익률 클래스 결정 함수
         const getReturnClass = (value) => {
           if (value === null || value === undefined) return "";
-          return value >= 0 ? "pos" : "neg";
+          // return value >= 0 ? "pos" : "neg";
+          if (value > 0) {
+            return "pos";
+          } else if (value < 0) {
+            return "neg";
+          } else {
+            return "zero";
+          }
         };
 
         // 수익률 포맷팅 함수
@@ -614,77 +624,81 @@
         };
 
         fundDiv.innerHTML = `
-                <!-- 메타 데이터 -->
-                <section class="fund-item-section fund-meta">
-                    <div class="fund-name-container">
-                        <h3 class="fund-name">
-                            <a href="/fund/${
-                              fund.fundId
-                            }" class="fund-name-link">
-                                ${fund.fundName || ""}
-                            </a>
-                        </h3>
-                    </div>
-                    <ul class="fund-detail">
-                        <li>설정일&nbsp;${formatDate(fund.establishDate)}</li>
-                        <li>기준가&nbsp;${formatNumber(fund.nav)}</li>
-                        <li>순자산&nbsp;${fund.aum || 0}억</li>
-                    </ul>
-                    <div class="badge-list">
-                        <span class="badge company">${
-                          fund.managementCompany || ""
-                        }</span>
-                        <span class="badge type">${fund.fundType || ""}</span>
-                        ${createRegionBadge(fund.investmentRegion)}
-                        <span class="badge risk ${getRiskClass(
-                          fund.riskLevel
-                        )}">
-                            ${getRiskText(fund.riskLevel)}
-                        </span>
-                    </div>
-                    <div class="fund-item-section fund-compare-check">
-                        <button class="compare-add-btn"
-                                data-fund-id="${fund.fundId}"
-                                data-fund-name="${fund.fundName || ""}">
-                            비교담기
-                        </button>
-                    </div>
-                </section>
+                    <!-- 메타 데이터 -->
+                    <section class="fund-item-section fund-meta">
+                        <div class="fund-name-container">
+                            <h3 class="fund-name">
+                                <a href="/fund/${
+                                  fund.fundId
+                                }" class="fund-name-link">
+                                    ${fund.fundName || ""}
+                                </a>
+                            </h3>
+                        </div>
+                        <ul class="fund-detail">
+                            <li>설정일&nbsp;${formatDate(
+                              fund.establishDate
+                            )}</li>
+                            <li>기준가&nbsp;${formatNumber(fund.nav)}</li>
+                            <li>순자산&nbsp;${fund.aum || 0}억</li>
+                        </ul>
+                        <div class="badge-list">
+                            <span class="badge company">${
+                              fund.managementCompany || ""
+                            }</span>
+                            <span class="badge type">${
+                              fund.fundType || ""
+                            }</span>
+                            ${createRegionBadge(fund.investmentRegion)}
+                            <span class="badge risk ${getRiskClass(
+                              fund.riskLevel
+                            )}">
+                                ${getRiskText(fund.riskLevel)}
+                            </span>
+                        </div>
+                        <div class="fund-item-section fund-compare-check">
+                            <button class="compare-add-btn"
+                                    data-fund-id="${fund.fundId}"
+                                    data-fund-name="${fund.fundName || ""}">
+                                비교담기
+                            </button>
+                        </div>
+                    </section>
 
-                <!-- 수익률 -->
-                <section class="fund-item-section fund-return">
-                    <div class="stat">
-                        <span>1개월</span>
-                        <strong class="${getReturnClass(
-                          fund.return1m
-                        )}">${formatReturn(fund.return1m)}</strong>
-                    </div>
-                    <div class="stat">
-                        <span>3개월</span>
-                        <strong class="${getReturnClass(
-                          fund.return3m
-                        )}">${formatReturn(fund.return3m)}</strong>
-                    </div>
-                    <div class="stat">
-                        <span>6개월</span>
-                        <strong class="${getReturnClass(
-                          fund.return6m
-                        )}">${formatReturn(fund.return6m)}</strong>
-                    </div>
-                    <div class="stat">
-                        <span>12개월</span>
-                        <strong class="${getReturnClass(
-                          fund.return12m
-                        )}">${formatReturn(fund.return12m)}</strong>
-                    </div>
-                    <div class="stat">
-                        <span>누적</span>
-                        <strong class="${getReturnClass(
-                          fund.returnSince
-                        )}">${formatReturn(fund.returnSince)}</strong>
-                    </div>
-                </section>
-            `;
+                    <!-- 수익률 -->
+                    <section class="fund-item-section fund-return">
+                        <div class="stat">
+                            <span>1개월</span>
+                            <strong class="${getReturnClass(
+                              fund.return1m
+                            )}">${formatReturn(fund.return1m)}</strong>
+                        </div>
+                        <div class="stat">
+                            <span>3개월</span>
+                            <strong class="${getReturnClass(
+                              fund.return3m
+                            )}">${formatReturn(fund.return3m)}</strong>
+                        </div>
+                        <div class="stat">
+                            <span>6개월</span>
+                            <strong class="${getReturnClass(
+                              fund.return6m
+                            )}">${formatReturn(fund.return6m)}</strong>
+                        </div>
+                        <div class="stat">
+                            <span>12개월</span>
+                            <strong class="${getReturnClass(
+                              fund.return12m
+                            )}">${formatReturn(fund.return12m)}</strong>
+                        </div>
+                        <div class="stat">
+                            <span>누적</span>
+                            <strong class="${getReturnClass(
+                              fund.returnSince
+                            )}">${formatReturn(fund.returnSince)}</strong>
+                        </div>
+                    </section>
+                `;
         return fundDiv;
       }
 
@@ -766,7 +780,7 @@
         }
       }
 
-      // 🔥 메시지 영역을 보존하면서 펀드 아이템만 삭제하는 함수
+      // 메시지 영역을 보존하면서 펀드 아이템만 삭제하는 함수
       function clearFundItems() {
         const fundList = document.getElementById("fund-list");
         const messageElement = fundList.querySelector(".message");

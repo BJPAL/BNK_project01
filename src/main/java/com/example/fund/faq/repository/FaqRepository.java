@@ -2,6 +2,7 @@ package com.example.fund.faq.repository;
 
 import java.util.List;
 
+import com.example.fund.admin.faq.repository.projection.FaqCategoryCount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,12 @@ public interface FaqRepository extends JpaRepository<Faq, Integer> {
 	@Query("SELECT f FROM Faq f WHERE f.active = true AND (f.question LIKE %:keyword% OR f.answer LIKE %:keyword%)")
 	Page<Faq> searchActiveFaqs(@Param("keyword") String keyword, Pageable pageable);
 
+	/** 카테고리별 FAQ 건수 집계 */
+	@Query("""
+      SELECT m.category AS category,
+             COUNT(m)    AS cnt
+      FROM FaqCategoryMap m
+      GROUP BY m.category
+    """)
+	List<FaqCategoryCount> countByCategory();
 }

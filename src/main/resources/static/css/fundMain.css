@@ -1,0 +1,460 @@
+@charset "UTF-8";
+
+/* --------------------------------------------------------------------
+   Font faces
+-------------------------------------------------------------------- */
+@font-face {
+  font-family: 'BNKGothic';
+  src: url('/font/BNKGothic-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BNKGothic';
+  src: url('/font/BNKGothic-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --------------------------------------------------------------------
+   Color variables
+-------------------------------------------------------------------- */
+:root {
+  --primary: #10747d;
+  --border : #96c3c7;
+  --gray   : #f2f2f2;
+}
+
+/* --------------------------------------------------------------------
+   Base reset & page layout
+-------------------------------------------------------------------- */
+html, body { height: 100%; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'BNKGothic';
+  color: #222;
+  background: #fff;
+  line-height: 1.5;
+  display: flex;                 /* overall center */
+  justify-content: center;
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------
+   Wrapper & headings
+-------------------------------------------------------------------- */
+.wrapper {
+  width: 90vw;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  font-family: 'BNKGothic';
+}
+
+/* --------------------------------------------------------------------
+   Search bar
+-------------------------------------------------------------------- */
+.search-bar { position: relative; margin-bottom: 32px; }
+.search-bar input {
+  width: 100%;
+  padding: 14px 60px 14px 20px;
+  font-size: 16px;
+  border: 2px solid var(--primary);
+  border-radius: 9999px;
+  outline: none;
+}
+.search-bar .fa-search {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 20px;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------
+   Headline row (slogan & link)
+-------------------------------------------------------------------- */
+.headline { display: flex; align-items: center; margin-bottom: 12px;justify-content:right; }
+.slogan   { font-size: 25px; }
+.slogan b { font-weight: 700; }
+
+.slogan {
+  font-size: 24px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: fadeSlideUp 0.8s ease-out 0.2s forwards;
+}
+.slogan b {
+  font-weight: 700;
+  color: var(--primary);  /* 포인트 컬러 강조 */
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.inline-link {
+  margin-left: auto;
+  font-size: 18px;
+  font-weight: 600;
+  color: #404040;
+  text-decoration: none;
+}
+.inline-link:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------
+   Card grid layout
+-------------------------------------------------------------------- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* desktop: 3 cols */
+  grid-auto-rows: 140px;
+  gap: 32px;
+}
+
+.card {
+  background: var(--gray);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.card.big   { grid-row: span 2; min-height: 280px; }
+.card.small { min-height: 140px; flex-direction: column; }
+
+.card-title  { font-size: 18px; font-weight: 700; color: #000; }
+.card-title2 { font-family: 'BNKGothic'; font-weight: 1000; font-size: 24px; }
+#best-title, #rec-title {font-size: 26px;}
+
+/* --------------------------------------------------------------------
+   Small icon cards (가이드 & MBTI)
+-------------------------------------------------------------------- */
+.card.small.icon {
+  position: relative;
+  padding-left: 120px;   /* reserve icon space */
+  overflow: hidden;
+}
+
+.card.small.icon img {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 140px;
+  height: 130px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.card.small.icon .card-title {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  font-size: 16px;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.card.small.icon.guide-card { background-color: #bbf2df; }
+.card.small.icon.mbti-card  { background-color: #faff9e; }
+
+.card.small.icon .mbti-img {
+  width: 210px;
+  height: 210px;
+  left: 20px;
+}
+
+/* --------------------------------------------------------------------
+   >>>  Big card layout (추천 펀드 · 수익률 BEST) <<<
+-------------------------------------------------------------------- */
+.card.big {
+  position: relative;            /* positioning context */
+  display: block;                /* disable flex */
+  padding: 32px 32px 32px 220px; /* reserve left space for image */
+  text-align: right;
+}
+
+.card.big img {
+  position: absolute;
+  top: 50%;
+  left: 40px;
+  transform: translateY(-50%);
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.card.big .card-title2 {
+  position: absolute;
+  right: 32px;
+  bottom: 32px;
+  line-height: 1.2;
+}
+
+/* 설명 텍스트(hover) --------------------------------------------- */
+.card.big .card-desc {
+  position: absolute;
+  right: 32px;
+  bottom: 71px;                   /* title 위로 32px + 약간 여유 */
+  font-size: 16px;                /* 더 작게 */
+  line-height: 1.35;
+  text-align: right;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.card.big:hover .card-desc { opacity: 1; }
+
+/* — Fine‑tune individual card elements — */
+#big1 img    { left: 40px; }
+
+/* --------------------------------------------------------------------
+   Button reset & interactive states
+-------------------------------------------------------------------- */
+button.card {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+}
+
+#big1 { background-color: #00d1a7; color: #fff; }
+#big2 { background-color: #3C99F7; color: #fff; }
+
+.card.small.icon,
+.card.big {
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.card.small.icon:hover,
+.card.big:hover { transform: scale(1.05); }
+
+
+
+/* --------------------------------------------------------------------
+   Responsive tweaks
+-------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .card.big { grid-row: span 1; }
+}
+
+@media (max-width: 600px) {
+  .cards { grid-template-columns: 1fr; }
+}
+
+
+/* ===== 공통값 ===== */
+:root{
+  --gap:20px;
+  --big-h:260px;
+}
+
+/* ===== cards2 ===== */
+.cards2{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:var(--gap);
+  margin-top:32px;
+
+  --row-h:calc((var(--big-h) - var(--gap)) / 2);
+  grid-auto-rows:var(--row-h);
+}
+
+.c2{
+  position:relative;
+  border:1px solid #cfe5e7;
+  border-radius:18px;
+  background:#fff;
+  cursor:pointer;
+  overflow:hidden;
+  transition:transform .25s ease, box-shadow .25s ease;
+  transform-origin:center;
+}
+.c2:hover{
+  transform:scale(1.05);
+  box-shadow:0 6px 16px rgba(0,0,0,.12);
+}
+/* FAQ / QNA 아이콘: 왼쪽 중간 */
+.c2.faq img,
+.c2.qna img{
+  display:block;
+  position:absolute;
+  left:40px;
+  top:50%;
+  transform:translateY(-50%);
+  width:120px;
+  height:auto;
+  object-fit:contain;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* ── 펀드시황: 이미지/텍스트 겹침 방지 - 내부 그리드로 분리 ── */
+.c2.market{
+  display:block;               /* ← grid 제거 */
+  padding-left:260px;          /* 이미지 폭 + 여백만큼 확보 (원하는 만큼 조절) */
+  background: linear-gradient(to right, transparent 0 260px, #a8a8a8 220px 100%);
+}
+
+.c2.market img{
+  display:block;
+  position:absolute;
+  left:0;                   /* 좌측 여백 */
+  top:50%;
+  transform:translateY(-50%);
+  width:260px;                 /* 원하는 크기 */
+  height:auto;
+  object-fit:contain;
+  z-index:0;
+  pointer-events:none;
+}
+
+.c2.market .br{
+  position:static;
+  grid-column:2;
+  justify-self:end;
+  align-self:end;
+  font-size:24px;
+  font-weight:700;
+  line-height:1.2;
+  color: #fff;
+  z-index:2;
+  
+}
+
+/* 카드 제목(오른쪽 아래 기본 – market/prof는 위에서 재정의) */
+.c2 .br{
+  position:absolute;
+  right:24px;
+  bottom:24px;
+  font-size:20px;
+  font-weight:700;
+  line-height:1.2;
+  z-index:2;
+  color:#000;
+}
+
+/* --- 위치 고정 --- */
+.c2.faq     { grid-column:1; grid-row:1; font-family: 'BNKGothic';}
+.c2.qna     { grid-column:1; grid-row:2; font-family: 'BNKGothic';}
+.c2.market  { grid-column:2; grid-row:1 / span 2; font-family: 'BNKGothic';}
+.c2.profile { grid-column:3; grid-row:1 / span 2; background: #4d4d4d;}
+
+/* 접근성 */
+.c2:focus-visible{
+  outline:3px solid var(--primary, #10747d);
+  outline-offset:2px;
+}
+
+/* ── 공통 Hover 오버레이 (profile / faq / qna 제외) ── */
+.c2:not(.profile):not(.faq):not(.qna)::after{
+  content:attr(data-desc);
+  position:absolute; inset:0;
+  display:flex; justify-content:center; align-items:center;
+  padding:0 14px;
+  font-size:20px; font-weight:500; line-height:1.45; color: #003273; font-family: 'BNKGothic';
+  background:rgba(255,255,255,.94);
+  opacity:0; transform:translateY(6px);
+  transition:opacity .18s ease, transform .18s ease;
+  white-space:pre-line;
+  text-align:center;
+  z-index:1;
+}
+.c2:not(.profile):not(.faq):not(.qna):hover::after{
+  opacity:1; transform:translateY(0);
+}
+
+/* ── FAQ / QNA : 제목 위 문구 ── */
+.c2.faq::after,
+.c2.qna::after{
+  content:attr(data-desc);
+  position:absolute;
+  right:24px;
+  bottom:calc(24px + 28px);
+  font-size:16px;
+  line-height:1.4;
+  color:#000;
+  text-align:right;
+  white-space:pre-line;
+  opacity:0; transform:translateY(4px);
+  transition:opacity .18s ease, transform .18s ease;
+  z-index:2;
+  background:none;
+}
+.c2.faq:hover::after,
+.c2.qna:hover::after{
+  opacity:1; transform:translateY(0);
+}
+
+/* ===== profile 전용 ===== */
+.c2.profile::after{ content:none; }
+
+.c2.profile .profile-title{
+  position:absolute;
+  left:50%; top:25%;
+  transform:translate(-50%, -50%);
+  font-size:26px; font-weight:700;
+  color: #fff;
+  white-space:nowrap;
+  text-align:center;
+  z-index:2;
+}
+.c2.profile .profile-desc {
+  position: absolute;
+  left: 24px;
+  top: calc(28% + 28px);
+  font-size: 16px;
+  font-family: 'BNKGothic';
+  line-height: 1.5;
+  color: #fff !important;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 2;
+}
+.c2.profile:hover .profile-desc {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 투자성향분석 이미지 스타일 */
+.c2.profile img {
+  display: block;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+}

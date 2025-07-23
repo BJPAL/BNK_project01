@@ -23,7 +23,15 @@ public class ApprovalLogService {
         approvalLogRepository.save(log);
     }
 
+    public List<ApprovalLog> findAllByNewStatus(String newStatus) {
+        return approvalLogRepository.findByStatusOrderByChangedAtDesc(newStatus);
+    }
+
+    public List<ApprovalLog> findAllByNewStatusAndWriter(String newStatus, String writer) {
+        return approvalLogRepository.findAllByNewStatusAndWriter(newStatus, writer);
+    }
+
     public List<ApprovalLog> getLogsByApprovalId(Integer approvalId) {
-        return approvalLogRepository.findByApproval_ApprovalIdOrderByChangedAtDesc(approvalId);
+        return approvalLogRepository.findByApproval_ApprovalIdOrderByChangedAtDesc(approvalId.intValue());
     }
 }

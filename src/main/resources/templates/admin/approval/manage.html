@@ -63,7 +63,7 @@
       border-radius: 14px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     }
-    h1 {
+    .title1 {
       font-size: 26px;
       color: var(--primary);
       margin-bottom: 28px;
@@ -170,12 +170,6 @@
       background: var(--primary);
       color: #fff;
     }
-
-    /* 헤더 로고 위치 조정 */
-    .admin-header .logo {
-      position: relative;
-      top: 14px;
-    }
   </style>
 </head>
 
@@ -186,7 +180,7 @@
     <div th:replace="admin/admin_aside :: adminAside"></div>
     <main class="content">
       <div class="manage-container">
-        <h1>결재 요청 승인 관리</h1>
+        <h1 class="title1">결재 요청 승인 관리</h1>
 
         <!-- 검색 폼 -->
         <form class="search-form" th:action="@{/admin/approval/manage}" method="get">
