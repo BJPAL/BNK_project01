@@ -33,10 +33,11 @@ public class FundServiceController {
             @RequestPart("fileProspectus") MultipartFile fileProspectus) {
 
         try {
-            fundService.registerFundWithAllDocuments(request, fileTerms, fileManual, fileProspectus);
+            Long fundId = fundService.registerFundWithAllDocuments(request, fileTerms, fileManual, fileProspectus);
             return ResponseEntity.ok(Map.of(
                     "status", "success",
-                    "message", "펀드 + 정책 + 문서 3종 등록 완료"
+                    "message", "펀드 + 정책 + 문서 3종 등록 완료",
+                    "fundId", fundId
             ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of(
@@ -50,6 +51,7 @@ public class FundServiceController {
             ));
         }
     }
+
 
 }
 

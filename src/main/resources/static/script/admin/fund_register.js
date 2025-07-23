@@ -84,10 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error('등록 실패');
       }
 
+      return response.json(); 
+    })
+    .then(result => {s
+      const fundId = result.fundId;
+
       document.getElementById('confirmModal').style.display = 'flex';
 
       document.getElementById('goToPayment').onclick = function () {
-        window.location.href = '/payment';
+        window.location.href = `/admin/approval/form?fundId=${fundId}`;
       };
     })
     .catch(err => {

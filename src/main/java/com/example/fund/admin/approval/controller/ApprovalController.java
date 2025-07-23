@@ -1,20 +1,26 @@
 package com.example.fund.admin.approval.controller;
 
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.example.fund.admin.approval.entity.Approval;
 import com.example.fund.admin.approval.entity.ApprovalLog;
 import com.example.fund.admin.approval.service.ApprovalLogService;
 import com.example.fund.admin.approval.service.ApprovalService;
 import com.example.fund.admin.dto.AdminDTO;
+import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.service.FundService;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin/approval")
@@ -23,6 +29,7 @@ public class ApprovalController {
 
     private final ApprovalService approvalService;
     private final ApprovalLogService approvalLogService;
+    private final FundService fundService;
 
     @GetMapping("/manage")
     public String manageApprovals(HttpSession session, Model model,
@@ -169,16 +176,20 @@ public class ApprovalController {
     }
 
     @GetMapping("/form")
-    public String showForm(HttpSession session, Model model) {
+    public String showForm(@RequestParam(value = "fundId", required = false) Long fundId, HttpSession session, Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null || !"planner".equals(admin.getRole())) return "redirect:/admin/";
+        if (admin == null || !"planner".equals(admin.getRole())){
+            return "redirect:/admin/";
+        }
 
+        model.addAttribute("fundId", fundId);
         return "admin/approval/form";
     }
 
     @PostMapping("/register")
     public String register(@RequestParam("title") String title,
                            @RequestParam("content") String content,
+                           @RequestParam(value = "fundId", required = false) Long fundId,
                            HttpSession session,
                            RedirectAttributes redirect) {
 
@@ -187,7 +198,9 @@ public class ApprovalController {
             throw new SecurityException("결재 요청 권한이 없습니다.");
         }
 
-        Integer id = approvalService.createApproval(title, content, admin.getAdmin_id());
+        Integer id = approvalService.createApproval(
+                title, content, admin.getAdmin_id(), fundId
+        );
         redirect.addFlashAttribute("successMessage", "결재 요청이 완료되었습니다!");
         redirect.addFlashAttribute("highlightId", id);
 

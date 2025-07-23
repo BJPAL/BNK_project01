@@ -2,6 +2,7 @@ package com.example.fund.admin.approval.entity;
 
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.common.entity.BaseEntity;
+import com.example.fund.fund.entity.Fund;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,4 +35,8 @@ public class Approval extends BaseEntity {
 
     @Column(length = 200)
     private String rejectReason; // 반려 사유
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fund_id")
+    private Fund fund;
 }
