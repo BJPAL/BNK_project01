@@ -1,20 +1,26 @@
 package com.example.fund.admin.approval.controller;
 
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.example.fund.admin.approval.entity.Approval;
 import com.example.fund.admin.approval.entity.ApprovalLog;
 import com.example.fund.admin.approval.service.ApprovalLogService;
 import com.example.fund.admin.approval.service.ApprovalService;
 import com.example.fund.admin.dto.AdminDTO;
+import com.example.fund.fund.entity.Fund;
+import com.example.fund.fund.service.FundService;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin/approval")
@@ -23,6 +29,7 @@ public class ApprovalController {
 
     private final ApprovalService approvalService;
     private final ApprovalLogService approvalLogService;
+    private final FundService fundService;
 
     @GetMapping("/manage")
     public String manageApprovals(HttpSession session, Model model,
@@ -169,10 +176,17 @@ public class ApprovalController {
     }
 
     @GetMapping("/form")
-    public String showForm(HttpSession session, Model model) {
+    public String showForm(@RequestParam("fundId") Long fundId,
+                        HttpSession session,
+                        Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null || !"planner".equals(admin.getRole())) return "redirect:/admin/";
 
+        Fund fund = fundService.findById(fundId)
+                .orElseThrow(() -> new RuntimeException("펀드를 찾을 수 없습니다."));
+
+        model.addAttribute("fund", fund);       // fund 객체 통째로 넘김
+        model.addAttribute("fundId", fundId);   // 필요한 경우 별도로 넘김
         return "admin/approval/form";
     }
 

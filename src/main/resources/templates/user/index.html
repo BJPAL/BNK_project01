@@ -1,21 +1,21 @@
 <head>
   <meta charset="UTF-8">
-  <title>테스트</title>
-   <link rel="stylesheet" href="/css/userHeader.css">
+  <title></title>
+  <link rel="stylesheet" th:href="@{/css/userHeader.css}">
   <link rel="stylesheet" th:href="@{/css/userMain.css}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </head>
 
 <body>
-  <div th:replace="fragments/userHeader :: userHeader"></div>
+  <div th:replace="fragments/userHeader ::userHeader"></div>
   <div class="start-text-div">
     <p class="start-text"><span>BNK</span> BUSAN BANK</p>
   </div>
   <div class="first-page">
     <div class="bg"></div>
     <div class="content">
-      <div class="1st-div">
+      <div class="div-1st">
         <div class="div-content1">
           <p>금융뉴스</p>
           <span>돈이 되는 <br>최신 금융 소식</span>
@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <div class="2nd-div">
+      <div class="div-2nd">
         <div class="div-content3">
           <p>고메부산</p>
           <strong>Instagram</strong>
@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <div class="3rd-div">
+      <div class="div-3rd">
         <div class="div-content5">
           <p>금융상품</p>
           <ul class="vision-keywords">

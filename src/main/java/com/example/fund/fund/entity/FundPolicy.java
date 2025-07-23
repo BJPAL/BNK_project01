@@ -32,9 +32,6 @@ public class FundPolicy {
     @JoinColumn(name = "fund_id", nullable = false)
     private Fund fund;
 
-    @Column(name = "fund_payout", precision = 5, scale = 4)
-    private BigDecimal fundPayout;
-
     @Column(name = "fund_theme", length = 50)
     private String fundTheme;
 

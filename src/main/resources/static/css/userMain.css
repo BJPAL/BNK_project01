@@ -263,22 +263,6 @@
       transform: translate(0, 0);
     }
 
-    /* 모바일 대응
-@media (max-width: 768px) {
-  .div-content1,
-  .div-content2,
-  .div-content3,
-  .div-content4,
-  .div-content5,
-  .div-content6,
-  .div-content7,
-  .div-content8,
-  .div-content9,
-  .div-content10 {
-    width: 90vw;
-  }
-} */
-
     /* 텍스트 요소들 */
     [class^="div-content"] p {
       font-size: 20px;
@@ -467,3 +451,62 @@
        background: url('/images/emergency.svg') no-repeat center;
         background-size: contain;
     }
+
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+
+      html, body {
+          overflow-x: hidden;
+          overflow-y: auto;
+      }
+      
+      .content {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      [class^="div-content"] {
+        width: 44vw; /* 기본 2열 */
+      }
+
+      /* 1번 박스 (div-content1)와 6번 박스 (div-content6)는 2칸 차지 */
+      .div-content1,
+      .div-content6 {
+        width: 90vw;
+      }
+
+      /* 텍스트 크기 줄이기 */
+      [class^="div-content"] p {
+          font-size: 16px;
+      }
+
+      /* 아이콘 크기 줄이기 */
+      .arrow-icon,
+      .youtube-icon,
+      .event-icon,
+      .gourmet-busan {
+          width: 50px;
+          height: 50px;
+      }
+
+      /* 텍스트 배너 크기 줄이기 */
+      .start-text-div {
+          font-size: 2.5rem;
+          padding: 0 10px;
+      }
+
+      /* 슬라이드 높이 고정 */
+      .swiper,
+      .swiper-slide {
+          width: 100% !important;
+          height: 200px !important;
+      }
+
+      .div-content4 .swiper,
+      .div-content6 .swiper {
+          height: 200px;
+      }
+    }
+
