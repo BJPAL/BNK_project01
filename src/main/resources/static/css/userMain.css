@@ -117,6 +117,7 @@
       max-width: 100%;
       color: #fff;
       overflow: hidden;
+      visibility: hidden;
       opacity: 0;
       transform: translate(0, 0) scale(0.1);
       transition: all 0.8s ease;
@@ -126,6 +127,7 @@
       position: static;
       transform: scale(1);
       opacity: 1;
+      visibility: visible;
     }
 
     .content {
