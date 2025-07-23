@@ -33,7 +33,7 @@
 
     <!-- 로그인 된 경우 -->
     <div th:if="${session.user != null}">
-      <a th:href="@{/mypage}"></a><span th:text="${session.user.name + '님 환영합니다'}"></span>
+      <a th:href="@{/mypage}"><span th:text="${session.user.name + '님 환영합니다'}"></span></a>
       <span>|</span>
       <a th:href="@{/auth/logout}">로그아웃</a>
     </div>
