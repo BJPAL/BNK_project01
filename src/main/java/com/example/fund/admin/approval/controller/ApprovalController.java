@@ -176,23 +176,20 @@ public class ApprovalController {
     }
 
     @GetMapping("/form")
-    public String showForm(@RequestParam("fundId") Long fundId,
-                        HttpSession session,
-                        Model model) {
+    public String showForm(@RequestParam(value = "fundId", required = false) Long fundId, HttpSession session, Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
-        if (admin == null || !"planner".equals(admin.getRole())) return "redirect:/admin/";
+        if (admin == null || !"planner".equals(admin.getRole())){
+            return "redirect:/admin/";
+        }
 
-        Fund fund = fundService.findById(fundId)
-                .orElseThrow(() -> new RuntimeException("펀드를 찾을 수 없습니다."));
-
-        model.addAttribute("fund", fund);       // fund 객체 통째로 넘김
-        model.addAttribute("fundId", fundId);   // 필요한 경우 별도로 넘김
+        model.addAttribute("fundId", fundId);
         return "admin/approval/form";
     }
 
     @PostMapping("/register")
     public String register(@RequestParam("title") String title,
                            @RequestParam("content") String content,
+                           @RequestParam(value = "fundId", required = false) Long fundId,
                            HttpSession session,
                            RedirectAttributes redirect) {
 
@@ -201,7 +198,9 @@ public class ApprovalController {
             throw new SecurityException("결재 요청 권한이 없습니다.");
         }
 
-        Integer id = approvalService.createApproval(title, content, admin.getAdmin_id());
+        Integer id = approvalService.createApproval(
+                title, content, admin.getAdmin_id(), fundId
+        );
         redirect.addFlashAttribute("successMessage", "결재 요청이 완료되었습니다!");
         redirect.addFlashAttribute("highlightId", id);
 

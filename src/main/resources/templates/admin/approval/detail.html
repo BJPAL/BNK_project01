@@ -175,6 +175,15 @@
             <table>
               <tr><th>제목</th><td th:text="${approval.title}"></td></tr>
               <tr><th>내용</th><td th:text="${approval.content}"></td></tr>
+              <tr th:if="${approval.fund != null}">
+                <th>펀드명</th>
+                <td>
+                  <a th:href="@{/fund/fundDetail/{id}(id=${approval.fund.fundId})}"
+                     th:text="${approval.fund.name}"
+                     style="color:var(--primary); font-weight:600;">
+                  </a>
+                </td>
+              </tr>
               <tr><th>작성자</th>
                 <td>
                   <a th:if="${approval.writer != null}"

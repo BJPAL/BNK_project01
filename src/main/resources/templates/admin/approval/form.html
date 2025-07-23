@@ -115,6 +115,8 @@
                               required
                               th:text="${approval?.content}"></textarea>
 
+                    <input type="hidden" name="fundId" th:value="${fundId}" />
+
                     <!-- 액션 버튼 우측 정렬 -->
                     <div class="form-actions">
                         <button type="submit" class="btn-submit"
