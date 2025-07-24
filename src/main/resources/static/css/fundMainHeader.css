@@ -43,7 +43,8 @@
   border-radius:9999px;
   background:transparent;
   color:#5ba6ac;
-  font:700 16px 'BNKGothic';
+  font:600 19px 'BNKGothic';
+  letter-spacing: 1.5px;
   text-decoration:none;
   cursor:pointer;
   transition:background .25s,color .25s,border-color .25s;

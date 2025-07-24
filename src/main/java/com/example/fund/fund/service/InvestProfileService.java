@@ -1,5 +1,6 @@
 package com.example.fund.fund.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -148,7 +149,16 @@ public class InvestProfileService {
     }
     
     public Optional<InvestProfileResult> getLatestResult(User user) {
-        return resultRepository.findTopByUserOrderByAnalysisDateDesc(user);
+        Optional<InvestProfileResult> resultOpt = resultRepository.findTopByUserOrderByAnalysisDateDesc(user);
+        
+        if (resultOpt.isPresent()) {
+            InvestProfileResult result = resultOpt.get();
+            if (result.getAnalysisDate().plusDays(365).isBefore(LocalDateTime.now())) {
+                return Optional.empty(); // 유효기간 초과 → 무효 처리
+            }
+        }
+
+        return resultOpt;
     }
     
     public String extractAnswerText(String snapshotJson, String keyword) {
@@ -173,6 +183,17 @@ public class InvestProfileService {
             return "&nbsp;";
         }
         return "&nbsp;";
+    }
+    
+    public boolean hasAnalyzedToday(Integer userId) {
+        Optional<InvestProfileResult> opt = resultRepository.findByUser_UserId(userId);
+
+        if (opt.isPresent()) {
+            LocalDate lastDate = opt.get().getAnalysisDate().toLocalDate();
+            return lastDate.isEqual(LocalDate.now()); // 오늘이면 true
+        }
+
+        return false;
     }
 }
 

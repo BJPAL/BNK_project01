@@ -185,9 +185,20 @@
     투자성향분석을 진행하시겠습니까?
   </div>
 
-  <div class="btn-box">
-    <button class="btn-analyze" onclick="location.href='terms'">분석하기</button>
-  </div>
+<div class="notice2" th:if="${analyzedToday}">
+  <span class="danger">※ 오늘은 이미 투자성향 분석을 완료하셨습니다.</span><br>
+  내일 다시 분석하실 수 있습니다.
+</div>
+
+<div class="btn-box">
+  <button class="btn-analyze"
+          th:if="${!analyzedToday}"
+          onclick="location.href='terms'">분석하기</button>
+
+  <button class="btn-analyze"
+          th:if="${analyzedToday}"
+          disabled style="opacity: 0.5; cursor: not-allowed;">오늘 분석 완료</button>
+</div>
 </div>
 <th:block th:replace="fragments/footer :: siteFooter"></th:block>
 </body>

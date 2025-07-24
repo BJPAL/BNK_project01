@@ -143,3 +143,40 @@ body {
 .btn-analyze:hover {
   background-color: #b52b27;
 }
+
+.notice2 {
+
+  color: #856404;
+  border: 2px solid ;
+  padding: 16px 24px;
+  margin: 24px 0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+  text-align: center; /* ✅ 가운데 정렬 */
+}
+
+.notice2::before {
+  display: inline-block;
+  background-color: #ffc107;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  position: absolute;
+  top: -12px;
+  left: 50%;                    /* 가운데 정렬 */
+  transform: translateX(-50%);  /* 정확한 중앙 위치 */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.notice2 .danger {
+  font-weight: bold;
+  color: #a94442;
+  font-size: 17px;
+  margin-bottom: 4px;
+  display: block;
+}
