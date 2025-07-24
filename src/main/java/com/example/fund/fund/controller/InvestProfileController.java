@@ -30,11 +30,15 @@ public class InvestProfileController {
 	
 	@GetMapping("/profile")
 	public String investProfile(HttpSession session, Model model) {
-		User loginUser = (User)session.getAttribute("user");
-		if (loginUser == null) return "redirect:/auth/login";
-		model.addAttribute("user", loginUser);
-		Optional<InvestProfileResult> optional = investProfileService.getLatestResult(loginUser);
-		
+	    User loginUser = (User)session.getAttribute("user");
+	    if (loginUser == null) return "redirect:/auth/login";
+
+	    model.addAttribute("user", loginUser);
+
+	    Optional<InvestProfileResult> optional = investProfileService.getLatestResult(loginUser);
+	    boolean analyzedToday = investProfileService.hasAnalyzedToday(loginUser.getUserId());
+	    model.addAttribute("analyzedToday", analyzedToday);
+
 	    if (optional.isPresent()) {
 	        InvestProfileResult result = optional.get();
 	        model.addAttribute("result", result);
@@ -48,8 +52,10 @@ public class InvestProfileController {
 	        model.addAttribute("canInvestTerm", "&nbsp;");
 	        model.addAttribute("experienceTerm", "&nbsp;");
 	    }
-		return "investprofile";
+
+	    return "investprofile";
 	}
+
 	
 	 @GetMapping("/terms")
 	 public String showInvestProfileForm(Model model, HttpSession session) {
@@ -68,7 +74,9 @@ public class InvestProfileController {
 	     if (loginUser == null) {
 	         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 	     }
-
+	     if (investProfileService.hasAnalyzedToday(loginUser.getUserId())) {
+	         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "오늘은 이미 투자성향 분석을 완료하셨습니다.");
+	     }
 	     // 분석 수행 및 결과 저장
 	     InvestProfileResult result = investProfileService.analyzeAndSave(loginUser.getUserId(), paramMap);
 
@@ -79,5 +87,7 @@ public class InvestProfileController {
 
 	     return response;
 	 }
+	 
+	 
 
 }
