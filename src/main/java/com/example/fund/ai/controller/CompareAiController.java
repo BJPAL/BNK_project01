@@ -17,13 +17,6 @@ public class CompareAiController {
     @Autowired
     private CompareAiService compareAiService;
 
-    @GetMapping("/talk")
-    public String talk(@RequestParam("message") String message) {
-        System.out.println("recieved message param : " + message);
-
-        return compareAiService.talk(message);
-    }
-
     @GetMapping("/compare")
     public String fundCompare(@RequestParam("fundId") List<Long> fundId, @RequestParam("invert") Integer invert) {
 
