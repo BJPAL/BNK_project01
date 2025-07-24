@@ -72,9 +72,8 @@ public class ApprovalController {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
         if (admin == null) return "redirect:/admin/";
 
-        /* 1차 컨트롤러 권한 체크 */
-        if (!List.of("super", "approver", "planner")
-                .contains(admin.getRole())) {
+        // 1차 컨트롤러 권한 체크
+        if (!List.of("super", "approver", "planner").contains(admin.getRole())) {
             redirect.addFlashAttribute("alertMessage", "승인 권한이 없습니다.");
             return "redirect:/admin/approval/manage";
         }
@@ -83,12 +82,14 @@ public class ApprovalController {
             /* 두번째 파라미터를 admin.getRole() 으로 전달 */
             approvalService.approve(id, admin.getRole(), reason);
             redirect.addFlashAttribute("alertMessage", "승인 처리되었습니다.");
+
+            return "redirect:/admin/approval/manage";
             // 승인한 결재가 특정 펀드와 연결되어 있으면 그 펀드 상세로 이동
-            Approval approval = approvalService.findById(id);
-            if (approval != null && approval.getFund() != null) {
-                Long fundId = approval.getFund().getFundId();
-                return "redirect:/admin/fund/view/" + fundId;
-            }
+//            Approval approval = approvalService.findById(id);
+//            if (approval != null && approval.getFund() != null) {
+//                Long fundId = approval.getFund().getFundId();
+//                return "redirect:/admin/fund/view/" + fundId;
+//            }
         } catch (SecurityException ex) {
             redirect.addFlashAttribute("alertMessage", ex.getMessage());
         } catch (Exception ex) {
