@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FundListResponse {
-    private List<FundResponseDTO> funds;
+    private List<FundPolicyResponseDTO> funds;
     private Integer investType;
     private String investTypeName;
 }

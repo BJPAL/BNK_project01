@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FundResponseDTO {
+public class FundPolicyResponseDTO {
     private Long fundId;    // 펀드 ID
     private String fundName;    // 펀드명
     private String fundType;    // 펀드 유형

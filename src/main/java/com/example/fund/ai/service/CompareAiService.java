@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
-import com.example.fund.fund.dto.FundResponseDTO;
+import com.example.fund.fund.dto.FundPolicyResponseDTO;
 import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.entity.FundReturn;
 import com.example.fund.fund.repository.FundRepository;
@@ -32,7 +32,7 @@ public class CompareAiService {
 
   public String fundsCompare(List<Long> fundIds, Integer investType) {
 
-    List<FundResponseDTO> compareList = new ArrayList<>();
+    List<FundPolicyResponseDTO> compareList = new ArrayList<>();
 
     // 펀드 ID리스트를 FundResponseDTO 리스트로 변환하는 for문
     for (Long id : fundIds) {
@@ -44,7 +44,7 @@ public class CompareAiService {
         throw new RuntimeException("Fund return not found: " + id); // 예외처리
       }
 
-      FundResponseDTO dto = FundResponseDTO.builder()
+      FundPolicyResponseDTO dto = FundPolicyResponseDTO.builder()
           .fundId(fund.getFundId())
           .fundName(fund.getFundName())
           .fundType(fund.getFundType())
@@ -73,7 +73,7 @@ public class CompareAiService {
   }
 
   // 프롬프트 생성 함수
-  public String buildFundComparisonPrompt(List<FundResponseDTO> fundResponseList, String investType) {
+  public String buildFundComparisonPrompt(List<FundPolicyResponseDTO> fundResponseList, String investType) {
     StringBuilder promptBuilder = new StringBuilder();
 
     promptBuilder.append("다음은 비교하고 싶은 펀드들의 정보입니다.\n\n");
@@ -130,7 +130,7 @@ public class CompareAiService {
     promptBuilder.append("<p>").append(investType).append("</p>\n\n");
 
     promptBuilder.append("<h3>펀드 데이터</h3>\n");
-    for (FundResponseDTO fund : fundResponseList) {
+    for (FundPolicyResponseDTO fund : fundResponseList) {
       promptBuilder.append("- ").append(fund.getFundName()).append(" | 총보수: ")
           .append(fund.getTotalExpenseRatio()).append("% | 수익률(1M/3M/6M/12M/누적): ")
           .append(fund.getReturn1m()).append("/").append(fund.getReturn3m()).append("/")

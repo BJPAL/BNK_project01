@@ -3,7 +3,7 @@ package com.example.fund.fund.service;
 import com.example.fund.fund.dto.FundDetailResponse;
 import com.example.fund.fund.dto.FundDetailResponseDto;
 import com.example.fund.fund.dto.FundRegisterRequest;
-import com.example.fund.fund.dto.FundResponseDTO;
+import com.example.fund.fund.dto.FundPolicyResponseDTO;
 import com.example.fund.fund.entity.*;
 import com.example.fund.fund.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -219,8 +219,6 @@ public class FundService {
     }
 
     /*PDF 저장 & JPG 변환*/
-//    private final FundPolicyRepository fundPolicyRepository;
-//    private final FundDocumentRepository fundDocumentRepository;
     private final String UPLOAD_DIR = "C:\\bnk_project\\data\\uploads\\fund_document\\";
 
     @Transactional
@@ -308,7 +306,7 @@ public class FundService {
     /**
      * 투자 성향 + 3개월 수익률 중에세 가장 높은 수익률 10개를 조회
      */
-    public List<FundResponseDTO> findBestReturn(
+    public List<FundPolicyResponseDTO> findBestReturn(
             Integer investType,
             Pageable pageable
     ) {
@@ -341,7 +339,7 @@ public class FundService {
      * @param pageable   페이지네이션 정보
      * @return 조건에 맞는 펀드 페이지
      */
-    public Page<FundResponseDTO> findWithFilters(
+    public Page<FundPolicyResponseDTO> findWithFilters(
             Integer investType,
             List<String> riskLevels,
             List<String> fundTypes,
@@ -383,7 +381,7 @@ public class FundService {
         return convertToFundResponseDTO(fundPage);
     }
 
-    public Page<FundResponseDTO> findWithFilters_policy(
+    public Page<FundPolicyResponseDTO> findWithFilters_policy(
             Integer investType,
             List<String> riskLevels,
             List<String> fundTypes,
@@ -426,7 +424,7 @@ public class FundService {
     /**
      * 투자 성향에 따른 펀드 목록 조회 - pagination
      */
-    public Page<FundResponseDTO> findByInvestType(
+    public Page<FundPolicyResponseDTO> findByInvestType(
             Integer investType,
             Pageable pageable
     ) {
@@ -447,10 +445,10 @@ public class FundService {
         Page<Fund> fundPage = fundRepository.findByRiskLevelBetween(startRiskLevel, endRiskLevel, pageable);
 
         // ✅ fundPage → fundResponsePage 변환
-        Page<FundResponseDTO> fundResponsePage = fundPage.map(fund -> {
+        Page<FundPolicyResponseDTO> fundResponsePage = fundPage.map(fund -> {
             FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
 
-            return FundResponseDTO.builder()
+            return FundPolicyResponseDTO.builder()
                     .fundId(fund.getFundId())
                     .fundName(fund.getFundName())
                     .fundType(fund.getFundType())
@@ -476,14 +474,14 @@ public class FundService {
     /**
      * Page<Fund>를 Page<FundResponseDTO>로 변환하는 메서드
      */
-    private Page<FundResponseDTO> convertToFundResponseDTO(
+    private Page<FundPolicyResponseDTO> convertToFundResponseDTO(
             Page<Fund> fundPage
     ) {
         return fundPage.map(fund -> {
             // 각 펀드의 수익률 정보 조회
             FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
 
-            return FundResponseDTO.builder()
+            return FundPolicyResponseDTO.builder()
                     .fundId(fund.getFundId())
                     .fundName(fund.getFundName())
                     .fundType(fund.getFundType())
@@ -507,7 +505,7 @@ public class FundService {
     /**
      * List<Fund>를 List<FundResponseDTO>로 변환하는 메서드
      */
-    private List<FundResponseDTO> convertToFundResponseDTO(
+    private List<FundPolicyResponseDTO> convertToFundResponseDTO(
             List<Fund> fundList
     ) {
         return fundList.stream()
@@ -515,7 +513,7 @@ public class FundService {
                     // 각 펀드의 수익률 정보 조회
                     FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
 
-                    return FundResponseDTO.builder()
+                    return FundPolicyResponseDTO.builder()
                             .fundId(fund.getFundId())
                             .fundName(fund.getFundName())
                             .fundType(fund.getFundType())
@@ -541,7 +539,7 @@ public class FundService {
      * FundPolicy 페이지를 FundResponseDTO 페이지로 변환
      * N+1 문제를 해결하기 위해 배치로 FundReturn 조회
      */
-    private Page<FundResponseDTO> convertFundPolicyToFundResponseDTO(Page<FundPolicy> fundPolicyPage) {
+    private Page<FundPolicyResponseDTO> convertFundPolicyToFundResponseDTO(Page<FundPolicy> fundPolicyPage) {
         // 1. 모든 fundId 수집
         List<Long> fundIds = fundPolicyPage.getContent()
                 .stream()
@@ -567,7 +565,7 @@ public class FundService {
             Fund fund = fundPolicy.getFund();
             FundReturn fundReturn = finalFundReturnMap.get(fund.getFundId());
 
-            return FundResponseDTO.builder()
+            return FundPolicyResponseDTO.builder()
                     .fundId(fund.getFundId())
                     .fundName(fund.getFundName())
                     .fundType(fund.getFundType())

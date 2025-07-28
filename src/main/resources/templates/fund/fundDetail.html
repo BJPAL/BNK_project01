@@ -17,7 +17,9 @@
     <body>
         <!-- 헤더 영역 -->
         <th:block th:replace="fragments/userHeader :: userHeader"></th:block>
-		<th:block th:replace="fragments/fundMainHeader :: fundMainHeader"></th:block>
+        <th:block
+            th:replace="fragments/fundMainHeader :: fundMainHeader"
+        ></th:block>
         <!-- 메인 영역 -->
         <div class="container">
             <!-- 페이지 제목 영역 -->
@@ -136,9 +138,11 @@
                 </div>
 
                 <!-- 펀드 공시자료 -->
-                <div class="fund-item-container">
-                    <h2 class="item-title">펀드 공시자료</h2>
-                </div>
+                <!-- 
+                    <div class="fund-item-container">
+                        <h2 class="item-title">펀드 공시자료</h2>
+                    </div>
+                -->
             </div>
 
             <!-- 버튼 영역 -->

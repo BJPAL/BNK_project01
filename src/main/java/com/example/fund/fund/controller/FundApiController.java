@@ -10,13 +10,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.fund.fund.dto.*;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -94,7 +92,7 @@ public class FundApiController {
                     investType, risk, type, region, page);
 
             // 4. 펀드 데이터 조회 - 필터 조건이 있으면 필터링, 없으면 기본 조회
-            Page<FundResponseDTO> fundPage;
+            Page<FundPolicyResponseDTO> fundPage;
 
             boolean hasFilters = (risk != null && !risk.isEmpty()) ||
                     (type != null && !type.isEmpty()) ||
@@ -199,7 +197,7 @@ public class FundApiController {
             Pageable pageable = PageRequest.of(page, size, Sort.by("policyId").descending());
 
             // 데이터 조회
-            Page<FundResponseDTO> fundPage = fundService.findWithFilters_policy(investType, risk, type, region, pageable);
+            Page<FundPolicyResponseDTO> fundPage = fundService.findWithFilters_policy(investType, risk, type, region, pageable);
 
             // 투자성향 이름 조회
             String investTypeName = getInvestTypeName(investType);
@@ -270,7 +268,7 @@ public class FundApiController {
             Pageable pageable = PageRequest.of(0, 10);
 
             // 데이터 조회
-            List<FundResponseDTO> fundList = fundService.findBestReturn(investType, pageable);
+            List<FundPolicyResponseDTO> fundList = fundService.findBestReturn(investType, pageable);
 
             // 투자 성향 조회
             String investTypeName = getInvestTypeName(investType);
