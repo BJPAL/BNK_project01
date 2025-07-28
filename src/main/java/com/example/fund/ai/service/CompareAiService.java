@@ -23,6 +23,7 @@ public class CompareAiService {
   private final FundRepository fundRepository;
   private final FundReturnRepository fundReturnRepository;
 
+  // OpenAI의 답변 출력
   public String talk(String message) {
     return chatClient.prompt()
         .user(message)
