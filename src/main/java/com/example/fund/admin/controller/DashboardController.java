@@ -25,7 +25,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class DashboardController {
 
-    private final FundService          fundService;      // findAll() 만 사용
     private final QnaService           qnaService;       // countUnanwseQna() 사용
     private final ApprovalService      approvalService;  // getApprovalsByStatus() 사용
     private final AdminNoticeService noticeService;    // 최근 공지 조회용
