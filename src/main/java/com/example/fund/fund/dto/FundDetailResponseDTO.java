@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FundDetailResponseDto {
+public class FundDetailResponseDTO {
     // 펀드 기본 정보
     private Long fundId;
     private String fundName;

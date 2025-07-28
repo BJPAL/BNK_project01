@@ -20,30 +20,6 @@ public class FundController {
     private final FundRepository fundRepo;
     private final FundFavoriteService favoriteService;
 
-
-    /**
-     * 펀드 상세 페이지 - legacy
-     */
-    /*
-    @GetMapping("/{id}")
-    public String detail(
-            @PathVariable Long id,
-            HttpSession session,
-            Model model
-    ) {
-        // 잠시 주석 처리
-        Fund fund = fundRepo.findById(id).orElseThrow();
-        model.addAttribute("fund", fund);
-
-        User user = (User) session.getAttribute("user");
-        boolean isFav = favoriteService.isFavorite(user.getUserId(), id);
-        model.addAttribute("isFavorite", isFav);
-
-
-        return "mypage/fund-detail";
-    }
-    */
-
     /**
      * 보유 펀드 목록
      */

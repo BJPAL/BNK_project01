@@ -1,7 +1,7 @@
 package com.example.fund.fund.service;
 
 import com.example.fund.fund.dto.FundDetailResponse;
-import com.example.fund.fund.dto.FundDetailResponseDto;
+import com.example.fund.fund.dto.FundDetailResponseDTO;
 import com.example.fund.fund.dto.FundRegisterRequest;
 import com.example.fund.fund.dto.FundPolicyResponseDTO;
 import com.example.fund.fund.entity.*;
@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -622,12 +621,12 @@ public class FundService {
      * 펀드 상세 정보 조회 (투자성향 검증 포함)
      */
     // Integer investType
-    public FundDetailResponseDto getFundDetail(Long fundId) {
+    public FundDetailResponseDTO getFundDetail(Long fundId) {
 
         // 1. 펀드 기본 정보 조회
         Optional<Fund> fundOpt = fundRepository.findByFundId(fundId);
         if (!fundOpt.isPresent()) {
-            return FundDetailResponseDto.builder()
+            return FundDetailResponseDTO.builder()
                     .accessAllowed(false)
                     .accessMessage("존재하지 않는 펀드입니다.")
                     .build();
@@ -636,7 +635,7 @@ public class FundService {
         Fund fund = fundOpt.get();
 
         // 2. 전체 정보 조회
-        FundDetailResponseDto.FundDetailResponseDtoBuilder builder = FundDetailResponseDto.builder()
+        FundDetailResponseDTO.FundDetailResponseDtoBuilder builder = FundDetailResponseDTO.builder()
                 .fundId(fund.getFundId())
                 .fundName(fund.getFundName())
                 .fundType(fund.getFundType())

@@ -324,7 +324,7 @@ public class FundApiController {
             // og.debug("사용자 투자성향 확인 - userId: {}, investType: {}", userId, investType);
 
             // 3. 펀드 상세 정보 조회
-            FundDetailResponseDto fundDetail = fundService.getFundDetail(fundId);
+            FundDetailResponseDTO fundDetail = fundService.getFundDetail(fundId);
 
             // 4. 펀드 존재 여부 확인
             if (fundDetail == null) {
