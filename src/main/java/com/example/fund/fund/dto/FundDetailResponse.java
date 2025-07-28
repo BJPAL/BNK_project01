@@ -1,6 +1,5 @@
 package com.example.fund.fund.dto;
 
-import com.example.fund.fund.entity.FundAsset;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
