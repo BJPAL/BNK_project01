@@ -1,7 +1,6 @@
 package com.example.fund.admin.approval.service;
 
 import com.example.fund.admin.approval.entity.Approval;
-import com.example.fund.admin.approval.entity.ApprovalLog;
 import com.example.fund.admin.approval.repository.ApprovalRepository;
 import com.example.fund.admin.entity.Admin;
 import com.example.fund.admin.repository.AdminRepository_A;

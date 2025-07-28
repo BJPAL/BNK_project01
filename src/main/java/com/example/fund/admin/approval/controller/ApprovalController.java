@@ -16,7 +16,6 @@ import com.example.fund.admin.approval.entity.ApprovalLog;
 import com.example.fund.admin.approval.service.ApprovalLogService;
 import com.example.fund.admin.approval.service.ApprovalService;
 import com.example.fund.admin.dto.AdminDTO;
-import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.service.FundService;
 
 import jakarta.servlet.http.HttpSession;
@@ -29,7 +28,6 @@ public class ApprovalController {
 
     private final ApprovalService approvalService;
     private final ApprovalLogService approvalLogService;
-    private final FundService fundService;
 
     @GetMapping("/manage")
     public String manageApprovals(HttpSession session, Model model,
@@ -84,12 +82,7 @@ public class ApprovalController {
             redirect.addFlashAttribute("alertMessage", "승인 처리되었습니다.");
 
             return "redirect:/admin/approval/manage";
-            // 승인한 결재가 특정 펀드와 연결되어 있으면 그 펀드 상세로 이동
-//            Approval approval = approvalService.findById(id);
-//            if (approval != null && approval.getFund() != null) {
-//                Long fundId = approval.getFund().getFundId();
-//                return "redirect:/admin/fund/view/" + fundId;
-//            }
+
         } catch (SecurityException ex) {
             redirect.addFlashAttribute("alertMessage", ex.getMessage());
         } catch (Exception ex) {

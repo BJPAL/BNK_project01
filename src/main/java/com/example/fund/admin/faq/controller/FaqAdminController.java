@@ -168,9 +168,4 @@ public class FaqAdminController {
         }
         return "redirect:/admin/faq/list";
     }
-
-    @GetMapping("/admin/test")
-    public String testLayout() {
-        return "admin/admin_layout_temp";
-    }
 }
