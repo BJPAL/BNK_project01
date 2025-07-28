@@ -22,7 +22,7 @@ public class AdminNoticeController {
         return admin != null && "super".equals(admin.getRole());
     }
 
-    // (1) 공지 등록 폼 (super 전용)
+    // (1) 공지 등록 폼 (super 전용) get
     @GetMapping("/new")
     public String newForm(HttpSession session, RedirectAttributes rttr) {
         if (!isSuper(session)) {
@@ -32,10 +32,10 @@ public class AdminNoticeController {
         return "admin/notice/form";
     }
 
-    // (2) 공지 등록 처리
+    // (2) 공지 등록 처리 post
     @PostMapping("/new")
-    public String create(@RequestParam String title,
-                         @RequestParam String content,
+    public String create(@RequestParam("title") String title,
+                         @RequestParam("content") String content,
                          HttpSession session,
                          RedirectAttributes rttr) {
         if (!isSuper(session)) {
@@ -59,7 +59,7 @@ public class AdminNoticeController {
 
     // (4) 상세 페이지
     @GetMapping("/detail/{id}")
-    public String detail(@PathVariable Long id,
+    public String detail(@PathVariable("id") Long id,
                          HttpSession session,
                          Model model) {
         AdminDTO admin = (AdminDTO) session.getAttribute("admin");
@@ -76,7 +76,7 @@ public class AdminNoticeController {
 
     // (5) 수정 폼
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable Long id, HttpSession session, RedirectAttributes rttr, Model model) {
+    public String editForm(@PathVariable("id") Long id, HttpSession session, RedirectAttributes rttr, Model model) {
         if (!isSuper(session)) {
             rttr.addFlashAttribute("alertMessage", "권한이 없습니다.");
             return "redirect:/admin/notice/list";
@@ -87,9 +87,9 @@ public class AdminNoticeController {
 
     // (6) 수정 처리
     @PostMapping("/edit/{id}")
-    public String update(@PathVariable Long id,
-                         @RequestParam String title,
-                         @RequestParam String content,
+    public String update(@PathVariable("id") Long id,
+                         @RequestParam("title") String title,
+                         @RequestParam("content") String content,
                          HttpSession session,
                          RedirectAttributes rttr) {
         if (!isSuper(session)) {
@@ -103,7 +103,7 @@ public class AdminNoticeController {
 
     // (7) 삭제 처리
     @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Long id,
+    public String delete(@PathVariable("id") Long id,
                          HttpSession session,
                          RedirectAttributes rttr) {
         if (!isSuper(session)) {
