@@ -39,7 +39,6 @@ public class FundService {
 
     private final FundRepository fundRepository;
     private final FundReturnRepository fundReturnRepository;
-    private final FundAssetRepository fundAssetRepository;  // deprecated 됨, 수정 필요
     private final FundPortfolioRepository fundPortfolioRepository;
     private final FundPolicyRepository fundPolicyRepository;
     private final FundDocumentRepository fundDocumentRepository;
@@ -51,7 +50,6 @@ public class FundService {
         Fund fund = fundRepository.findByFundId(fundId)
                 .orElseThrow(() -> new RuntimeException("펀드를 찾을 수 없습니다."));
 
-        FundAsset asset = fundAssetRepository.findByFund_FundId(fundId).orElse(null);
         List<FundDocument> documents = fundDocumentRepository.findByFund_FundId(fundId);
 
         Long termsFileId = null;
@@ -88,12 +86,6 @@ public class FundService {
                 .managementCompany(fund.getManagementCompany())
                 .riskLevel(fund.getRiskLevel())
                 .totalExpenseRatio(fund.getTotalExpenseRatio())
-                .domesticStock(asset != null ? asset.getDomesticStock() : BigDecimal.ZERO)
-                .overseasStock(asset != null ? asset.getOverseasStock() : BigDecimal.ZERO)
-                .domesticBond(asset != null ? asset.getDomesticBond() : BigDecimal.ZERO)
-                .overseasBond(asset != null ? asset.getOverseasBond() : BigDecimal.ZERO)
-                .fundInvestment(asset != null ? asset.getFundInvestment() : BigDecimal.ZERO)
-                .liquidity(asset != null ? asset.getLiquidity() : BigDecimal.ZERO)
                 .termsFileId(termsFileId)
                 .manualFileId(manualFileId)
                 .prospectusFileId(prospectusFileId)
@@ -113,7 +105,6 @@ public class FundService {
         FundPolicy policy = fundPolicyRepository.findByFund_FundId(fundId)
                 .orElseThrow(() -> new RuntimeException("펀드 정책을 찾을 수 없습니다."));
 
-        FundAsset asset = fundAssetRepository.findByFund_FundId(fundId).orElse(null);
         List<FundDocument> documents = fundDocumentRepository.findByFund_FundId(fundId);
 
         Long termsFileId = null;
@@ -151,12 +142,6 @@ public class FundService {
                 .managementCompany(fund.getManagementCompany())
                 .riskLevel(fund.getRiskLevel())
                 .totalExpenseRatio(fund.getTotalExpenseRatio())
-                .domesticStock(asset != null ? asset.getDomesticStock() : BigDecimal.ZERO)
-                .overseasStock(asset != null ? asset.getOverseasStock() : BigDecimal.ZERO)
-                .domesticBond(asset != null ? asset.getDomesticBond() : BigDecimal.ZERO)
-                .overseasBond(asset != null ? asset.getOverseasBond() : BigDecimal.ZERO)
-                .fundInvestment(asset != null ? asset.getFundInvestment() : BigDecimal.ZERO)
-                .liquidity(asset != null ? asset.getLiquidity() : BigDecimal.ZERO)
                 .termsFileId(termsFileId)
                 .manualFileId(manualFileId)
                 .prospectusFileId(prospectusFileId)
