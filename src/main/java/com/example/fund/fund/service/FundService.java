@@ -635,7 +635,7 @@ public class FundService {
         Fund fund = fundOpt.get();
 
         // 2. 전체 정보 조회
-        FundDetailResponseDTO.FundDetailResponseDtoBuilder builder = FundDetailResponseDTO.builder()
+        FundDetailResponseDTO.FundDetailResponseDTOBuilder builder = FundDetailResponseDTO.builder()
                 .fundId(fund.getFundId())
                 .fundName(fund.getFundName())
                 .fundType(fund.getFundType())

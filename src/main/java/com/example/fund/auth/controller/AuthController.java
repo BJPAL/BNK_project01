@@ -22,17 +22,24 @@ public class AuthController {
     private final UserService service;
     private static final String SESSION_KEY = "user";
 
-    /* ===== 회원가입 ===== */
+    /**
+     *  회원가입 폼 제공
+     */
     @GetMapping("/join")
     public String joinForm(Model m) {
         m.addAttribute("joinRequest", new JoinRequest());
         return "auth/join";
     }
 
+    /**
+     *  회원가입 처리 메서드
+     */
     @PostMapping("/join")
-    public String join(@Valid @ModelAttribute JoinRequest dto,
+    public String join(
+            @Valid @ModelAttribute JoinRequest dto,
             BindingResult br,
-            Model m) {
+            Model m
+    ) {
         if (!dto.samePassword())
             br.rejectValue("confirmPassword", "nomatch", "비밀번호가 일치하지 않습니다.");
         if (br.hasErrors())
@@ -55,10 +62,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute LoginRequest dto,
+    public String login(
+            @Valid @ModelAttribute LoginRequest dto,
             BindingResult br,
             HttpSession session,
-            Model m) {
+            Model m
+    ) {
         if (br.hasErrors())
             return "auth/login";
 
