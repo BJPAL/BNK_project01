@@ -75,10 +75,10 @@ textarea {
   margin-top: 2rem;
 }
 
-button {
-  background-color: #2d838b;
-  color: white;
-  padding: 0.65rem 2.2rem;
+.qna-btn {
+  background-color: #2d838b !important;
+  color: white !important;
+  padding: 0.65rem 2.2rem !important;
   font-size: 1rem;
   border: none;
   border-radius: 999px;
