@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +26,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,6 +40,8 @@ public class FundService {
     private final FundPortfolioRepository fundPortfolioRepository;
     private final FundPolicyRepository fundPolicyRepository;
     private final FundDocumentRepository fundDocumentRepository;
+
+    private final FundPublicRepository fundPublicRepository; // 공개용 엔티티
 
     /**
      * 새로운 메서드 - 투자 성향 + 필터링 조건을 모두 적용한 펀드 목록 조회
@@ -323,6 +324,51 @@ public class FundService {
      * @param pageable   페이지네이션 정보
      * @return 조건에 맞는 펀드 페이지
      */
+//    public Page<FundPolicyResponseDTO> findWithFilters(
+//            Integer investType,
+//            List<String> riskLevels,
+//            List<String> fundTypes,
+//            List<String> regions,
+//            Pageable pageable
+//    ) {
+//        // 1. 투자 성향 → 위험 등급 범위 계산 (기본 필터)
+//        int startRiskLevel;
+//        int endRiskLevel = 6;
+//
+//        switch (investType) {
+//            case 1 -> startRiskLevel = 6; // 안정형: 6등급만
+//            case 2 -> startRiskLevel = 5; // 안정 추구형: 5~6등급
+//            case 3 -> startRiskLevel = 4; // 위험 중립형: 4~6등급
+//            case 4 -> startRiskLevel = 3; // 적극 투자형: 3~6등급
+//            case 5 -> startRiskLevel = 1; // 공격 투자형: 1~6등급
+//            default -> throw new IllegalArgumentException("올바르지 않은 투자 성향입니다.");
+//        }
+//
+//        // 2. 문자열 리스트를 적절한 타입으로 변환
+//        List<Integer> riskLevelInts = convertToIntegerList(riskLevels);
+//        List<String> processedFundTypes = processEmptyList(fundTypes);
+//        List<String> processedRegions = processEmptyList(regions);
+//
+//        log.info("필터링 조건 - investType: {}, riskLevels: {}, fundTypes: {}, regions: {}",
+//                investType, riskLevelInts, processedFundTypes, processedRegions);
+//
+//        // 3. Repository에서 필터링된 데이터 조회
+//        Page<Fund> fundPage = fundRepository.findWithFilters(
+//                startRiskLevel,
+//                endRiskLevel,
+//                riskLevelInts,
+//                processedFundTypes,
+//                processedRegions,
+//                pageable
+//        );
+//
+//        // 4. Entity → DTO 변환
+//        return convertToFundResponseDTO(fundPage);
+//    }
+
+    /**
+     * (2) 투자성향 + 필터링(risk/type/region) 적용 조회.. 승인된 결제만으로 메서드 교체
+     */
     public Page<FundPolicyResponseDTO> findWithFilters(
             Integer investType,
             List<String> riskLevels,
@@ -330,39 +376,35 @@ public class FundService {
             List<String> regions,
             Pageable pageable
     ) {
-        // 1. 투자 성향 → 위험 등급 범위 계산 (기본 필터)
-        int startRiskLevel;
-        int endRiskLevel = 6;
-
+        // 1) 투자성향 → 위험등급 범위 계산
+        int startRisk, endRisk = 6;
         switch (investType) {
-            case 1 -> startRiskLevel = 6; // 안정형: 6등급만
-            case 2 -> startRiskLevel = 5; // 안정 추구형: 5~6등급
-            case 3 -> startRiskLevel = 4; // 위험 중립형: 4~6등급
-            case 4 -> startRiskLevel = 3; // 적극 투자형: 3~6등급
-            case 5 -> startRiskLevel = 1; // 공격 투자형: 1~6등급
+            case 1 -> startRisk = 6;
+            case 2 -> startRisk = 5;
+            case 3 -> startRisk = 4;
+            case 4 -> startRisk = 3;
+            case 5 -> startRisk = 1;
             default -> throw new IllegalArgumentException("올바르지 않은 투자 성향입니다.");
         }
 
-        // 2. 문자열 리스트를 적절한 타입으로 변환
-        List<Integer> riskLevelInts = convertToIntegerList(riskLevels);
-        List<String> processedFundTypes = processEmptyList(fundTypes);
-        List<String> processedRegions = processEmptyList(regions);
+        // 2) 문자열 리스트 → Integer 리스트 (riskLevels)
+        List<Integer> riskInts = (riskLevels == null || riskLevels.isEmpty())
+                ? null
+                : riskLevels.stream().map(Integer::parseInt).toList();
 
-        log.info("필터링 조건 - investType: {}, riskLevels: {}, fundTypes: {}, regions: {}",
-                investType, riskLevelInts, processedFundTypes, processedRegions);
+        // 3) fundTypes, regions 빈 리스트면 null
+        List<String> types = (fundTypes == null || fundTypes.isEmpty()) ? null : fundTypes;
+        List<String> regs  = (regions    == null || regions.isEmpty())    ? null : regions;
 
-        // 3. Repository에서 필터링된 데이터 조회
-        Page<Fund> fundPage = fundRepository.findWithFilters(
-                startRiskLevel,
-                endRiskLevel,
-                riskLevelInts,
-                processedFundTypes,
-                processedRegions,
+        // 4) JPQL 프로젝션 호출
+        return fundPolicyRepository.findFilteredWithReturns(
+                startRisk,     // 투자성향 기반 위험범위 시작
+                endRisk,       // 위험범위 끝
+                riskInts,      // 사용자가 선택한 위험등급 리스트 (null 가능)
+                types,         // 펀드유형 리스트     (null 가능)
+                regs,          // 투자지역 리스트     (null 가능)
                 pageable
         );
-
-        // 4. Entity → DTO 변환
-        return convertToFundResponseDTO(fundPage);
     }
 
     public Page<FundPolicyResponseDTO> findWithFilters_policy(
@@ -405,54 +447,84 @@ public class FundService {
     }
 
 
+//    /**
+//     * 투자 성향에 따른 펀드 목록 조회 - pagination
+//     */
+//    public Page<FundPolicyResponseDTO> findByInvestType(
+//            Integer investType,
+//            Pageable pageable
+//    ) {
+//        // 투자 성향 → 위험 등급 범위 계산
+//        int startRiskLevel;
+//        int endRiskLevel = 6;
+//        // String investTypeName = "";
+//
+//        switch (investType) {
+//            case 1 -> startRiskLevel = 6; // 안정형
+//            case 2 -> startRiskLevel = 5; // 안정 추구형
+//            case 3 -> startRiskLevel = 4; // 위험 중립형
+//            case 4 -> startRiskLevel = 3; // 적극 투자형
+//            case 5 -> startRiskLevel = 1; // 공격 투자형
+//            default -> throw new IllegalArgumentException("올바르지 않은 투자 성향입니다.");
+//        }
+//
+//        Page<Fund> fundPage = fundRepository.findByRiskLevelBetween(startRiskLevel, endRiskLevel, pageable);
+//
+//        // ✅ fundPage → fundResponsePage 변환
+//        Page<FundPolicyResponseDTO> fundResponsePage = fundPage.map(fund -> {
+//            FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
+//
+//            return FundPolicyResponseDTO.builder()
+//                    .fundId(fund.getFundId())
+//                    .fundName(fund.getFundName())
+//                    .fundType(fund.getFundType())
+//                    .investmentRegion(fund.getInvestmentRegion())
+//                    .establishDate(fund.getEstablishDate())
+//                    .launchDate(fund.getLaunchDate())
+//                    .nav(fund.getNav())
+//                    .aum(fund.getAum())
+//                    .totalExpenseRatio(fund.getTotalExpenseRatio())
+//                    .riskLevel(fund.getRiskLevel())
+//                    .managementCompany(fund.getManagementCompany())
+//                    .return1m(fundReturn.getReturn1m())
+//                    .return3m(fundReturn.getReturn3m())
+//                    .return6m(fundReturn.getReturn6m())
+//                    .return12m(fundReturn.getReturn12m())
+//                    .returnSince(fundReturn.getReturnSince())
+//                    .build();
+//        });
+//
+//        return fundResponsePage;
+//    }
+
     /**
-     * 투자 성향에 따른 펀드 목록 조회 - pagination
+     * (1) 투자성향에 따른 목록 조회 (active=true + 수익률까지 한 번에) 위 메서드 교체
      */
     public Page<FundPolicyResponseDTO> findByInvestType(
             Integer investType,
             Pageable pageable
     ) {
-        // 투자 성향 → 위험 등급 범위 계산
-        int startRiskLevel;
-        int endRiskLevel = 6;
-        // String investTypeName = "";
-
+        // 1) investType → 위험등급 범위 계산
+        int startRisk;
         switch (investType) {
-            case 1 -> startRiskLevel = 6; // 안정형
-            case 2 -> startRiskLevel = 5; // 안정 추구형
-            case 3 -> startRiskLevel = 4; // 위험 중립형
-            case 4 -> startRiskLevel = 3; // 적극 투자형
-            case 5 -> startRiskLevel = 1; // 공격 투자형
+            case 1 -> startRisk = 6;
+            case 2 -> startRisk = 5;
+            case 3 -> startRisk = 4;
+            case 4 -> startRisk = 3;
+            case 5 -> startRisk = 1;
             default -> throw new IllegalArgumentException("올바르지 않은 투자 성향입니다.");
         }
+        int endRisk = 6;
 
-        Page<Fund> fundPage = fundRepository.findByRiskLevelBetween(startRiskLevel, endRiskLevel, pageable);
-
-        // ✅ fundPage → fundResponsePage 변환
-        Page<FundPolicyResponseDTO> fundResponsePage = fundPage.map(fund -> {
-            FundReturn fundReturn = fundReturnRepository.findByFund_FundId(fund.getFundId());
-
-            return FundPolicyResponseDTO.builder()
-                    .fundId(fund.getFundId())
-                    .fundName(fund.getFundName())
-                    .fundType(fund.getFundType())
-                    .investmentRegion(fund.getInvestmentRegion())
-                    .establishDate(fund.getEstablishDate())
-                    .launchDate(fund.getLaunchDate())
-                    .nav(fund.getNav())
-                    .aum(fund.getAum())
-                    .totalExpenseRatio(fund.getTotalExpenseRatio())
-                    .riskLevel(fund.getRiskLevel())
-                    .managementCompany(fund.getManagementCompany())
-                    .return1m(fundReturn.getReturn1m())
-                    .return3m(fundReturn.getReturn3m())
-                    .return6m(fundReturn.getReturn6m())
-                    .return12m(fundReturn.getReturn12m())
-                    .returnSince(fundReturn.getReturnSince())
-                    .build();
-        });
-
-        return fundResponsePage;
+        // 2) 투자성향 조회는 필터가 없으니 나머지 파라미터는 null
+        return fundPolicyRepository.findFilteredWithReturns(
+                startRisk,
+                endRisk,
+                null,   // riskLevels
+                null,   // fundTypes
+                null,   // regions
+                pageable
+        );
     }
 
     /**
@@ -635,7 +707,7 @@ public class FundService {
         Fund fund = fundOpt.get();
 
         // 2. 전체 정보 조회
-        FundDetailResponseDTO.FundDetailResponseDtoBuilder builder = FundDetailResponseDTO.builder()
+        FundDetailResponseDTO.FundDetailResponseDTOBuilder builder = FundDetailResponseDTO.builder()
                 .fundId(fund.getFundId())
                 .fundName(fund.getFundName())
                 .fundType(fund.getFundType())
@@ -717,6 +789,50 @@ public class FundService {
         Fund fund = fundRepository.findByFundId(fundId)
                 .orElseThrow(() -> new RuntimeException("펀드 없음"));
         saveFundDocument(fund, newFile, docType);
+    }
+
+    // 공개펀드 + 수익률 조회 메서드 추가
+    public Page<FundPolicyResponseDTO> findActivePublicWithReturns(Pageable pageable) {
+        Page<FundPublic> pubPage = fundPublicRepository.findByActiveTrueOrderByPubIdDesc(pageable);
+
+        List<Long> fundIds = pubPage.getContent().stream()
+                .map(FundPublic::getOriginFundId)
+                .toList();
+
+        final Map<Long, FundReturn> returnMap;
+        if (fundIds.isEmpty()) {
+            returnMap = Collections.emptyMap();
+        } else {
+            returnMap = fundReturnRepository.findLatestByFundIds(fundIds).stream()
+                    .collect(Collectors.toMap(fr -> fr.getFund().getFundId(), Function.identity()));
+        }
+
+        List<FundPolicyResponseDTO> dtos = pubPage.getContent().stream()
+                .map(pub -> {
+                    FundReturn ret = returnMap.get(pub.getOriginFundId());
+                    return FundPolicyResponseDTO.builder()
+                            .fundId(pub.getOriginFundId())
+                            .fundName(pub.getFundName())
+                            .fundType(pub.getFundType())
+                            .investmentRegion(pub.getInvestmentRegion())
+                            .establishDate(pub.getEstablishDate())
+                            .fundRelease(pub.getLaunchDate())
+                            .nav(pub.getNav())
+                            .aum(pub.getAum())
+                            .totalExpenseRatio(pub.getTotalExpenseRatio())
+                            .riskLevel(pub.getRiskLevel())
+                            .managementCompany(pub.getManagementCompany())
+                            .fundTheme(null)
+                            .return1m(ret != null ? ret.getReturn1m() : null)
+                            .return3m(ret != null ? ret.getReturn3m() : null)
+                            .return6m(ret != null ? ret.getReturn6m() : null)
+                            .return12m(ret != null ? ret.getReturn12m() : null)
+                            .returnSince(ret != null ? ret.getReturnSince() : null)
+                            .build();
+                })
+                .toList();
+
+        return new PageImpl<>(dtos, pageable, pubPage.getTotalElements());
     }
 
 }

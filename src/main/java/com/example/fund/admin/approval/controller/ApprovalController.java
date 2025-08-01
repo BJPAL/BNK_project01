@@ -16,7 +16,6 @@ import com.example.fund.admin.approval.entity.ApprovalLog;
 import com.example.fund.admin.approval.service.ApprovalLogService;
 import com.example.fund.admin.approval.service.ApprovalService;
 import com.example.fund.admin.dto.AdminDTO;
-import com.example.fund.fund.service.FundService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

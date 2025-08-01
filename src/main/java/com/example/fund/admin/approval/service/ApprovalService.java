@@ -7,6 +7,7 @@ import com.example.fund.admin.repository.AdminRepository_A;
 import com.example.fund.admin.repository.projection.StatusCount;
 import com.example.fund.fund.entity.Fund;
 import com.example.fund.fund.repository.FundRepository;
+import com.example.fund.fund.service.FundPublishService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ public class ApprovalService {
     private final AdminRepository_A  adminRepository;
     private final ApprovalLogService approvalLogService;   // 결재 로그 기록용
     private final FundRepository fundRepository;
+    private final FundPublishService fundPublishService;
 
     /* 승인/반려 가능한 역할 */
     private static final List<String> APPROVER_ROLES =
@@ -84,6 +86,7 @@ public class ApprovalService {
     }
 
     /* ───── 4. 배포 (요청자 본인) ───── */
+    @Transactional
     public void publish(Integer id, String adminname) {
 
         Approval approval = approvalRepository.findById(id)
@@ -96,10 +99,14 @@ public class ApprovalService {
         if (!"배포대기".equals(approval.getStatus()))
             throw new IllegalStateException("배포 가능한 상태가 아닙니다.");
 
+        // 드래프트(Fund) → 퍼블릭(FundPublic) 복사
+        Long draftFundId = approval.getFund().getFundId();
+        fundPublishService.publishFromDraft(draftFundId);
+
+        // Approval 상태 업데이트
         approval.setStatus("배포");
         approvalRepository.save(approval);
         approvalLogService.saveLog(approval, adminname, "배포", null);
-        // TODO: fundService.register(approval) 등 실제 펀드 등록 로직 호출
     }
 
     /* ───── 5. 결재 요청 등록 (요청자) ───── */

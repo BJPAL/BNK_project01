@@ -1,6 +1,8 @@
 package com.example.fund.fund.controller;
 
+import com.example.fund.fund.dto.FundListResponse;
 import com.example.fund.fund.entity.InvestProfileResult;
+import com.example.fund.fund.repository.FundPublicRepository;
 import com.example.fund.fund.repository.InvestProfileResultRepository;
 import com.example.fund.fund.service.FundService;
 import com.example.fund.user.entity.User;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -22,16 +26,14 @@ import java.util.Optional;
 public class FundViewController {
     private final InvestProfileResultRepository investProfileResultRepository;
     private final FundService fundService;
-
+    //승인된 펀드만 보이도록
+    private final FundPublicRepository pubRepo;
 
     /**
      * 투자 성향에 따른 펀드 목록
      */
     @GetMapping("/list")
-    public String listPage(
-            HttpSession session,
-            Model model
-    ) {
+    public String listPage(HttpSession session, Model model) {
         log.debug("펀드 목록 페이지 접근 요청");
         User user = (User) session.getAttribute("user");
 
@@ -51,6 +53,15 @@ public class FundViewController {
 
             model.addAttribute("userId", userId);
             model.addAttribute("investType", investType);
+
+            // 추가: 승인된(public) 펀드 조회 후 모델에 담기
+            List<FundListResponse> funds = pubRepo
+                    .findByActiveTrueOrderByPubIdDesc()
+                    .stream()
+                    .map(FundListResponse::new)
+                    .collect(Collectors.toList());
+            model.addAttribute("funds", funds);
+            // ────────────────────────────────────────
 
             return "fund/fundList";
         } else {

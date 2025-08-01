@@ -3,6 +3,7 @@ package com.example.fund.fund.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.fund.fund.dto.FundPolicyResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -49,64 +50,84 @@ public interface FundPolicyRepository extends JpaRepository<FundPolicy, Long> {
             @Param("regions") List<String> regions,
             Pageable pageable
     );
-}
 
-/*
-
-@Query("SELECT fp FROM FundPolicy fp " +
-        "LEFT JOIN FETCH fp.fund f " +
-        "WHERE fp.fundActive = true " +
-        "AND f.riskLevel BETWEEN :startRiskLevel AND :endRiskLevel " +
-        "AND (:riskLevels IS NULL OR f.riskLevel IN :riskLevels) " +
-        "AND (:fundTypes IS NULL OR f.fundType IN :fundTypes) " +
-        "AND (:regions IS NULL OR f.investmentRegion IN :regions))
-Page<FundPolicy> findActiveFundPoliciesWithFilters(
-        @Param("startRiskLevel") int startRiskLevel,
-        @Param("endRiskLevel") int endRiskLevel,
-        @Param("riskLevels") List<Integer> riskLevels,
-        @Param("fundTypes") List<String> fundTypes,
-        @Param("regions") List<String> regions,
-        Pageable pageable
-);
-
-
-SELECT fp FROM FundPolicy
-fp LEFT JOIN FETCH fp.fund f
-WHERE fp.fundActive = true AND f.riskLevel BETWEEN :startRiskLevel AND :endRiskLevel
-AND (:riskLevels IS NULL OR f.riskLevel IN :riskLevels_1)
-AND (:fundTypes IS NULL OR f.fundType IN :fundTypes_1)
-AND (:regions IS NULL OR f.investmentRegion IN :regions_1)
-ORDER BY f.fundId DESC, fp.fundId desc
-
-
-=====================================================================================
-
-
-
-
-@Query("SELECT fp FROM FundPolicy fp " +
-            "LEFT JOIN FETCH fp.fund f " +
-            "WHERE fp.fundActive = true " +
-            "AND f.riskLevel BETWEEN :startRiskLevel AND :endRiskLevel " +
-            "AND (:riskLevels IS NULL OR f.riskLevel IN :riskLevels) " +
-            "AND (:fundTypes IS NULL OR f.fundType IN :fundTypes) " +
-            "AND (:regions IS NULL OR f.investmentRegion IN :regions)" +
+    /**
+     * 투자성향(위험등급 범위) + (선택적) 위험/유형/지역 필터 적용 → FundPolicyResponseDTO 로 바로 생성
+     */
+    @Query("SELECT new com.example.fund.fund.dto.FundPolicyResponseDTO(" +
+            "  f.fundId, f.fundName, f.fundType, f.investmentRegion," +
+            "  f.establishDate, p.fundRelease, f.launchDate, f.nav, f.aum," +
+            "  f.totalExpenseRatio, f.riskLevel, f.managementCompany," +
+            "  p.fundTheme," +
+            "  r.return1m, r.return3m, r.return6m, r.return12m, r.returnSince" +
+            ") " +
+            "FROM FundPolicy p " +
+            "  JOIN p.fund f " +
+            "  LEFT JOIN FundReturn r ON r.fund = f " +
+            "WHERE p.fundActive = true " +
+            "  AND f.riskLevel BETWEEN :startRisk AND :endRisk " +
+            "  AND (:riskLevels IS NULL OR f.riskLevel   IN :riskLevels) " +
+            "  AND (:fundTypes  IS NULL OR f.fundType      IN :fundTypes) " +
+            "  AND (:regions    IS NULL OR f.investmentRegion IN :regions) " +
             "ORDER BY f.fundId DESC")
-    Page<FundPolicy> findActiveFundPoliciesWithFilters(
-            @Param("startRiskLevel") int startRiskLevel,
-            @Param("endRiskLevel") int endRiskLevel,
-            @Param("riskLevels") List<Integer> riskLevels,
-            @Param("fundTypes") List<String> fundTypes,
-            @Param("regions") List<String> regions,
+    Page<FundPolicyResponseDTO> findFilteredWithReturns(
+            @Param("startRisk")   int startRiskLevel,
+            @Param("endRisk")     int endRiskLevel,
+            @Param("riskLevels")  List<Integer> riskLevels,
+            @Param("fundTypes")   List<String>  fundTypes,
+            @Param("regions")     List<String>  regions,
             Pageable pageable
     );
 
 
+}
 
+/*
 
-
-
-
+//@Query("SELECT fp FROM FundPolicy fp " +
+//        "LEFT JOIN FETCH fp.fund f " +
+//        "WHERE fp.fundActive = true " +
+//        "AND f.riskLevel BETWEEN :startRiskLevel AND :endRiskLevel " +
+//        "AND (:riskLevels IS NULL OR f.riskLevel IN :riskLevels) " +
+//        "AND (:fundTypes IS NULL OR f.fundType IN :fundTypes) " +
+//        "AND (:regions IS NULL OR f.investmentRegion IN :regions))
+//Page<FundPolicy> findActiveFundPoliciesWithFilters(
+//        @Param("startRiskLevel") int startRiskLevel,
+//        @Param("endRiskLevel") int endRiskLevel,
+//        @Param("riskLevels") List<Integer> riskLevels,
+//        @Param("fundTypes") List<String> fundTypes,
+//        @Param("regions") List<String> regions,
+//        Pageable pageable
+//);
+//
+//
+//SELECT fp FROM FundPolicy
+//fp LEFT JOIN FETCH fp.fund f
+//WHERE fp.fundActive = true AND f.riskLevel BETWEEN :startRiskLevel AND :endRiskLevel
+//AND (:riskLevels IS NULL OR f.riskLevel IN :riskLevels_1)
+//AND (:fundTypes IS NULL OR f.fundType IN :fundTypes_1)
+//AND (:regions IS NULL OR f.investmentRegion IN :regions_1)
+//ORDER BY f.fundId DESC, fp.fundId desc
+//
+//
+//=====================================================================================
+//
+//@Query("SELECT fp FROM FundPolicy fp " +
+//            "LEFT JOIN FETCH fp.fund f " +
+//            "WHERE fp.fundActive = true " +
+//            "AND f.riskLevel BETWEEN :startRiskLevel AND :endRiskLevel " +
+//            "AND (:riskLevels IS NULL OR f.riskLevel IN :riskLevels) " +
+//            "AND (:fundTypes IS NULL OR f.fundType IN :fundTypes) " +
+//            "AND (:regions IS NULL OR f.investmentRegion IN :regions)" +
+//            "ORDER BY f.fundId DESC")
+//    Page<FundPolicy> findActiveFundPoliciesWithFilters(
+//            @Param("startRiskLevel") int startRiskLevel,
+//            @Param("endRiskLevel") int endRiskLevel,
+//            @Param("riskLevels") List<Integer> riskLevels,
+//            @Param("fundTypes") List<String> fundTypes,
+//            @Param("regions") List<String> regions,
+//            Pageable pageable
+//    );
 
 
 */

@@ -22,4 +22,20 @@ public interface FundReturnRepository extends JpaRepository<FundReturn, Long> {
      */
     @Query("SELECT fr FROM FundReturn fr WHERE fr.fund.fundId IN :fundIds")
     List<FundReturn> findByFund_FundIdIn(@Param("fundIds") List<Long> fundIds);
+
+    /**
+     * 각 fund_id에 대해 가장 최신(return_id가 가장 큰) FundReturn을 가져온다.
+     * nativeQuery로 서브쿼리 조인하여 최신 것만 필터링.
+     */
+    @Query(value = """
+        SELECT fr.*
+        FROM fund_return fr
+        INNER JOIN (
+            SELECT fund_id, MAX(return_id) AS max_return_id
+            FROM fund_return
+            WHERE fund_id IN (:fundIds)
+            GROUP BY fund_id
+        ) latest ON fr.fund_id = latest.fund_id AND fr.return_id = latest.max_return_id
+        """, nativeQuery = true)
+    List<FundReturn> findLatestByFundIds(@Param("fundIds") List<Long> fundIds);
 }
