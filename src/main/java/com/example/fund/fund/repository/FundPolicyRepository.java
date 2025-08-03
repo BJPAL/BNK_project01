@@ -17,7 +17,7 @@ import com.example.fund.fund.entity.FundPolicy;
 public interface FundPolicyRepository extends JpaRepository<FundPolicy, Long> {
 
     @Query(value = "SELECT fp FROM FundPolicy fp LEFT JOIN FETCH fp.fund", countQuery = "SELECT count(fp) FROM FundPolicy fp")
-    Page<FundPolicy> findAllWithFund(org.springframework.data.domain.Pageable pageable);
+    Page<FundPolicy> findAllWithFund(Pageable pageable);
 
     Optional<FundPolicy> findByFund_FundId(Long fundId);
 
